@@ -1,12 +1,11 @@
 (ns com.example.model.entity
   (:require
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]))
 
 (defattr firm ::firm :ref
   {::attr/target        :firm/id
-   ::datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; This attribute can live on any entity identified by this set.
@@ -17,9 +16,9 @@
    ;; to supply any necessary extra information.  This points to an interesting facet of
    ;; attributes: They may be resolved from multiple sources (more than one resolver
    ;; might be generated for a single defattr). Overrides for this are simply db-centric options
-   ;; like `::datomic/generate-resolvers? false` on an attribute, followed by manual resolvers
+   ;; like `:com.fulcrologic.rad.database-adapters.datomic/generate-resolvers? false` on an attribute, followed by manual resolvers
    ;; defined elsewhere in the source.
-   ::datomic/entity-ids #{:com.example.model.account/id :com.example.model.tag/id}
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:com.example.model.account/id :com.example.model.tag/id}
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -38,7 +37,7 @@
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; NOTE: This is overly broad in some cases. Is the attribute required on ALL entities it
    ;; can be on, or is it optional in some circumstances?
-   ;; ::attr/required? as a boolean is too broad for all uses. ::form/required? true and ::datomic/required-on #{::id}
+   ;; ::attr/required? as a boolean is too broad for all uses. ::form/required? true and :com.fulcrologic.rad.database-adapters.datomic/required-on #{::id}
    ;; give context-sensitive meaning (which might even be co-located on another artifact, like a
    ;; `defsc-form`). Notice, however, that `::attr/required?` *can* have a well-defined
    ;; "default" meaning for all contexts (required on forms and all entities on which it can appear).

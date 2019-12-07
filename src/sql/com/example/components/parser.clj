@@ -4,8 +4,7 @@
     [com.example.components.config :refer [config]]
     [com.example.components.connection-pools :as pools]
     [com.fulcrologic.rad.pathom :as pathom]
-    [mount.core :refer [defstate]]
-    [datomic.api :as d]))
+    [mount.core :refer [defstate]]))
 
 (defstate parser
   :start

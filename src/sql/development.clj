@@ -21,6 +21,7 @@
 
 (defn seed! []
   (let [db (pools/get-jdbc-datasource)]
+    (jdbc/execute! db ["DELETE FROM ACCOUNT"])
     (doseq [row [{:id       (new-uuid 1)
                   :name     "Joe Blow"
                   :email    "joe@example.com"

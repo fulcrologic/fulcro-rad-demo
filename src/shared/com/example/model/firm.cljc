@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [name])
   (:require
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -12,7 +11,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defattr id ::id :uuid
   {::attr/identity? true
-   ::datomic/schema :production
+   :com.fulcrologic.rad.database-adapters.datomic/schema :production
    ::attr/required? true
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -28,7 +27,7 @@
    ::auth/authority :local})
 
 (defattr name ::name :string
-  {::datomic/schema     :production
+  {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; In the Datomic case it is sufficient to indicate identity fields as a way to
@@ -37,7 +36,7 @@
    ;; the given ID) to optimized Pathom resolvers that can pull related attributes in a single
    ;; query. A similar mechanism is trivial for SQL as well `::sql/table "account"`.
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ::datomic/entity-ids #{::id}
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
 
    ::attr/required?     true
    ::auth/authority     :local})

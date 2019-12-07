@@ -2,51 +2,50 @@
   (:refer-clojure :exclude [name])
   (:require
     #?@(:clj
-        [[datomic.api :as d]
-         [com.wsscode.pathom.connect :as pc :refer [defmutation]]]
+        [[com.wsscode.pathom.connect :as pc :refer [defmutation]]]
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [com.wsscode.pathom.connect :as pc]
     [com.example.components.database-queries :as queries]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
-    [com.fulcrologic.rad.database-adapters.sql :as sql]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
     [taoensso.timbre :as log]))
 
 (defattr id ::id :uuid
-  {::attr/identity? true
-   ::datomic/schema :production
-   ::sql/schema     :production
-   ::sql/tables     #{"account"}
-   ::auth/authority :local})
+  {::attr/identity?                                      true
+   ;; NOTE: These are spelled out so we don't have to have either on classpath, which allows
+   ;; independent experimentation. In a normal project you'd use ns aliasing.
+   :com.fulcrologic.rad.database-adapters.datomic/schema :production
+   :com.fulcrologic.rad.database-adapters.sql/schema     :production
+   :com.fulcrologic.rad.database-adapters.sql/tables     #{"account"}
+   ::auth/authority                                      :local})
 
 (defattr email ::email :string
-  {::datomic/schema     :production
-   ::datomic/entity-ids #{::id}
-   ::sql/schema         :production
-   ::sql/tables         #{"account"}
-   :db/unique           :db.unique/value
-   ::attr/required?     true
-   ::auth/authority     :local})
+  {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :db/unique                                                :db.unique/value
+   ::attr/required?                                          true
+   ::auth/authority                                          :local})
 
 (defattr active? ::active? :boolean
-  {::auth/authority     :local
-   ::datomic/schema     :production
-   ::datomic/entity-ids #{::id}
-   ::sql/schema         :production
-   ::sql/column-name    "active"
-   ::sql/tables         #{"account"}
-   ::form/default-value true})
+  {::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/column-name    "active"
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   ::form/default-value                                      true})
 
 (defattr password ::password :password
   {;; TODO: context sense to allow for owner to write
-   ::auth/authority          :local
-   ::datomic/schema          :production
-   ::datomic/entity-ids      #{::id}
-   ::sql/schema              :production
-   ::sql/tables              #{"account"}
+   ::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; Permissions are typically only trusted at the server, but cases where we can
@@ -69,7 +68,7 @@
    ;; everything from the databases to the Ring request to the attribute name being checked. This
    ;; could then allow logic to figure out the permissions on an attribute for any circumstance.
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ::auth/permissions        (fn [env] #{})
+   ::auth/permissions                                        (fn [env] #{})
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; Things like this may or may not belong at the attr level.  Support for a
@@ -78,38 +77,38 @@
    ;; for some kind of plugin.  The form augmentation of `::form/beforeWrite` shown
    ;; elsewhere is potentially a more appropriate generalization for this.
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ::attr/encrypt-iterations 100
-   ::attr/required?          true})
+   ::attr/encrypt-iterations                                 100
+   ::attr/required?                                          true})
 
 (defattr name ::name :string
-  {::auth/authority     :local
-   ::datomic/schema     :production
-   ::datomic/entity-ids #{::id}
-   ::sql/schema         :production
-   ::sql/tables         #{"account"}
-   ::attr/required?     true})
+  {::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   ::attr/required?                                          true})
 
 ;; In SQL engine default to one->many with target table holding back-ref
 #_(defattr addresses ::addresses :ref
-    {::attr/target              :com.example.model.address/id
-     ::attr/cardinality         :many
-     ::datomic/schema           :production
-     ::datomic/intended-targets #{:com.example.model.address/id}
-     ::datomic/entity-ids       #{::id}
-     ::sql/schema               :production
-     ::sql/tables               #{"account"}
-     :db/isComponent            true
-     ::auth/authority           :local})
+    {::attr/target                                                   :com.example.model.address/id
+     ::attr/cardinality                                              :many
+     :com.fulcrologic.rad.database-adapters.datomic/schema           :production
+     :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.address/id}
+     :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
+     :com.fulcrologic.rad.database-adapters.sql/schema               :production
+     :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+     :db/isComponent                                                 true
+     ::auth/authority                                                :local})
 
 #_(defattr tags ::tags :ref
-    {::attr/target              :tag/id
-     ::attr/cardinality         :many
-     ::datomic/schema           :production
-     ::datomic/intended-targets #{:com.example.model.tag/id}
-     ::datomic/entity-ids       #{::id}
-     ::sql/schema               :production
-     ::sql/tables               #{"account"}
-     ::auth/authority           :local})
+    {::attr/target                                                   :tag/id
+     ::attr/cardinality                                              :many
+     :com.fulcrologic.rad.database-adapters.datomic/schema           :production
+     :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.tag/id}
+     :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
+     :com.fulcrologic.rad.database-adapters.sql/schema               :production
+     :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+     ::auth/authority                                                :local})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; If there is no database-specific representation of an attribute then one must
