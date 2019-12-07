@@ -1,10 +1,9 @@
 {:deps     {:aliases [:dev :test]}
  :nrepl    {:port 9000}
- :dev-http {8080 "resources/public"}
  :jvm-opts ["-Xmx2G"]
  :builds   {:example  {:target     :browser
                        :output-dir "resources/public/js/example"
-                       :asset-path "/js/eample"
+                       :asset-path "/js/example"
                        :dev        {:compiler-options {:external-config {:guardrails {}}}}
                        :modules    {:main {:entries [com.example.client]}}
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]

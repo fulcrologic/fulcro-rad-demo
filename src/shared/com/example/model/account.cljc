@@ -2,11 +2,11 @@
   (:refer-clojure :exclude [name])
   (:require
     #?@(:clj
-        [[com.wsscode.pathom.connect :as pc :refer [defmutation]]]
+        [[com.wsscode.pathom.connect :as pc :refer [defmutation]]
+         [com.example.components.database-queries :as queries]]
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [com.wsscode.pathom.connect :as pc]
-    [com.example.components.database-queries :as queries]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
@@ -121,7 +121,8 @@
    ::auth/authority :local
    ::pc/output      [{::all-accounts [::id]}]
    ::pc/resolve     (fn [{:keys [query-params] :as env} _]
-                      {::all-accounts (queries/get-all-accounts env query-params)})})
+                      #?(:clj
+                         {::all-accounts (queries/get-all-accounts env query-params)}))})
 
 #?(:clj
    (defmutation login [env {:keys [username password]}]
