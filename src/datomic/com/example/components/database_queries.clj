@@ -1,16 +1,18 @@
 (ns com.example.components.database-queries
   (:require
-    [datomic.api :as d]))
+    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
+    [datomic.api :as d]
+    [taoensso.timbre :as log]))
 
 (defn get-all-accounts
-  [db query-params]
-  #?(:clj
-     (let [ids (if (:ui/show-inactive? query-params)
-                 (d/q [:find '[?uuid ...]
-                       :where
-                       ['?dbid ::id '?uuid]] db)
-                 (d/q [:find '[?uuid ...]
-                       :where
-                       ['?dbid ::active? true]
-                       ['?dbid ::id '?uuid]] db))]
-       (mapv (fn [id] {::id id}) ids))))
+  [env query-params]
+  (let [db (get-in env [::datomic/databases :production])]
+    (let [ids (if (:ui/show-inactive? query-params)
+               (d/q [:find '[?uuid ...]
+                     :where
+                     ['?dbid :com.example.model.account/id '?uuid]] db)
+               (d/q [:find '[?uuid ...]
+                     :where
+                     ['?dbid :com.example.model.account/active? true]
+                     ['?dbid :com.example.model.account/id '?uuid]] db))]
+     (mapv (fn [id] {:com.example.model.account/id id}) ids))))

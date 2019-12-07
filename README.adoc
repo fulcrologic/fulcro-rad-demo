@@ -33,3 +33,20 @@ $ clj -A:dev:sql
 user=> (require 'development)
 user=> (development/go)
 -----
+
+== Running a Datomic-based Sever
+
+The example code for Datomic components is in the `src/datomic` folder, along with a custom
+`development.clj`.
+
+Install Datomic, and configure it for a PostgreSQL storage engine, then update the config parameters
+in `defaults.edn` in the `src/datomic/config` directory to have the correct connection parameters.
+
+Then you can run it with the correct classpath using:
+
+[source, bash]
+-----
+$ clj -A:dev:datomic
+user=> (require 'development)
+user=> (development/go)
+-----

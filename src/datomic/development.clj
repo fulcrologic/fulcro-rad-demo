@@ -17,7 +17,7 @@
 
 (set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared")
 
-(defn seed []
+(defn seed! []
   (let [u          new-uuid
         connection (:main datomic-connections)]
     (when connection
