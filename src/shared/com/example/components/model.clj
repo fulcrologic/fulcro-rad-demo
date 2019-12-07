@@ -13,7 +13,7 @@
   :start
   (let [all-attributes (vec (concat
                               account/attributes
-                              address/attributes
+                              #_#_#_#_address/attributes
                               firm/attributes
                               entity/attributes
                               tag/attributes))]

@@ -7,33 +7,26 @@
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [com.wsscode.pathom.connect :as pc]
+    [com.example.components.database-queries :as queries]
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
+    [com.fulcrologic.rad.database-adapters.sql :as sql]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
     [taoensso.timbre :as log]))
 
-(defn get-all-accounts
-  [db query-params]
-  #?(:clj
-     (let [ids (if (:ui/show-inactive? query-params)
-                 (d/q [:find '[?uuid ...]
-                       :where
-                       ['?dbid ::id '?uuid]] db)
-                 (d/q [:find '[?uuid ...]
-                       :where
-                       ['?dbid ::active? true]
-                       ['?dbid ::id '?uuid]] db))]
-       {::all-accounts (mapv (fn [id] {::id id}) ids)})))
-
 (defattr id ::id :uuid
   {::attr/identity? true
    ::datomic/schema :production
+   ::sql/schema     :production
+   ::sql/tables     #{"account"}
    ::auth/authority :local})
 
 (defattr email ::email :string
   {::datomic/schema     :production
    ::datomic/entity-ids #{::id}
+   ::sql/schema         :production
+   ::sql/tables         #{"account"}
    :db/unique           :db.unique/value
    ::attr/required?     true
    ::auth/authority     :local})
@@ -42,6 +35,9 @@
   {::auth/authority     :local
    ::datomic/schema     :production
    ::datomic/entity-ids #{::id}
+   ::sql/schema         :production
+   ::sql/column-name    "active"
+   ::sql/tables         #{"account"}
    ::form/default-value true})
 
 (defattr password ::password :password
@@ -49,6 +45,8 @@
    ::auth/authority          :local
    ::datomic/schema          :production
    ::datomic/entity-ids      #{::id}
+   ::sql/schema              :production
+   ::sql/tables              #{"account"}
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; Permissions are typically only trusted at the server, but cases where we can
@@ -87,25 +85,31 @@
   {::auth/authority     :local
    ::datomic/schema     :production
    ::datomic/entity-ids #{::id}
+   ::sql/schema         :production
+   ::sql/tables         #{"account"}
    ::attr/required?     true})
 
 ;; In SQL engine default to one->many with target table holding back-ref
-(defattr addresses ::addresses :ref
-  {::attr/target              :com.example.model.address/id
-   ::attr/cardinality         :many
-   ::datomic/schema           :production
-   ::datomic/intended-targets #{:com.example.model.address/id}
-   ::datomic/entity-ids       #{::id}
-   :db/isComponent            true
-   ::auth/authority           :local})
+#_(defattr addresses ::addresses :ref
+    {::attr/target              :com.example.model.address/id
+     ::attr/cardinality         :many
+     ::datomic/schema           :production
+     ::datomic/intended-targets #{:com.example.model.address/id}
+     ::datomic/entity-ids       #{::id}
+     ::sql/schema               :production
+     ::sql/tables               #{"account"}
+     :db/isComponent            true
+     ::auth/authority           :local})
 
-(defattr tags ::tags :ref
-  {::attr/target              :tag/id
-   ::attr/cardinality         :many
-   ::datomic/schema           :production
-   ::datomic/intended-targets #{:com.example.model.tag/id}
-   ::datomic/entity-ids       #{::id}
-   ::auth/authority           :local})
+#_(defattr tags ::tags :ref
+    {::attr/target              :tag/id
+     ::attr/cardinality         :many
+     ::datomic/schema           :production
+     ::datomic/intended-targets #{:com.example.model.tag/id}
+     ::datomic/entity-ids       #{::id}
+     ::sql/schema               :production
+     ::sql/tables               #{"account"}
+     ::auth/authority           :local})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; If there is no database-specific representation of an attribute then one must
@@ -117,9 +121,8 @@
   {::attr/target    ::id
    ::auth/authority :local
    ::pc/output      [{::all-accounts [::id]}]
-   ::pc/resolve     (fn [{:keys          [query-params] :as env
-                          ::datomic/keys [databases]} input]
-                      (get-all-accounts (:production databases) query-params))})
+   ::pc/resolve     (fn [{:keys [query-params] :as env} _]
+                      {::all-accounts (queries/get-all-accounts env query-params)})})
 
 #?(:clj
    (defmutation login [env {:keys [username password]}]
@@ -136,4 +139,4 @@
        (-> env
          (m/returning auth/Session)))))
 
-(def attributes [id name email password active? tags addresses all-accounts])
+(def attributes [id name email password active? #_#_tags addresses all-accounts])

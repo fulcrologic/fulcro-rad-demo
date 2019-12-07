@@ -1,14 +1,33 @@
 {:com.example.components.server/config {:port 3000}
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
-                                       {:main {:datomic/schema    :production
-                                               :datomic/driver    :postgresql
-                                               :datomic/database  "example"
+                                       {:main {:datomic/schema      :production
+                                               :datomic/driver      :postgresql
+                                               :datomic/database    "example"
                                                :postgresql/host     "localhost"
                                                :postgresql/port     5432
                                                :postgresql/user     "datomic"
                                                :postgresql/password "datomic"
                                                :postgresql/database "datomic"}}
+
+ :com.fulcrologic.rad.database-adapters.sql/databases
+                                       {:main {:flyway/migrate?          false ; alternate for managing schema
+                                               :flyway/migrations        ["classpath:config/sql_migrations"]
+                                               :hikaricp/config          {"dataSourceClassName"     "org.postgresql.ds.PGSimpleDataSource"
+                                                                          "dataSource.user"         "postgres"
+                                                                          "dataSource.password"     ""
+                                                                          "dataSource.databaseName" "example"
+                                                                          "dataSource.portNumber"   "5432"
+                                                                          "dataSource.serverName"   "localhost"}
+                                               :sql/auto-create-missing? true
+                                               :sql/schema               :production
+                                               :sql/driver               :postgresql
+                                               :sql/host                 "localhost"
+                                               :sql/port                 5432
+                                               :sql/user                 "datomic"
+                                               :sql/password             "datomic"
+                                               :sql/database             "datomic"}}
+
 
  :ring.middleware/defaults-config      {:params    {:keywordize true
                                                     :multipart  true
