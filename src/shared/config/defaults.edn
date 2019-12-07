@@ -11,7 +11,7 @@
                                                :postgresql/database "datomic"}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases
-                                       {:main {:flyway/migrate?          false ; alternate for managing schema
+                                       {:main {:flyway/migrate?          true
                                                :flyway/migrations        ["classpath:config/sql_migrations"]
                                                :hikaricp/config          {"dataSourceClassName"     "org.postgresql.ds.PGSimpleDataSource"
                                                                           "dataSource.user"         "postgres"
@@ -19,14 +19,8 @@
                                                                           "dataSource.databaseName" "example"
                                                                           "dataSource.portNumber"   "5432"
                                                                           "dataSource.serverName"   "localhost"}
-                                               :sql/auto-create-missing? true
-                                               :sql/schema               :production
-                                               :sql/driver               :postgresql
-                                               :sql/host                 "localhost"
-                                               :sql/port                 5432
-                                               :sql/user                 "datomic"
-                                               :sql/password             "datomic"
-                                               :sql/database             "datomic"}}
+                                               :sql/auto-create-missing? false
+                                               :sql/schema               :production}}
 
 
  :ring.middleware/defaults-config      {:params    {:keywordize true

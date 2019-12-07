@@ -14,44 +14,42 @@
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.resolvers :as res]
     [mount.core :as mount]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [com.example.components.connection-pools :as pools]))
 
 (set-refresh-dirs "src/main" "src/sql" "src/dev" "src/shared")
 
-(def seed
-  (let [u (fn [n] (new-uuid n))]
-    [{:id       (u 1)
-      :name     "Joe Blow"
-      :email    "joe@example.com"
-      :active   true
-      :password (attr/encrypt "letmein" "some-salt"
-                  (::attr/encrypt-iterations
-                    (attr/key->attribute ::account/password)))}
-     {:id       (u 2)
-      :name     "Sam Hill"
-      :email    "sam@example.com"
-      :active   false
-      :password (attr/encrypt "letmein" "some-salt"
-                  (::attr/encrypt-iterations
-                    (attr/key->attribute ::account/password)))}
-     {:id       (u 3)
-      :name     "Jose Haplon"
-      :email    "jose@example.com"
-      :active   true
-      :password (attr/encrypt "letmein" "some-salt"
-                  (::attr/encrypt-iterations
-                    (attr/key->attribute ::account/password)))}
-     {:id       (u 4)
-      :name     "Rose Small"
-      :email    "rose@example.com"
-      :active   true
-      :password (attr/encrypt "letmein" "some-salt"
-                  (::attr/encrypt-iterations
-                    (attr/key->attribute ::account/password)))}]))
+(defn seed! []
+  (let [db (pools/get-jdbc-datasource)]
+    (doseq [row [{:id       (new-uuid 1)
+                  :name     "Joe Blow"
+                  :email    "joe@example.com"
+                  :active   true
+                  :password (attr/encrypt "letmein" "some-salt"
+                              (::attr/encrypt-iterations account/password))}
+                 {:id       (new-uuid 2)
+                  :name     "Sam Hill"
+                  :email    "sam@example.com"
+                  :active   false
+                  :password (attr/encrypt "letmein" "some-salt"
+                              (::attr/encrypt-iterations account/password))}
+                 {:id       (new-uuid 3)
+                  :name     "Jose Haplon"
+                  :email    "jose@example.com"
+                  :active   true
+                  :password (attr/encrypt "letmein" "some-salt"
+                              (::attr/encrypt-iterations account/password))}
+                 {:id       (new-uuid 4)
+                  :name     "Rose Small"
+                  :email    "rose@example.com"
+                  :active   true
+                  :password (attr/encrypt "letmein" "some-salt"
+                              (::attr/encrypt-iterations account/password))}]]
+      (jdbc/insert! db "account" row))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
-  ;(seed)
+  (seed!)
   :ok)
 
 (defn stop
@@ -75,8 +73,17 @@
             :host     "localhost"
             :user     "postgres"
             :password ""}]
-    (queries/get-all-accounts {:sql/databases {:production db}} {:ui/show-inactive? true})
+    #_(queries/get-all-accounts {:sql/databases {:production db}} {:ui/show-inactive? true})
+    (sql/entity-query {::sql/schema                          :production
+                       ::sql/attributes                      account/attributes
+                       :com.wsscode.pathom.core/parent-query [::account/name ::account/active?]
+                       ::sql/id-attribute                    account/id
+                       ::sql/databases                       {:production db}} {::account/id #uuid "ffffffff-ffff-ffff-ffff-000000000001"})
     #_(jdbc/query db ["SELECT * FROM account"])
     #_(jdbc/execute! db [(sql/automatic-schema :production account/attributes)]))
+
+  (sql/generate-resolvers account/attributes :production)
+
+  (sql/column-names account/attributes [::account/id ::account/active?])
 
   )

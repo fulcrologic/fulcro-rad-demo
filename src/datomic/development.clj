@@ -53,7 +53,7 @@
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
-  (seed)
+  (seed!)
   :ok)
 
 (defn stop
@@ -72,7 +72,7 @@
 (def reset #'restart)
 
 (comment
-  (seed)
+  (seed!)
   (res/schema->resolvers #{:production} ex-schema/latest-schema)
   (res/entity->resolvers :production account/account))
 
