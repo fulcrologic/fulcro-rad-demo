@@ -12,6 +12,11 @@
     [com.fulcrologic.fulcro.data-fetch :as df]
     [com.fulcrologic.rad.attributes :as attr]
     [taoensso.timbre :as log]
+    ;; FIXME: Configure controls at client level
+    [com.fulcrologic.semantic-ui.modules.modal.ui-modal :refer [ui-modal]]
+    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-content :refer [ui-modal-content]]
+    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-header :refer [ui-modal-header]]
+
     [com.example.model.account :as account]
     [com.example.model.tag :as tag]
     [com.example.model.address :as address]))

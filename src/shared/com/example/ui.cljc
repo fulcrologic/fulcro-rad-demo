@@ -1,35 +1,49 @@
 (ns com.example.ui
   (:require
-    ;; This require pulls in the multimethods for rendering w/semantic UI
-    [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls]
     [com.example.model.account :as acct]
+    [com.example.model.address :as address]
     [com.example.ui.login-dialog :refer [LoginForm]]
-    [com.fulcrologic.rad.ids :refer [new-uuid]]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal :refer [ui-modal]]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-header :refer [ui-modal-header]]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-content :refer [ui-modal-content]]
-    [com.fulcrologic.rad :as rad]
-    [com.fulcrologic.rad.form :as form]
-    [com.fulcrologic.rad.report :as report]
-    [com.fulcrologic.rad.controller :as controller]
-    [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.attributes :as attr]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    #?(:clj [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
+       :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
-    [com.fulcrologic.fulcro.dom :as dom :refer [div label input]]
+    [com.fulcrologic.rad :as rad]
+    [com.fulcrologic.rad.attributes :as attr]
+    [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.rad.controller :as controller]
+    [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.ids :refer [new-uuid]]
+    [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls]
+    [com.fulcrologic.rad.report :as report]
     [taoensso.timbre :as log]))
+
+;; NOTE: Limitation: Each "storage location" requires a form. The ident of the component matches the identity
+;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
+;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
+;; data in forms when "mixing" server side "entities/tables/documents".
+(form/defsc-form AddressForm [this props]
+  {::form/id           address/id
+   ::form/attributes   [address/street address/city address/state address/zip]
+   ::form/cancel-route ["landing-page"]
+   ::form/route-prefix "address"
+   ::form/title        "Edit Address"
+   ;; TODO: (fix ns, and implement)
+   :sui/layout         [[::address/street]
+                        [::address/city ::address/state ::address/zip]]})
 
 (form/defsc-form AccountForm [this props]
   {::form/id           acct/id
-   ::form/attributes   [acct/name acct/email]
-   ; ::form/read-only?   {::acct/email false}
+   ::form/attributes   [acct/name acct/addresses acct/email acct/active?]
+   ::form/read-only?   {::acct/email true}
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "account"
    ::form/title        "Edit Account"
-   ;;::form/confirm-exit? true
-   ;; TODO: Derive query of attributes that are needed to manage the entities that hold the
-   ;; attributes being edited.
-   })
+   ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
+   ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
+   ;; don't get top-level controls like "Save" and "Cancel".
+   ::form/subforms     {::acct/addresses {::form/ui            AddressForm
+                                          ;; Use computed props to inform subform of its role.
+                                          ::form/subform-style :inline}}})
 
 (defsc AccountListItem [this {::acct/keys [id name active? last-login] :as props}]
   {::report/columns         [::acct/name ::acct/active? ::acct/last-login]

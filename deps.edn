@@ -1,16 +1,17 @@
 {:paths   ["src/shared"]
 
- :deps    {edn-query-language/eql             {:mvn/version "0.0.9"}
+ :deps    {edn-query-language/eql             {:mvn/version "0.0.10"}
            com.taoensso/timbre                {:mvn/version "4.10.0"}
            com.taoensso/encore                {:mvn/version "2.115.0"}
            com.fulcrologic/guardrails         {:mvn/version "0.0.9"}
+           com.fulcrologic/fulcro             {:mvn/version "3.0.15"}
            com.fulcrologic/fulcro-rad         {:mvn/version "0.0.1-SNAPSHOT"}
            com.fulcrologic/fulcro-rad-sql     {:mvn/version "0.0.1-SNAPSHOT"}
            com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-SNAPSHOT"}
            com.wsscode/pathom                 {:mvn/version "2.2.26"}
            org.clojure/clojure                {:mvn/version "1.10.1" :scope "provided"}}
 
- :aliases {:test        {:extra-paths ["src/test"]
+ :aliases {:tests       {:extra-paths ["src/test"]
                          :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.4"}}}
 
            :sql         {:extra-paths ["src/sql"]
@@ -24,10 +25,6 @@
            :clj-tests   {:extra-paths ["src/test"]
                          :main-opts   ["-m" "kaocha.runner"]
                          :extra-deps  {lambdaisland/kaocha {:mvn/version "0.0-554"}}}
-
-           :library-dev {:override-deps {com.fulcrologic/fulcro-rad         {:local/root "/Users/tonykay/fulcrologic/fulcro-rad"}
-                                         com.fulcrologic/fulcro-rad-sql     {:local/root "/Users/tonykay/fulcrologic/fulcro-rad-sql"}
-                                         com.fulcrologic/fulcro-rad-datomic {:local/root "/Users/tonykay/fulcrologic/fulcro-rad-datomic"}}}
 
            :dev         {:extra-paths ["src/dev" "resources"]
                          :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.8.69"}
