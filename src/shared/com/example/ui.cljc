@@ -4,7 +4,7 @@
     [com.example.model.address :as address]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    #?(:clj [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
+    #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
     [com.fulcrologic.rad :as rad]
@@ -27,8 +27,7 @@
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "address"
    ::form/title        "Edit Address"
-   ;; TODO: (fix ns, and implement)
-   :sui/layout         [[::address/street]
+   ::form/layout       [[::address/street]
                         [::address/city ::address/state ::address/zip]]})
 
 (form/defsc-form AccountForm [this props]
@@ -41,9 +40,12 @@
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   ::form/subforms     {::acct/addresses {::form/ui            AddressForm
+   ::form/subforms     {::acct/addresses {::form/ui              AddressForm
+                                          ::form/can-delete-row? (fn [parent item] (< 1 (count (::acct/addresses parent))))
+                                          ::form/can-add-row?    (fn [parent] true)
+                                          ::form/add-row-title   "Add Address"
                                           ;; Use computed props to inform subform of its role.
-                                          ::form/subform-style :inline}}})
+                                          ::form/subform-style   :inline}}})
 
 (defsc AccountListItem [this {::acct/keys [id name active? last-login] :as props}]
   {::report/columns         [::acct/name ::acct/active? ::acct/last-login]
