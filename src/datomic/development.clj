@@ -7,6 +7,7 @@
     [com.example.components.middleware]
     [com.example.components.server]
     [com.example.model.account :as account]
+    [com.example.model.address :as address]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.resolvers :as res]
@@ -15,20 +16,27 @@
     [datomic.api :as d]
     [com.fulcrologic.rad.attributes :as attr]))
 
-(set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared")
+(set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared" "../fulcro-rad-datomic/src/main" "../fulcro-rad/src/main")
 
 (defn seed! []
   (let [u          new-uuid
         connection (:main datomic-connections)]
     (when connection
       (log/info "SEEDING data.")
-      @(d/transact connection [{::account/id       (u 1)
-                                ::account/name     "Joe Blow"
-                                ::account/email    "joe@example.com"
-                                ::account/active?  true
-                                ::account/password (attr/encrypt "letmein" "some-salt"
-                                                     (::attr/encrypt-iterations
-                                                       (attr/key->attribute ::account/password)))}
+      @(d/transact connection [{:db/id           "addr-1"
+                                ::address/id     (u 10)
+                                ::address/street "11 Main St"
+                                ::address/city   "Nowhere"
+                                ::address/state  :com.example.model.address.state/AZ
+                                ::address/zip    "88888"}
+                               {::account/id        (u 1)
+                                ::account/name      "Joe Blow"
+                                ::account/email     "joe@example.com"
+                                ::account/active?   true
+                                ::account/addresses ["addr-1"]
+                                ::account/password  (attr/encrypt "letmein" "some-salt"
+                                                      (::attr/encrypt-iterations
+                                                        (attr/key->attribute ::account/password)))}
                                {::account/id       (u 2)
                                 ::account/name     "Sam Hill"
                                 ::account/email    "sam@example.com"

@@ -88,17 +88,16 @@
    :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    ::attr/required?                                          true})
 
-;; In SQL engine default to one->many with target table holding back-ref
-#_(defattr addresses ::addresses :ref
-    {::attr/target                                                   :com.example.model.address/id
-     ::attr/cardinality                                              :many
-     :com.fulcrologic.rad.database-adapters.datomic/schema           :production
-     :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.address/id}
-     :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
-     :com.fulcrologic.rad.database-adapters.sql/schema               :production
-     :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
-     :db/isComponent                                                 true
-     ::auth/authority                                                :local})
+(defattr addresses ::addresses :ref
+  {::attr/target                                                   :com.example.model.address/id
+   ::attr/cardinality                                              :many
+   :com.fulcrologic.rad.database-adapters.datomic/schema           :production
+   :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.address/id}
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
+   :com.fulcrologic.rad.database-adapters.sql/schema               :production
+   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+   :db/isComponent                                                 true
+   ::auth/authority                                                :local})
 
 #_(defattr tags ::tags :ref
     {::attr/target                                                   :tag/id
@@ -139,4 +138,4 @@
        (-> env
          (m/returning auth/Session)))))
 
-(def attributes [id name email password active? #_#_tags addresses all-accounts])
+(def attributes [id name email password active? addresses all-accounts])

@@ -1,10 +1,10 @@
-{:deps     {:aliases [:dev :test]}
+{:deps     {:aliases [:dev :test :rad-dev]}
  :nrepl    {:port 9000}
  :jvm-opts ["-Xmx2G"]
  :builds   {:example  {:target     :browser
                        :output-dir "resources/public/js/example"
                        :asset-path "/js/example"
-                       :dev        {:compiler-options {:external-config {:guardrails {}}}}
+                       :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}}}}
                        :modules    {:main {:entries [com.example.client]}}
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/start}}
