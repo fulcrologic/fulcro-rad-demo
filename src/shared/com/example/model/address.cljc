@@ -19,7 +19,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity     ::address})
 
-(def states #:com.example.model.address {:AZ "Arizona"
+(def states #:com.example.model.address.state {:AZ "Arizona"
                                          :AL "Alabama"
                                          :AK "Alaska"
                                          :CA "California"
