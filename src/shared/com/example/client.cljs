@@ -12,14 +12,11 @@
     [com.fulcrologic.fulcro.data-fetch :as df]
     [com.fulcrologic.rad.attributes :as attr]
     [taoensso.timbre :as log]
-    ;; FIXME: Configure controls at client level
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal :refer [ui-modal]]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-content :refer [ui-modal-content]]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-header :refer [ui-modal-header]]
-
+    [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.example.model.account :as account]
     [com.example.model.tag :as tag]
-    [com.example.model.address :as address]))
+    [com.example.model.address :as address]
+    [com.fulcrologic.rad.form :as form]))
 
 ;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
 
@@ -43,4 +40,7 @@
                                                          ::controller/router    ui/MainRouter
                                                          ::controller/id        :main-controller}))}))
 
-(defn start [] (app/mount! app Root "app"))
+
+(defn start []
+  (form/install! app sui/all-controls)
+  (app/mount! app Root "app"))

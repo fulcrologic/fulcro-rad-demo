@@ -22,17 +22,18 @@
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AddressForm [this props]
-  {::form/id           address/id
-   ::form/attributes   [address/street address/city address/state address/zip]
-   ::form/cancel-route ["landing-page"]
-   ::form/route-prefix "address"
-   ::form/title        "Edit Address"
-   ::form/layout       [[::address/street]
-                        [::address/city ::address/state ::address/zip]]})
+  {::form/id                address/id
+   ::form/attributes        [address/street address/city address/state address/zip]
+   ::form/enumeration-order {::address/state (sort-by #(get address/states %) (keys address/states))}
+   ::form/cancel-route      ["landing-page"]
+   ::form/route-prefix      "address"
+   ::form/title             "Edit Address"
+   ::form/layout            [[::address/street]
+                             [::address/city ::address/state ::address/zip]]})
 
 (form/defsc-form AccountForm [this props]
   {::form/id           acct/id
-   ::form/attributes   [acct/name acct/addresses acct/email acct/active?]
+   ::form/attributes   [acct/name acct/email acct/active? acct/addresses]
    ::form/read-only?   {::acct/email true}
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "account"
@@ -46,6 +47,7 @@
                                           ::form/add-row-title   "Add Address"
                                           ;; Use computed props to inform subform of its role.
                                           ::form/subform-style   :inline}}})
+
 
 (defsc AccountListItem [this {::acct/keys [id name active? last-login] :as props}]
   {::report/columns         [::acct/name ::acct/active? ::acct/last-login]

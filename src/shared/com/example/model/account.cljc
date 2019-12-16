@@ -138,4 +138,4 @@
        (-> env
          (m/returning auth/Session)))))
 
-(def attributes [id name email password active? #_#_tags addresses all-accounts])
+(def attributes [id name email password active? addresses all-accounts])
