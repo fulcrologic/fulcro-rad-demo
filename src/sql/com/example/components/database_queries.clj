@@ -9,7 +9,7 @@
   [env query-params]
   (let [db             (get-in env [::sql/databases :production])
         show-inactive? (:ui/show-inactive? query-params)
-        sql            (str "SELECT id FROM account" (when-not show-inactive? " WHERE active = true"))
+        sql            (str "SELECT id FROM accounts" (when-not show-inactive? " WHERE active = true"))
         rows           (jdbc/query db sql {:keywordize    false
                                            :result-set-fn vec
                                            :identifiers   (partial add-namespace "com.example.model.account")})]

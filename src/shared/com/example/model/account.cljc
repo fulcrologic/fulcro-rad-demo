@@ -18,14 +18,14 @@
    ;; independent experimentation. In a normal project you'd use ns aliasing.
    :com.fulcrologic.rad.database-adapters.datomic/schema :production
    :com.fulcrologic.rad.database-adapters.sql/schema     :production
-   :com.fulcrologic.rad.database-adapters.sql/tables     #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/tables     #{"accounts"}
    ::auth/authority                                      :local})
 
 (defattr email ::email :string
   {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
    :db/unique                                                :db.unique/value
    ::attr/required?                                          true
    ::auth/authority                                          :local})
@@ -36,7 +36,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.sql/column-name    "active"
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
    ::form/default-value                                      true})
 
 (defattr password ::password :password
@@ -45,7 +45,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; Permissions are typically only trusted at the server, but cases where we can
@@ -85,7 +85,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
    ::attr/required?                                          true})
 
 (defattr addresses ::addresses :ref
@@ -95,7 +95,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.address/id}
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
-   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/tables               #{"accounts"}
    :db/isComponent                                                 true
    ::auth/authority                                                :local})
 
@@ -106,7 +106,7 @@
      :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.tag/id}
      :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
      :com.fulcrologic.rad.database-adapters.sql/schema               :production
-     :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+     :com.fulcrologic.rad.database-adapters.sql/tables               #{"accounts"}
      ::auth/authority                                                :local})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

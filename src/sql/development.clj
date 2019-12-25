@@ -1,6 +1,7 @@
 (ns development
   (:require
-    [clojure.java.jdbc :as jdbc]
+    [next.jdbc :as jdbc]
+    [next.jdbc.sql :as jdbc.sql]
     [clojure.pprint :refer [pprint]]
     [clojure.repl :refer [doc source]]
     [clojure.tools.namespace.repl :as tools-ns :refer [disable-reload! refresh clear set-refresh-dirs]]
@@ -20,8 +21,9 @@
 (set-refresh-dirs "src/main" "src/sql" "src/dev" "src/shared")
 
 (defn seed! []
-  (let [db (pools/get-jdbc-datasource)]
-    (jdbc/execute! db ["DELETE FROM ACCOUNT"])
+  (let [db (:datasource (pools/get-jdbc-datasource))]
+    (jdbc/execute! db ["DELETE FROM ADDRESSES"])
+    (jdbc/execute! db ["DELETE FROM ACCOUNTS"])
     (doseq [row [{:id       (new-uuid 1)
                   :name     "Joe Blow"
                   :email    "joe@example.com"
@@ -46,7 +48,7 @@
                   :active   true
                   :password (attr/encrypt "letmein" "some-salt"
                               (::attr/encrypt-iterations account/password))}]]
-      (jdbc/insert! db "account" row))))
+      (jdbc.sql/insert! db :accounts row))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
