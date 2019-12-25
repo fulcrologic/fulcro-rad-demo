@@ -16,7 +16,8 @@
     [com.fulcrologic.rad.resolvers :as res]
     [mount.core :as mount]
     [taoensso.timbre :as log]
-    [com.example.components.connection-pools :as pools]))
+    [com.example.components.connection-pools :as pools])
+  (:import org.postgresql.util.PGobject))
 
 (set-refresh-dirs "src/main" "src/sql" "src/dev" "src/shared")
 
@@ -48,7 +49,16 @@
                   :active   true
                   :password (attr/encrypt "letmein" "some-salt"
                               (::attr/encrypt-iterations account/password))}]]
-      (jdbc.sql/insert! db :accounts row))))
+      (jdbc.sql/insert! db :accounts row))
+    (let [row {:id         (new-uuid 5)
+               :street     "11 Main St"
+               :city       "Nowhere"
+               :state      (doto (PGobject.)
+                             (.setType  "state")
+                             (.setValue "AZ"))
+               :zip        "88888"
+               :account_id (new-uuid 1)}]
+      (jdbc.sql/insert! db :addresses row))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
