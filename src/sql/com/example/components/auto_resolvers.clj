@@ -3,7 +3,7 @@
     [com.example.components.model :refer [all-attributes]]
     [mount.core :refer [defstate]]
     [com.fulcrologic.rad.resolvers :as res]
-    [com.fulcrologic.rad.database-adapters.sql :as sql]
+    [com.fulcrologic.rad.database-adapters.sql.plugin :as sql]
     [taoensso.timbre :as log]))
 
 (defstate automatic-resolvers
