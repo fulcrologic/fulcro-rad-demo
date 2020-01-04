@@ -6,7 +6,8 @@
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.pathom :as pathom]
     [mount.core :refer [defstate]]
-    [datomic.api :as d]))
+    [datomic.api :as d]
+    [com.fulcrologic.rad.form :as form]))
 
 (defstate parser
   :start
@@ -17,4 +18,4 @@
       (assoc env
         ::datomic/connections {:production (:main datomic-connections)}
         ::datomic/databases {:production (d/db (:main datomic-connections))}))
-    [automatic-resolvers]))
+    [automatic-resolvers form/save-form]))
