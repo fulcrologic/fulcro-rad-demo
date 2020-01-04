@@ -42,5 +42,5 @@
 
 
 (defn start []
-  (form/install! app sui/all-controls)
+  (form/install-ui-controls! app sui/all-controls)
   (app/mount! app Root "app"))

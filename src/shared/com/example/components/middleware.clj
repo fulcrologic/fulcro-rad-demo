@@ -18,6 +18,12 @@
     {:status 404
      :body   {}}))
 
+(defn wrap-root [handler]
+  (fn [req]
+    (handler
+      (update req :uri
+        #(if (= "/" %) "/index.html" %)))))
+
 (defstate middleware
   :start
   (let [defaults-config (:ring.middleware/defaults-config config/config)]
@@ -25,5 +31,6 @@
       (wrap-api "/api")
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
-      (wrap-defaults defaults-config))))
+      (wrap-defaults defaults-config)
+      (wrap-root))))
 

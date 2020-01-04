@@ -15,7 +15,8 @@
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls]
     [com.fulcrologic.rad.report :as report]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
 
 ;; NOTE: Limitation: Each "storage location" requires a form. The ident of the component matches the identity
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
@@ -47,7 +48,6 @@
                                           ::form/add-row-title   "Add Address"
                                           ;; Use computed props to inform subform of its role.
                                           ::form/subform-style   :inline}}})
-
 
 (defsc AccountListItem [this {::acct/keys [id name active? last-login] :as props}]
   {::report/columns         [::acct/name ::acct/active? ::acct/last-login]
