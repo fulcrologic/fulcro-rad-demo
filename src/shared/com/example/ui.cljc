@@ -52,6 +52,7 @@
 (defsc AccountListItem [this {::acct/keys [id name active? last-login] :as props}]
   {::report/columns         [::acct/name ::acct/active? ::acct/last-login]
    ::report/column-headings ["Name" "Active?" "Last Login"]
+   ::report/row-actions     {:delete (fn [this id] (form/delete! this ::acct/id id))}
    ::report/edit-form       AccountForm
    :query                   [::acct/id ::acct/name ::acct/active? ::acct/last-login]
    :ident                   ::acct/id}
@@ -97,9 +98,9 @@
       (div :.ui.item "Demo Application")
       ;; TODO: Show how we can check authority to hide UI
       (dom/a :.ui.item {:onClick (fn [] (form/edit! this AccountForm (new-uuid 1)))} "My Account")
-      #_(dom/a :.ui.item {:onClick (fn []
-                                     (controller/route-to! this :main-controller
-                                       ["account" "create" (str (new-uuid))]))} "New Account")
+      (dom/a :.ui.item {:onClick (fn []
+                                   (form/delete! this :com.example.model.account/id (new-uuid 2)))}
+        "Delete account 2")
       (dom/a :.ui.item {:onClick (fn []
                                    (controller/route-to! this :main-controller ["accounts"]))} "List Accounts"))
     (div :.ui.container.segment
