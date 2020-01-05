@@ -13,9 +13,11 @@
   :start
   (pathom/new-parser config
     (fn [env]
-      ;; Setup required datomic env entries. This is how you would
-      ;; select the correct connection when doing things like sharding.
       (assoc env
+        ;; Register Datomic's save function for forms
+        ::form/save-handlers [datomic/save-form]
+        ;; Setup required datomic env entries. This is how you would
+        ;; select the correct connection when doing things like sharding.
         ::datomic/connections {:production (:main datomic-connections)}
-        ::datomic/databases {:production (d/db (:main datomic-connections))}))
+        ::datomic/databases {:production (atom (d/db (:main datomic-connections)))}))
     [automatic-resolvers form/save-form]))

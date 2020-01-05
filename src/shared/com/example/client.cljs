@@ -16,22 +16,26 @@
     [com.example.model.account :as account]
     [com.example.model.tag :as tag]
     [com.example.model.address :as address]
-    [com.fulcrologic.rad.form :as form]))
+    [com.fulcrologic.rad.form :as form]
+    [edn-query-language.core :as eql]))
 
 ;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
 
 (defonce app (app/fulcro-app {:remotes              {:remote (http/fulcro-http-remote {})}
                               :global-eql-transform (fn [ast]
-                                                      (let [kw-namespace (fn [k] (and (keyword? k) (namespace k)))]
-                                                        (df/elide-ast-nodes ast (fn [k]
-                                                                                  (let [ns (some-> k kw-namespace)]
-                                                                                    (or
-                                                                                      (= k '[:com.fulcrologic.fulcro.ui-state-machines/asm-id _])
-                                                                                      (= k df/marker-table)
-                                                                                      (= k ::fs/config)
-                                                                                      (and
-                                                                                        (string? ns)
-                                                                                        (= "ui" ns))))))))
+                                                      (let [kw-namespace (fn [k] (and (keyword? k) (namespace k)))
+                                                            mutation?    (symbol? (:dispatch-key ast))]
+                                                        (cond-> (df/elide-ast-nodes ast
+                                                                  (fn [k]
+                                                                    (let [ns (some-> k kw-namespace)]
+                                                                      (or
+                                                                        (= k '[:com.fulcrologic.fulcro.ui-state-machines/asm-id _])
+                                                                        (= k df/marker-table)
+                                                                        (= k ::fs/config)
+                                                                        (and
+                                                                          (string? ns)
+                                                                          (= "ui" ns))))))
+                                                          mutation? (update :children conj (eql/expr->ast :tempids)))))
                               :client-did-mount     (fn [app]
                                                       (auth/start! app {:local (uism/with-actor-class (comp/get-ident LoginForm {}) LoginForm)})
                                                       (controller/start! app
