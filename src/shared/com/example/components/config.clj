@@ -4,7 +4,9 @@
     [com.fulcrologic.fulcro.server.config :as fserver]
     [mount.core :refer [defstate args]]
     [taoensso.timbre :as log]
-    [clojure.string :as str]))
+    [clojure.string :as str]
+    [com.example.components.model :as model]
+    [com.fulcrologic.rad.attributes :as attr]))
 
 (defmacro p
   "Convert a data structure to a spy-like output string."
@@ -58,6 +60,7 @@
                 :or   {config "config/dev.edn"}} (args)
                loaded-config (merge (fserver/load-config {:config-path config}) overrides)]
            (log/warn "Loading config" config)
+           (attr/register-attributes! model/all-attributes)
            (start-logging! loaded-config)
            loaded-config))
 
