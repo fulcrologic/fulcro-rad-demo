@@ -4,6 +4,7 @@
     [com.example.model.address :as address]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.algorithms.merge :as merge]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
@@ -35,6 +36,8 @@
 (form/defsc-form AccountForm [this props]
   {::form/id           acct/id
    ::form/attributes   [acct/name acct/email acct/active? acct/addresses]
+   ::form/default      {::acct/active?   true
+                        ::acct/addresses [{}]}
    ::form/read-only?   {::acct/email true}
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "account"
@@ -98,6 +101,7 @@
       (div :.ui.item "Demo Application")
       ;; TODO: Show how we can check authority to hide UI
       (dom/a :.ui.item {:onClick (fn [] (form/edit! this AccountForm (new-uuid 1)))} "My Account")
+      (dom/a :.ui.item {:onClick (fn [] (form/create! this AccountForm))} "New Account")
       (dom/a :.ui.item {:onClick (fn []
                                    (form/delete! this :com.example.model.account/id (new-uuid 2)))}
         "Delete account 2")

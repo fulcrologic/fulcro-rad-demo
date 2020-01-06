@@ -3,6 +3,7 @@
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
+    [com.fulcrologic.fulcro.algorithms.merge :as merge]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.networking.http-remote :as http]
     [com.fulcrologic.rad.controller :as controller]
@@ -47,4 +48,6 @@
 
 (defn start []
   (form/install-ui-controls! app sui/all-controls)
+  (attr/register-attributes! (concat account/attributes address/attributes))
   (app/mount! app Root "app"))
+
