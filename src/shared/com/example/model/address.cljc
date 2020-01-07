@@ -9,21 +9,21 @@
    :com.fulcrologic.rad.database-adapters.datomic/entity ::address
    ::auth/authority                                      :local
    :com.fulcrologic.rad.database-adapters.sql/schema     :production
-   :com.fulcrologic.rad.database-adapters.sql/tables     #{"addresses"}})
+   :com.fulcrologic.rad.database-adapters.sql/table      "addresses"})
 
 (defattr street ::street :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity     ::address
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"addresses"}})
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}})
 
 (defattr city ::city :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity     ::address
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"addresses"}})
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}})
 
 (def states #:com.example.model.address.state {:AZ "Arizona"
                                          :AL "Alabama"
@@ -46,13 +46,13 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity     ::address
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"addresses"}})
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}})
 
 (defattr zip ::zip :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity     ::address
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"addresses"}})
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}})
 
 (def attributes [id street city state zip])

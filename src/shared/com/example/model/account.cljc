@@ -3,10 +3,11 @@
   (:require
     #?@(:clj
         [[com.wsscode.pathom.connect :as pc :refer [defmutation]]
-         [com.example.components.database-queries :as queries]]
+         [com.fulcrologic.rad.database-adapters.sql.plugin :as rad.sql.plugin]]
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [com.wsscode.pathom.connect :as pc]
+    [com.fulcrologic.rad :as rad]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
@@ -18,14 +19,14 @@
    ;; independent experimentation. In a normal project you'd use ns aliasing.
    :com.fulcrologic.rad.database-adapters.datomic/schema :production
    :com.fulcrologic.rad.database-adapters.sql/schema     :production
-   :com.fulcrologic.rad.database-adapters.sql/tables     #{"accounts"}
+   :com.fulcrologic.rad.database-adapters.sql/table      "accounts"
    ::auth/authority                                      :local})
 
 (defattr email ::email :string
   {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}
    :db/unique                                                :db.unique/value
    ::attr/required?                                          true
    ::auth/authority                                          :local})
@@ -36,7 +37,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.sql/column-name    "active"
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}
    ::form/default-value                                      true})
 
 (defattr password ::password :password
@@ -45,7 +46,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; Permissions are typically only trusted at the server, but cases where we can
@@ -85,7 +86,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"accounts"}
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids     #{::id}
    ::attr/required?                                          true})
 
 (defattr addresses ::addresses :ref
@@ -95,7 +96,9 @@
    :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.address/id}
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{::id}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
-   :com.fulcrologic.rad.database-adapters.sql/tables               #{"accounts"}
+   :com.fulcrologic.rad.database-adapters.sql/entity-ids           #{::id}
+   :com.fulcrologic.rad.database-adapters.sql/column-name          "account_id"
+   :com.fulcrologic.rad.database-adapters.sql/join                 ["addresses" "account_id"]
    :db/isComponent                                                 true
    ::auth/authority                                                :local})
 
