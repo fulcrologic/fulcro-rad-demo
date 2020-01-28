@@ -98,9 +98,14 @@
      (exauth/login! env params))
    :cljs
    (defmutation login [params]
-     (ok-action [{:keys [app result]}]
-       (log/info "Login result" result)
-       (auth/logged-in! app :local))
+     (ok-action [{:keys [app state]}]
+       (let [status (log/spy :info (some-> state deref ::auth/authorization :local ::auth/status))])
+       (if (= state :success)
+         (auth/logged-in! app :local)
+         (auth/failed! app :local)))
+     (error-action [{:keys [app]}]
+       (log/error "Login failed.")
+       (auth/failed! app :local))
      (remote [env]
        (m/returning env auth/Session))))
 

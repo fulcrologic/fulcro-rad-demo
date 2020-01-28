@@ -3,8 +3,9 @@
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [taoensso.timbre :as log]
     [mount.core :refer [defstate]]
+    [com.example.model :refer [all-attributes]]
     [com.example.components.config :refer [config]]))
 
 (defstate ^{:on-reload :noop} datomic-connections
   :start
-  (datomic/start-databases config))
+  (datomic/start-databases all-attributes config))

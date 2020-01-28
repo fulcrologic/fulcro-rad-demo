@@ -10,8 +10,8 @@
 
 (defn login!
   "Implementation of login. This is database-specific and is not further generalized for the demo."
-  [{::datomic/keys [databases]} {:keys [username password]}]
-  (log/info "Attempt login for " username)
+  [{::datomic/keys [databases] :as env} {:keys [username password]}]
+  (log/info "Attempt login for" username)
   (enc/if-let [db                   @(:production databases)
                {:account/keys  [name]
                 :password/keys [hashed-value salt iterations]} (d/pull db [:account/name
@@ -26,13 +26,15 @@
         (let [s {::auth/provider :local
                  ::auth/status   :success
                  :account/name   name}]
-          (fmw/augment-response s (fn [resp] (assoc resp :session s)))))
+          (fmw/augment-response s (fn [resp]
+                                    (let [current-session (-> env :ring/request :session)]
+                                      (assoc resp :session (merge current-session s)))))))
       (do
         (log/error "Login failure for" username)
         {::auth/provider :local
          ::auth/status   :failed}))
     (do
-      (log/fatal "The login mutation cannot find database values.")
+      (log/fatal "Login cannot find user" username)
       {})))
 
 (defn check-session! [env]

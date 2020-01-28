@@ -5,16 +5,21 @@
                [com.fulcrologic.semantic-ui.modules.modal.ui-modal-header :refer [ui-modal-header]]
                [com.fulcrologic.semantic-ui.modules.modal.ui-modal-content :refer [ui-modal-content]]])
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.fulcro.dom :refer [div label input]]
     [com.fulcrologic.fulcro.mutations :as m]
     [taoensso.timbre :as log]))
 
 (defsc LoginForm [this {:ui/keys [username password] :as props} {:keys [visible?]}]
-  {:query         [:ui/username
-                   :ui/password]
-   :initial-state {:ui/username "tony@example.com"
-                   :ui/password "letmein"}
-   :ident         (fn [] [:component/id ::LoginForm])}
+  {:query          [:ui/username
+                    :ui/password]
+   :initial-state  {:ui/username "tony@example.com"
+                    :ui/password "letmein"}
+
+   ::auth/provider :local
+   ::auth/check-session `account/check-session
+
+   :ident          (fn [] [:component/id ::LoginForm])}
   #?(:cljs
      (ui-modal {:open (boolean visible?) :dimmer true}
        (ui-modal-header {} "Please Log In")

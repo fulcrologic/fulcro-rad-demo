@@ -16,4 +16,8 @@
     (fn [env]
       (-> env
         (datomic/add-datomic-env {:production (:main datomic-connections)})))
-    [automatic-resolvers form/save-form form/delete-entity account/login]))
+    [automatic-resolvers
+     form/save-form
+     form/delete-entity
+     account/login
+     account/check-session]))

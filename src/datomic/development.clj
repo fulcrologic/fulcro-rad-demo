@@ -6,6 +6,7 @@
     [com.example.components.datomic :refer [datomic-connections]]
     [com.example.components.middleware]
     [com.example.components.server]
+    [com.example.model.seed :as seed]
     [com.example.model.account :as account]
     [com.example.model.address :as address]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
@@ -19,45 +20,15 @@
 (set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared" "../fulcro-rad-datomic/src/main" "../fulcro-rad/src/main")
 
 (defn seed! []
-  (let [u          new-uuid
-        connection (:main datomic-connections)]
+  (let [connection (:main datomic-connections)]
     (when connection
       (log/info "SEEDING data.")
-      @(d/transact connection [{:db/id           "addr-1"
-                                ::address/id     (u 10)
-                                ::address/street "11 Main St"
-                                ::address/city   "Nowhere"
-                                ::address/state  :com.example.model.address.state/AZ
-                                ::address/zip    "88888"}
-                               {::account/id        (u 1)
-                                ::account/name      "Joe Blow"
-                                ::account/email     "joe@example.com"
-                                ::account/active?   true
-                                ::account/addresses ["addr-1"]
-                                ::account/password  (attr/encrypt "letmein" "some-salt"
-                                                      (::attr/encrypt-iterations
-                                                        (attr/key->attribute ::account/password)))}
-                               {::account/id       (u 2)
-                                ::account/name     "Sam Hill"
-                                ::account/email    "sam@example.com"
-                                ::account/active?  false
-                                ::account/password (attr/encrypt "letmein" "some-salt"
-                                                     (::attr/encrypt-iterations
-                                                       (attr/key->attribute ::account/password)))}
-                               {::account/id       (u 3)
-                                ::account/name     "Jose Haplon"
-                                ::account/email    "jose@example.com"
-                                ::account/active?  true
-                                ::account/password (attr/encrypt "letmein" "some-salt"
-                                                     (::attr/encrypt-iterations
-                                                       (attr/key->attribute ::account/password)))}
-                               {::account/id       (u 4)
-                                ::account/name     "Rose Small"
-                                ::account/email    "rose@example.com"
-                                ::account/active?  true
-                                ::account/password (attr/encrypt "letmein" "some-salt"
-                                                     (::attr/encrypt-iterations
-                                                       (attr/key->attribute ::account/password)))}]))))
+      @(d/transact connection [(seed/new-address (new-uuid 1) "111 Main St.")
+                               (seed/new-account (new-uuid 100) "Tony" "tony@example.com" "letmein"
+                                 :account/addresses ["111 Main St."])
+                               (seed/new-account (new-uuid 101) "Sam" "sam@example.com" "letmein")
+                               (seed/new-account (new-uuid 102) "Sally" "sally@example.com" "letmein")
+                               (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")]))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
@@ -80,14 +51,9 @@
 (def reset #'restart)
 
 (comment
-  (seed!)
-  (res/schema->resolvers #{:production} ex-schema/latest-schema)
-  (res/entity->resolvers :production account/account))
-
-(comment
-  (let [adapter (datomic/->DatomicAdapter :production nil)]
-    (pprint
-      (dba/diff->migration adapter prior-schema latest-schema)))
-
-  (datomic/automatic-schema :production)
-  )
+  (d/delete-database "datomic:sql://example?jdbc:postgresql://localhost:5432/datomic?user=datomic&password=datomic")
+  (d/q
+    '[:find (pull ?e [*])
+      :where
+      [?e :account/id]]
+    (d/db (:main datomic-connections))))
