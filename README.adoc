@@ -50,3 +50,10 @@ $ clj -A:dev:datomic
 user=> (require 'development)
 user=> (development/go)
 -----
+
+== Restarting
+
+The `development/restart` will stop the server, reload source, and start the server.
+
+NOTE: This demo uses CSRF, so you will have to reload the client to get the new CSRF
+key on server restarts.
