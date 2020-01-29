@@ -8,11 +8,11 @@
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.controller :as controller]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls]
-    [com.fulcrologic.rad.report :as report]))
+    [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
 
 ;; NOTE: Limitation: Each "storage location" requires a form. The ident of the component matches the identity
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
@@ -47,27 +47,27 @@
                                             ;; Use computed props to inform subform of its role.
                                             ::form/subform-style   :inline}}})
 
-#_(defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
-    {::report/columns         [:account/name :account/active? :account/last-login]
-     ::report/column-headings ["Name" "Active?" "Last Login"]
-     ::report/row-actions     {:delete (fn [this id] (form/delete! this :account/id id))}
-     ::report/edit-form       AccountForm
-     :query                   [:account/id :account/name :account/active? :account/last-login]
-     :ident                   :account/id}
-    #_(dom/div :.item
-        (dom/i :.large.github.middle.aligned.icon)
-        (div :.content
-          (dom/a :.header {:onClick (fn [] (form/edit! this AccountForm id))} name)
-          (dom/div :.description
-            (str (if active? "Active" "Inactive") ". Last logged in " last-login)))))
+(defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
+  {::report/columns         [:account/name :account/active? :account/last-login]
+   ::report/column-headings ["Name" "Active?" "Last Login"]
+   ::report/row-actions     {:delete (fn [this id] (form/delete! this :account/id id))}
+   ::report/edit-form       AccountForm
+   :query                   [:account/id :account/name :account/active? :account/last-login]
+   :ident                   :account/id}
+  #_(dom/div :.item
+      (dom/i :.large.github.middle.aligned.icon)
+      (div :.content
+        (dom/a :.header {:onClick (fn [] (form/edit! this AccountForm id))} name)
+        (dom/div :.description
+          (str (if active? "Active" "Inactive") ". Last logged in " last-login)))))
 
-#_#_(def ui-account-list-item (comp/factory AccountListItem {:keyfn :account/id}))
+(def ui-account-list-item (comp/factory AccountListItem {:keyfn :account/id}))
 
-    (report/defsc-report AccountList [this props]
-      {::report/BodyItem         AccountListItem
-       ::report/source-attribute :account/all-accounts
-       ::report/parameters       {:ui/show-inactive? :boolean}
-       ::report/route            "accounts"})
+(report/defsc-report AccountList [this props]
+  {::report/BodyItem         AccountListItem
+   ::report/source-attribute :account/all-accounts
+   ::report/parameters       {:ui/show-inactive? :boolean}
+   ::report/route            "accounts"})
 
 (defsc LandingPage [this props]
   {:query         ['*]
@@ -78,7 +78,7 @@
 
 ;; This will just be a normal router...but there can be many of them.
 (defrouter MainRouter [this props]
-  {:router-targets [LandingPage #_AccountList AccountForm]})
+  {:router-targets [LandingPage AccountList AccountForm]})
 
 (def ui-main-router (comp/factory MainRouter))
 
@@ -105,7 +105,7 @@
             (dom/a :.ui.item {:onClick (fn [] (form/delete! this :com.example.model.account/id (new-uuid 102)))}
               "Delete account 2")
             (dom/a :.ui.item {:onClick (fn []
-                                         (controller/route-to! this :main-controller ["accounts"]))} "List Accounts")))
+                                         (dr/change-route this (dr/path-to AccountList)))} "List Accounts")))
         (div :.right.menu
           (if logged-in?
             (comp/fragment
