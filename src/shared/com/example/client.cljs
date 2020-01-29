@@ -18,7 +18,8 @@
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [edn-query-language.core :as eql]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
 
 ;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
 (def secured-request-middleware
@@ -48,10 +49,11 @@
                                                           mutation? (update :children conj (eql/expr->ast :tempids)))))
                               :client-did-mount     (fn [app]
                                                       (auth/start! app [LoginForm])
-                                                      (controller/start! app
-                                                        {::controller/home-page ["landing-page"]
-                                                         ::controller/router    ui/MainRouter
-                                                         ::controller/id        :main-controller}))}))
+                                                      (dr/change-route app (dr/path-to ui/LandingPage))
+                                                      #_(controller/start! app
+                                                          {::controller/home-page ["landing-page"]
+                                                           ::controller/router    ui/MainRouter
+                                                           ::controller/id        :main-controller}))}))
 
 (defn refresh []
   (app/mount! app Root "app"))
