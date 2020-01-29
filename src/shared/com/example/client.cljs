@@ -49,6 +49,10 @@
 (defn refresh []
   (app/mount! app Root "app"))
 
+(comment
+  (dr/change-route app (dr/path-to ui/AccountForm {:action "new"
+                                                   :id (str (random-uuid))})))
+
 (defn init []
   (log/info "Starting App")
   (form/install-ui-controls! app sui/all-controls)
