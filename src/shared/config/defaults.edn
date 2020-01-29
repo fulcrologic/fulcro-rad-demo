@@ -2,14 +2,15 @@
                                      :host "localhost"}
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
-                                    {:main {:datomic/schema      :production
-                                            :datomic/driver      :postgresql
-                                            :datomic/database    "example"
-                                            :postgresql/host     "localhost"
-                                            :postgresql/port     5432
-                                            :postgresql/user     "datomic"
-                                            :postgresql/password "datomic"
-                                            :postgresql/database "datomic"}}
+                                    {:main {:datomic/schema           :production
+                                            :datomic/driver           :postgresql
+                                            :datomic/database         "example"
+                                            :datomic/prevent-changes? true
+                                            :postgresql/host          "localhost"
+                                            :postgresql/port          5432
+                                            :postgresql/user          "datomic"
+                                            :postgresql/password      "datomic"
+                                            :postgresql/database      "datomic"}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases
                                     {:main {:flyway/migrate?          true

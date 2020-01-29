@@ -18,21 +18,21 @@
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
-#_(form/defsc-form AddressForm [this props]
-    {::form/id                address/id
-     ::form/attributes        [address/street address/city address/state address/zip]
-     ::form/enumeration-order {:address/state (sort-by #(get address/states %) (keys address/states))}
-     ::form/cancel-route      ["landing-page"]
-     ::form/route-prefix      "address"
-     ::form/title             "Edit Address"
-     ::form/layout            [[:address/street]
-                               [:address/city :address/state :address/zip]]})
+(form/defsc-form AddressForm [this props]
+  {::form/id                address/id
+   ::form/attributes        [address/street address/city address/state address/zip]
+   ::form/enumeration-order {:address/state (sort-by #(get address/states %) (keys address/states))}
+   ::form/cancel-route      ["landing-page"]
+   ::form/route-prefix      "address"
+   ::form/title             "Edit Address"
+   ::form/layout            [[:address/street]
+                             [:address/city :address/state :address/zip]]})
 
 (form/defsc-form AccountForm [this props]
   {::form/id           acct/id
-   ::form/attributes   [acct/name acct/email acct/active? #_acct/addresses]
-   ::form/default      {:account/active? true
-                        #_#_:account/addresses [{}]}
+   ::form/attributes   [acct/name acct/email acct/active? acct/addresses]
+   ::form/default      {:account/active?   true
+                        :account/addresses [{}]}
    ::form/read-only?   {:account/email true}
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "account"
@@ -40,7 +40,7 @@
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   #_#_::form/subforms {:account/addresses {::form/ui              AddressForm
+   ::form/subforms     {:account/addresses {::form/ui              AddressForm
                                             ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
                                             ::form/can-add-row?    (fn [parent] true)
                                             ::form/add-row-title   "Add Address"

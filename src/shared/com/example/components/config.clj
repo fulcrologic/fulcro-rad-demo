@@ -15,7 +15,7 @@
   :start (let [{:keys [config overrides]
                 :or   {config "config/dev.edn"}} (args)
                loaded-config (merge (fserver/load-config {:config-path config}) overrides)]
-           (log/warn "Loading config" config)
+           (log/info "Loading config" config)
            (attr/register-attributes! model/all-attributes)
            (logging/configure-logging! loaded-config)
            loaded-config))
