@@ -28,7 +28,10 @@
                                  :account/addresses ["111 Main St."])
                                (seed/new-account (new-uuid 101) "Sam" "sam@example.com" "letmein")
                                (seed/new-account (new-uuid 102) "Sally" "sally@example.com" "letmein")
-                               (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")]))))
+                               (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")
+                               (seed/new-item (new-uuid 200) "Widget" 33.99)
+                               (seed/new-item (new-uuid 201) "Tool" 14.99)
+                               (seed/new-item (new-uuid 202) "Toy" 4.99)]))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
@@ -55,5 +58,5 @@
   (d/q
     '[:find (pull ?e [*])
       :where
-      [?e :account/id]]
+      [?e :item/id]]
     (d/db (:main datomic-connections))))

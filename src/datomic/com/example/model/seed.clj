@@ -1,5 +1,6 @@
 (ns com.example.model.seed
   (:require
+    [com.fulcrologic.rad.type-support.decimal :as math]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.attributes :as attr]))
 
@@ -30,3 +31,14 @@
      :address/state  :address.state/CA
      :address/zip    "99999"}
     extras))
+
+(defn new-item
+  "Seed helper. Uses street at db/id for tempid purposes."
+  [id name price & {:as extras}]
+  (merge
+    {:db/id      name
+     :item/id    id
+     :item/name  name
+     :item/price (math/numeric price)}
+    extras))
+
