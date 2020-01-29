@@ -35,7 +35,8 @@
          ::auth/status   :failed}))
     (do
       (log/fatal "Login cannot find user" username)
-      {})))
+      {::auth/provider :local
+       ::auth/status   :failed})))
 
 (defn check-session! [env]
   (log/info "Checking for existing session")
