@@ -2,6 +2,7 @@
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
                                        {:main {:datomic/schema      :production
+                                               :datomic/storage-protocol :sql
                                                :datomic/driver      :postgresql
                                                :datomic/database    "example"
                                                :postgresql/host     "localhost"
