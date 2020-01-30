@@ -4,6 +4,7 @@
     [com.example.model.account :as acct]
     [com.example.model.address :as address]
     [com.example.model.item :as item]
+    [com.example.model.line-item :as line-item]
     [com.example.model.invoice :as invoice]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
@@ -20,7 +21,8 @@
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.algorithms.form-state :as fs]))
+    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
+    [com.fulcrologic.rad.type-support.decimal :as math]))
 
 (form/defsc-form ItemForm [this props]
   {::form/id           item/id
@@ -63,25 +65,30 @@
                                             ::form/subform-style   :inline}}})
 
 (defmutation transform-options [{:keys       [ref]
-                                 ::form/keys [options-transform]}]
+                                 ::form/keys [pick-one]}]
   (action [{:keys [state] :as env}]
-    (let [result  (log/spy :info (get-in @state (conj ref :ui/query-result)))
-          options (if options-transform
-                    (log/spy :info (mapv options-transform result))
-                    result)]
+    (let [result    (get-in @state (conj ref :ui/query-result))
+          transform (get pick-one :options/transform)
+          options   (if transform
+                      (mapv transform result)
+                      result)]
       (swap! state assoc-in (conj ref :ui/options) options))))
 
 (defn load-options! [this]
-  (let [{::form/keys [options-query options-transform] :as picker-options} (comp/get-computed this)
-        target-path (conj (comp/get-ident this) :ui/query-result)]
-    (when (log/spy :info options-query)
-      (comp/transact! this
-        `[(df/internal-load! ~{:query                options-query
-                               :source-key           :account/all-accounts
-                               :target               target-path
-                               :post-mutation        `transform-options
-                               :post-mutation-params (merge picker-options
-                                                       {:ref (comp/get-ident this)})})]))))
+  (let [{::form/keys [pick-one] :as picker-options} (comp/get-computed this)
+        {:options/keys [query-key id-key subquery]} pick-one
+        fake-component (comp/configure-component! (fn []) ::fake {:query (fn [] subquery)
+                                                                  ;; not sure these should be normalized...but could be
+                                                                  ;;:ident (fn [this props] [id-key (get props id-key)])
+                                                                  })
+        target-path    (conj (comp/get-ident this) :ui/query-result)]
+    (when (or (not query-key) (not subquery))
+      (log/error "Options for picker are missing query-key or subquery"))
+    (when query-key
+      (df/load! this query-key fake-component {:target               target-path
+                                               :post-mutation        `transform-options
+                                               :post-mutation-params (merge picker-options
+                                                                       {:ref (comp/get-ident this)})}))))
 
 (defsc ToOneEntityPicker [this
                           {:ui/keys     [options query-result]
@@ -99,17 +106,34 @@
                         ;:onSearchChange (fn [v] (load-options load))
                         :options  options}))
 
+(form/defsc-form LineItemForm [this props]
+  {::form/id           line-item/id
+   ::form/attributes   [line-item/item line-item/quantity]
+   ::form/cancel-route ["landing-page"]
+   ::form/route-prefix "line-item"
+   ::form/title        "Line Items"
+   ::form/layout       [[:line-item/item :line-item/quantity]]
+   ::form/subforms     {:line-item/item {::form/ui            ToOneEntityPicker
+                                         ::form/pick-one      {:options/query-key :item/all-items
+                                                               :options/subquery  [:item/id :item/name :item/price]
+                                                               :options/transform (fn [{:item/keys [id name price]}]
+                                                                                    {:text (str name " - " (math/numeric->currency-str price)) :value [:item/id id]})}
+                                         ::form/label         "Item"
+                                         ;; Use computed props to inform subform of its role.
+                                         ::form/subform-style :inline}}})
+
 (form/defsc-form InvoiceForm [this props]
   {::form/id           invoice/id
    ::form/attributes   [invoice/customer invoice/line-items]
-   ::form/subforms     {:invoice/customer   {::form/ui                ToOneEntityPicker
-                                             ::form/options-query     [{:account/all-accounts [:account/id :account/name :account/email]}]
-                                             ::form/options-transform (fn [{:account/keys [id name email]}]
-                                                                        {:text (str name ", " email) :value [:account/id id]})
-                                             ::form/label             "Customer"
+   ::form/subforms     {:invoice/customer   {::form/ui            ToOneEntityPicker
+                                             ::form/pick-one      {:options/query-key :account/all-accounts
+                                                                   :options/subquery  [:account/id :account/name :account/email]
+                                                                   :options/transform (fn [{:account/keys [id name email]}]
+                                                                                        {:text (str name ", " email) :value [:account/id id]})}
+                                             ::form/label         "Customer"
                                              ;; Use computed props to inform subform of its role.
-                                             ::form/subform-style     :inline}
-                        :invoice/line-items {::form/ui              ItemForm
+                                             ::form/subform-style :inline}
+                        :invoice/line-items {::form/ui              LineItemForm
                                              ::form/can-delete-row? (fn [parent item] true)
                                              ::form/can-add-row?    (fn [parent] true)
                                              ::form/add-row-title   "Add Item"
