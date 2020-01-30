@@ -77,7 +77,6 @@
   {::attr/target                                                   :address/id
    ::attr/cardinality                                              :many
    :com.fulcrologic.rad.database-adapters.datomic/schema           :production
-   :com.fulcrologic.rad.database-adapters.datomic/intended-targets #{:com.example.model.address/id}
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
    :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}

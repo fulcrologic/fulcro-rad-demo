@@ -17,3 +17,12 @@
                       ['?dbid :account/id '?uuid]] db))]
       (mapv (fn [id] {:account/id id}) ids))
     (log/error "No database atom for production schema!")))
+
+(defn get-all-items
+  [env query-params]
+  (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
+    (let [ids (d/q [:find '[?uuid ...]
+                    :where
+                    ['?dbid :item/id '?uuid]] db)]
+      (mapv (fn [id] {:item/id id}) ids))
+    (log/error "No database atom for production schema!")))
