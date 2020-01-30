@@ -8,6 +8,7 @@
     [com.example.model.invoice :as invoice]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
@@ -64,47 +65,7 @@
                                             ;; Use computed props to inform subform of its role.
                                             ::form/subform-style   :inline}}})
 
-(defmutation transform-options [{:keys       [ref]
-                                 ::form/keys [pick-one]}]
-  (action [{:keys [state] :as env}]
-    (let [result    (get-in @state (conj ref :ui/query-result))
-          transform (get pick-one :options/transform)
-          options   (if transform
-                      (mapv transform result)
-                      result)]
-      (swap! state assoc-in (conj ref :ui/options) options))))
 
-(defn load-options! [this]
-  (let [{::form/keys [pick-one] :as picker-options} (comp/get-computed this)
-        {:options/keys [query-key id-key subquery]} pick-one
-        fake-component (comp/configure-component! (fn []) ::fake {:query (fn [] subquery)
-                                                                  ;; not sure these should be normalized...but could be
-                                                                  ;;:ident (fn [this props] [id-key (get props id-key)])
-                                                                  })
-        target-path    (conj (comp/get-ident this) :ui/query-result)]
-    (when (or (not query-key) (not subquery))
-      (log/error "Options for picker are missing query-key or subquery"))
-    (when query-key
-      (df/load! this query-key fake-component {:target               target-path
-                                               :post-mutation        `transform-options
-                                               :post-mutation-params (merge picker-options
-                                                                       {:ref (comp/get-ident this)})}))))
-
-(defsc ToOneEntityPicker [this
-                          {:ui/keys     [options query-result]
-                           :picker/keys [id] :as props}
-                          {:keys [currently-selected-value onSelect] :as picker-options}]
-  {:query             [:picker/id
-                       :ui/options
-                       :ui/query-result]
-   :initial-state     (fn [{:keys [id]}] {:picker/id  id
-                                          :ui/options []})
-   :componentDidMount (fn [this] (load-options! this))
-   :ident             :picker/id}
-  (ui-wrapped-dropdown {:onChange (fn [v] (onSelect v))
-                        :value    currently-selected-value
-                        ;:onSearchChange (fn [v] (load-options load))
-                        :options  options}))
 
 (form/defsc-form LineItemForm [this props]
   {::form/id           line-item/id
@@ -113,7 +74,7 @@
    ::form/route-prefix "line-item"
    ::form/title        "Line Items"
    ::form/layout       [[:line-item/item :line-item/quantity]]
-   ::form/subforms     {:line-item/item {::form/ui            ToOneEntityPicker
+   ::form/subforms     {:line-item/item {::form/ui            form/ToOneEntityPicker
                                          ::form/pick-one      {:options/query-key :item/all-items
                                                                :options/subquery  [:item/id :item/name :item/price]
                                                                :options/transform (fn [{:item/keys [id name price]}]
@@ -125,7 +86,7 @@
 (form/defsc-form InvoiceForm [this props]
   {::form/id           invoice/id
    ::form/attributes   [invoice/customer invoice/line-items]
-   ::form/subforms     {:invoice/customer   {::form/ui            ToOneEntityPicker
+   ::form/subforms     {:invoice/customer   {::form/ui            form/ToOneEntityPicker
                                              ::form/pick-one      {:options/query-key :account/all-accounts
                                                                    :options/subquery  [:account/id :account/name :account/email]
                                                                    :options/transform (fn [{:account/keys [id name email]}]
