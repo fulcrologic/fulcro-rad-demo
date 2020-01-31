@@ -7,7 +7,8 @@
     [com.fulcrologic.rad.pathom :as pathom]
     [mount.core :refer [defstate]]
     [datomic.api :as d]
-    [com.fulcrologic.rad.form :as form]))
+    [com.fulcrologic.rad.form :as form]
+    [com.example.model.account :as account]))
 
 (defstate parser
   :start
@@ -15,4 +16,8 @@
     (fn [env]
       (-> env
         (datomic/add-datomic-env {:production (:main datomic-connections)})))
-    [automatic-resolvers form/save-form form/delete-entity]))
+    [automatic-resolvers
+     form/save-form
+     form/delete-entity
+     account/login
+     account/check-session]))

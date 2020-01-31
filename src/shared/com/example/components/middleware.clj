@@ -2,15 +2,35 @@
   (:require
     [com.fulcrologic.fulcro.server.api-middleware :as server]
     [mount.core :refer [defstate]]
+    [hiccup.page :refer [html5]]
     [ring.middleware.defaults :refer [wrap-defaults]]
     [com.example.components.config :as config]
     [com.example.components.parser :as parser]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [ring.util.response :as resp]))
+
+(defn index [csrf-token]
+  (html5
+    [:html {:lang "en"}
+     [:head {:lang "en"}
+      [:title "Application"]
+      [:meta {:charset "utf-8"}]
+      [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"}]
+      [:link {:href "https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.8/dist/semantic.min.css"
+              :rel  "stylesheet"}]
+      [:link {:rel "shortcut icon" :href "data:image/x-icon;," :type "image/x-icon"}]
+      [:script (str "var fulcro_network_csrf_token = '" csrf-token "';")]]
+     [:body
+      [:div#app]
+      [:script {:src "js/main/main.js"}]]]))
 
 (defn wrap-api [handler uri]
   (fn [request]
     (if (= uri (:uri request))
-      (server/handle-api-request (:transit-params request) (fn [query] (parser/parser {} query)))
+      (server/handle-api-request (:transit-params request)
+        (fn [query]
+          (parser/parser {:ring/request request}
+            query)))
       (handler request))))
 
 (def not-found-handler
@@ -18,11 +38,15 @@
     {:status 404
      :body   {}}))
 
-(defn wrap-root [handler]
-  (fn [req]
-    (handler
-      (update req :uri
-        #(if (= "/" %) "/index.html" %)))))
+(defn wrap-html-routes [ring-handler]
+  (fn [{:keys [uri anti-forgery-token] :as req}]
+    (cond
+      (#{"/" "/index.html"} uri)
+      (-> (resp/response (index anti-forgery-token))
+        (resp/content-type "text/html"))
+
+      :else
+      (ring-handler req))))
 
 (defstate middleware
   :start
@@ -31,6 +55,6 @@
       (wrap-api "/api")
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
-      (wrap-defaults defaults-config)
-      (wrap-root))))
+      (wrap-html-routes)
+      (wrap-defaults defaults-config))))
 

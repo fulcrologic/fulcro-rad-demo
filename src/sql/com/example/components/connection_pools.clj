@@ -1,7 +1,7 @@
 (ns com.example.components.connection-pools
   (:require
     [mount.core :refer [defstate]]
-    [com.example.components.model :refer [all-attributes]]
+    [com.example.model :refer [all-attributes]]
     [com.example.components.config :refer [config]]
     [com.fulcrologic.rad.database-adapters.sql :as sql])
   (:import (com.zaxxer.hikari HikariDataSource)))
