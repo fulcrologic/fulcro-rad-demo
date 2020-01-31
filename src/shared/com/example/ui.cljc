@@ -1,6 +1,5 @@
 (ns com.example.ui
   (:require
-    [edn-query-language.core :as eql]
     [com.example.model.account :as acct]
     [com.example.model.address :as address]
     [com.example.model.item :as item]
@@ -8,21 +7,15 @@
     [com.example.model.invoice :as invoice]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [com.fulcrologic.fulcro.application :as app]
-    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
-    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.fulcro.data-fetch :as df]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.rendering.semantic-ui.components :refer [ui-wrapped-dropdown]]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
-    [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.fulcrologic.rad.type-support.decimal :as math]))
 
 (form/defsc-form ItemForm [this props]
@@ -104,9 +97,6 @@
    ::form/route-prefix "invoice"
    ::form/title        "Edit Invoice"})
 
-(comment
-  (comp/get-query InvoiceForm))
-
 (defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
   {::report/columns         [:account/name :account/active? :account/last-login]
    ::report/column-headings ["Name" "Active?" "Last Login"]
@@ -125,6 +115,18 @@
 
 (report/defsc-report AccountList [this props]
   {::report/BodyItem         AccountListItem
+   ::report/source-attribute :account/all-accounts
+   ::report/parameters       {:ui/show-inactive? :boolean}
+   ::report/route            "accounts"})
+
+(defsc InvoiceLineItem [this {:keys [:invoice/id :invoice/customer :invoice/line-items  ] :as props}]
+  {:query [:invoice/id :invoice/customer :invoice/line-items  ]
+   :ident :invoice/id} )
+
+(def ui-invoice-line-item (comp/factory InvoiceLineItem {:keyfn :invoice/id}))
+
+#_(report/defsc-report InvoiceList [this props]
+  {::report/BodyItem         InvoiceLineItem
    ::report/source-attribute :account/all-accounts
    ::report/parameters       {:ui/show-inactive? :boolean}
    ::report/route            "accounts"})
