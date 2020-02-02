@@ -1,7 +1,6 @@
 (ns com.example.model.item
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
-    [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.authorization :as auth]
     [com.wsscode.pathom.connect :as pc]
     #?(:clj [com.example.components.database-queries :as queries])))
