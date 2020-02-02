@@ -55,6 +55,13 @@
 
 (comment
   (d/delete-database "datomic:sql://example?jdbc:postgresql://localhost:5432/datomic?user=datomic&password=datomic")
+
+  (d/q
+    '[:find (pull ?e [*  ])
+      :where
+      [?e :item/id]]
+    (d/db (:main datomic-connections)))
+
   (d/q
     '[:find (pull ?e [* {:invoice/customer [:account/name]}
                       {:invoice/line-items [*

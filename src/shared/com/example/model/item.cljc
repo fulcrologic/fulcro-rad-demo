@@ -15,6 +15,10 @@
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
+(defattr item-description :item/description :string
+  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+
 (defattr item-price :item/price :decimal
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
@@ -31,4 +35,5 @@
                       #?(:clj
                          {:item/all-items (queries/get-all-items env query-params)}))})
 
-(def attributes [id item-name item-price item-in-stock all-items])
+(def attributes [id item-name item-description item-price item-in-stock all-items])
+

@@ -20,7 +20,7 @@
 
 (form/defsc-form ItemForm [this props]
   {::form/id           item/id
-   ::form/attributes   [item/item-name item/item-in-stock item/item-price]
+   ::form/attributes   [item/item-name item/item-description item/item-in-stock item/item-price]
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "item"
    ::form/title        "Edit Item"})
@@ -119,17 +119,17 @@
    ::report/parameters       {:ui/show-inactive? :boolean}
    ::report/route            "accounts"})
 
-(defsc InvoiceLineItem [this {:keys [:invoice/id :invoice/customer :invoice/line-items  ] :as props}]
-  {:query [:invoice/id :invoice/customer :invoice/line-items  ]
-   :ident :invoice/id} )
+(defsc InvoiceLineItem [this {:keys [:invoice/id :invoice/customer :invoice/line-items] :as props}]
+  {:query [:invoice/id :invoice/customer :invoice/line-items]
+   :ident :invoice/id})
 
 (def ui-invoice-line-item (comp/factory InvoiceLineItem {:keyfn :invoice/id}))
 
 #_(report/defsc-report InvoiceList [this props]
-  {::report/BodyItem         InvoiceLineItem
-   ::report/source-attribute :account/all-accounts
-   ::report/parameters       {:ui/show-inactive? :boolean}
-   ::report/route            "accounts"})
+    {::report/BodyItem         InvoiceLineItem
+     ::report/source-attribute :account/all-accounts
+     ::report/parameters       {:ui/show-inactive? :boolean}
+     ::report/route            "accounts"})
 
 (defsc LandingPage [this props]
   {:query         ['*]
