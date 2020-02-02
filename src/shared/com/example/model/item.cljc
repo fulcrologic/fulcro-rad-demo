@@ -15,9 +15,8 @@
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-(defattr item-price :item/price :money
+(defattr item-price :item/price :decimal
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
-   ::form/style                                              ::custom-style
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
 (defattr item-in-stock :item/in-stock :int
