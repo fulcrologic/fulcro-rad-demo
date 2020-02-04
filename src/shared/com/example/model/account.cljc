@@ -7,6 +7,7 @@
          [com.example.components.database-queries :as queries]]
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
+    [clojure.string :as str]
     [com.wsscode.pathom.connect :as pc]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
@@ -67,6 +68,9 @@
 
 (defattr name :account/name :string
   {::auth/authority                                          :local
+   ::form/field-label                                        "Name"
+   ;::attr/valid?                                             (fn [v] (str/starts-with? v "Bruce"))
+   ;::attr/validation-message                                 (fn [v] "Your name's not Bruce then??? How 'bout we just call you Bruce?")
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
@@ -74,14 +78,14 @@
    ::attr/required?                                          true})
 
 (defattr addresses :account/addresses :ref
-  {::attr/target                                                   :address/id
-   ::attr/cardinality                                              :many
-   :com.fulcrologic.rad.database-adapters.datomic/schema           :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema               :production
-   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
-   :db/isComponent                                                 true
-   ::auth/authority                                                :local})
+  {::attr/target                                             :address/id
+   ::attr/cardinality                                        :many
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :db/isComponent                                           true
+   ::auth/authority                                          :local})
 
 (defattr all-accounts :account/all-accounts :ref
   {::attr/target    :account/id

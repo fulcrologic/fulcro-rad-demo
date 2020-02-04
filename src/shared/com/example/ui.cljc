@@ -1,5 +1,7 @@
 (ns com.example.ui
   (:require
+    [clojure.string :as str]
+    [com.example.model :as model]
     [com.example.model.account :as acct]
     [com.example.model.address :as address]
     [com.example.model.item :as item]
@@ -7,6 +9,7 @@
     [com.example.model.invoice :as invoice]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
@@ -35,28 +38,41 @@
    ::form/layout            [[:address/street]
                              [:address/city :address/state :address/zip]]})
 
+(def account-validator (fs/make-validator (fn [form field]
+                                            (case field
+                                              :account/email (let [prefix (or
+                                                                            (some-> form
+                                                                              (get :account/name)
+                                                                              (str/split #"\s")
+                                                                              (first)
+                                                                              (str/lower-case))
+                                                                            "")]
+                                                               (str/starts-with? (get form field) prefix))
+                                              (= :valid (model/all-attribute-validator form field))))))
+
 ;; NOTE: Limitation: Each "storage location" requires a form. The ident of the component matches the identity
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
-  {::form/id           acct/id
-   ::form/attributes   [acct/name acct/email acct/active? acct/addresses]
-   ::form/default      {:account/active?   true
-                        :account/addresses [{}]}
-   ::form/read-only?   {:account/email true}
-   ::form/cancel-route ["landing-page"]
-   ::form/route-prefix "account"
-   ::form/title        "Edit Account"
+  {::form/id                  acct/id
+   ::form/attributes          [acct/name acct/email acct/active? acct/addresses]
+   ::form/default             {:account/active?   true
+                               :account/addresses [{}]}
+   ::form/validator           account-validator
+   ::form/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
+   ::form/cancel-route        ["landing-page"]
+   ::form/route-prefix        "account"
+   ::form/title               "Edit Account"
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   ::form/subforms     {:account/addresses {::form/ui              AddressForm
-                                            ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                            ::form/can-add-row?    (fn [parent] true)
-                                            ::form/add-row-title   "Add Address"
-                                            ;; Use computed props to inform subform of its role.
-                                            ::form/subform-style   :inline}}})
+   ::form/subforms            {:account/addresses {::form/ui              AddressForm
+                                                   ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
+                                                   ::form/can-add-row?    (fn [parent] (< (count (:account/addresses parent)) 2))
+                                                   ::form/add-row-title   "Add Address"
+                                                   ;; Use computed props to inform subform of its role.
+                                                   ::form/subform-style   :inline}}})
 
 
 

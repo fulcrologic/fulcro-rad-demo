@@ -361,10 +361,10 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-js-joda-timezone@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/js-joda-timezone/-/js-joda-timezone-2.0.1.tgz#d4f0c0268c0a7549dcff8274fa945dea33f8fd79"
-  integrity sha512-nuNvILxBJ0s1XMSi6W+CnYBeE4bdthIdFuyf1dRaKME58KIdH7wyHbjTYqzfoTMAmZpA0bRpa4O+ClcDZOG6pg==
+js-joda-timezone@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/js-joda-timezone/-/js-joda-timezone-2.1.1.tgz#73b55e558f59a1490ce3e52d1a686689d6bdb416"
+  integrity sha512-l7PltQExLbI2gnzkvmzh+TFZcuAFiphmI93MUd6t/Zx3enVhjwXX3StD2QmibLdNXygqcxeBh4pkqcrlnGMTrQ==
 
 js-joda@1.11.0:
   version "1.11.0"
