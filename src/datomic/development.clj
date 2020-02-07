@@ -25,7 +25,8 @@
       (log/info "SEEDING data.")
       @(d/transact connection [(seed/new-address (new-uuid 1) "111 Main St.")
                                (seed/new-account (new-uuid 100) "Tony" "tony@example.com" "letmein"
-                                 :account/addresses ["111 Main St."])
+                                 :account/addresses ["111 Main St."]
+                                 :account/time-zone :account.time-zone/America-Los_Angeles)
                                (seed/new-account (new-uuid 101) "Sam" "sam@example.com" "letmein")
                                (seed/new-account (new-uuid 102) "Sally" "sally@example.com" "letmein")
                                (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")
@@ -57,7 +58,7 @@
   (d/delete-database "datomic:sql://example?jdbc:postgresql://localhost:5432/datomic?user=datomic&password=datomic")
 
   (d/q
-    '[:find (pull ?e [*  ])
+    '[:find (pull ?e [*])
       :where
       [?e :item/id]]
     (d/db (:main datomic-connections)))

@@ -607,11 +607,20 @@
    :WET                              "WET"
    :Zulu                             "Zulu"})
 
-(>defn namespaced-time-zone-map
+(>defn namespaced-time-zone-labels
   "Returns a time zone map with all keys prefixed properly for Datomic enumerated names. `ns` should be something like
   \"account.timezone\"."
   [ns]
   [string? => (s/map-of qualified-keyword? string?)]
   (into {}
     (map (fn [[k v]] [(keyword ns (name k)) (str/replace v "_" " ")]))
+    time-zones))
+
+(>defn namespaced-time-zone-ids
+  "Returns a time zone map with all keys prefixed properly for Datomic enumerated names. `ns` should be something like
+  \"account.timezone\"."
+  [ns]
+  [string? => (s/map-of qualified-keyword? string?)]
+  (into {}
+    (map (fn [[k v]] [(keyword ns (name k)) v]))
     time-zones))

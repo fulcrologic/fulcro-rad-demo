@@ -14,7 +14,8 @@
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
     [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.ui-state-machines :as uism]))
+    [com.fulcrologic.fulcro.ui-state-machines :as uism]
+    [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
 (defattr id :account/id :uuid
   {::attr/identity?                                      true
@@ -34,7 +35,7 @@
    ::attr/required?                                          true
    ::auth/authority                                          :local})
 
-(def account-time-zones (timezone/namespaced-time-zone-map "account.time-zone"))
+(def account-time-zones (timezone/namespaced-time-zone-labels "account.time-zone"))
 
 (defattr time-zone :account/time-zone :enum
   {::attr/required?                                          true
@@ -119,9 +120,13 @@
    :cljs
    (defmutation login [params]
      (ok-action [{:keys [app state]}]
-       (let [status (some-> state deref ::auth/authorization :local ::auth/status)]
+       (let [{:account/keys [time-zone]
+              ::auth/keys   [status]} (some-> state deref ::auth/authorization :local)]
          (if (= status :success)
-           (auth/logged-in! app :local)
+           (do
+             (log/info "Setting UI time zone" time-zone)
+             (datetime/set-timezone! time-zone)
+             (auth/logged-in! app :local))
            (auth/failed! app :local))))
      (error-action [{:keys [app]}]
        (log/error "Login failed.")
@@ -135,10 +140,15 @@
      (exauth/check-session! env))
    :cljs
    (defmutation check-session [_]
-     (ok-action [{:keys [app result]}]
+     (ok-action [{:keys [state app result]}]
        (let [{::auth/keys [provider]} (get-in result [:body `check-session])]
-         (uism/trigger! app auth/machine-id :event/session-checked {:provider provider})
-         (log/info "session result" result)))
+         (let [{:account/keys [time-zone]
+                ::auth/keys   [status]} (some-> state deref ::auth/authorization provider)]
+           (when (= status :success)
+             (do
+               (log/info "Setting UI time zone" time-zone)
+               (datetime/set-timezone! time-zone))))
+         (uism/trigger! app auth/machine-id :event/session-checked {:provider provider})))
      (remote [env]
        (m/returning env auth/Session))))
 
