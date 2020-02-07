@@ -1,6 +1,7 @@
 (ns com.example.ui
   (:require
     [clojure.string :as str]
+    [edn-query-language.core :as eql]
     [com.example.model :as model]
     [com.example.model.account :as acct]
     [com.example.model.address :as address]
@@ -20,7 +21,7 @@
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.type-support.decimal :as math]
-    [com.example.model.timezone :as timezone]))
+    [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
 (form/defsc-form ItemForm [this props]
   {::form/id           item/id
@@ -80,6 +81,7 @@
 (form/defsc-form LineItemForm [this props]
   {::form/id           line-item/id
    ::form/attributes   [line-item/item line-item/quantity]
+   ::form/validator    model/all-attribute-validator
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "line-item"
    ::form/title        "Line Items"
@@ -93,9 +95,22 @@
                                          ;; Use computed props to inform subform of its role.
                                          ::form/subform-style :inline}}})
 
+(def invoice-validator (fs/make-validator (fn [form field]
+                                            (let [value (get form field)]
+                                              (case field
+                                                :invoice/customer (eql/ident? value)
+                                                :invoice/date (let [now (datetime/now)]
+                                                                (and value (< (inst-ms value) (inst-ms now))))
+                                                :invoice/line-items (> (count value) 0)
+                                                (= :valid (model/all-attribute-validator form field)))))))
+
 (form/defsc-form InvoiceForm [this props]
   {::form/id           invoice/id
-   ::form/attributes   [invoice/customer invoice/line-items]
+   ::form/attributes   [invoice/customer invoice/date invoice/line-items]
+   ::form/default      {:invoice/date (datetime/now)}
+   ::form/validator    invoice-validator
+   ::form/layout       [[:invoice/customer :invoice/date]
+                        [:invoice/line-items]]
    ::form/subforms     {:invoice/customer   {::form/ui            form/ToOneEntityPicker
                                              ::form/pick-one      {:options/query-key :account/all-accounts
                                                                    :options/subquery  [:account/id :account/name :account/email]

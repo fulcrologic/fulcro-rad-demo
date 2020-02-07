@@ -2,7 +2,9 @@
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.rad.form :as form]
     [com.wsscode.pathom.connect :as pc]
+    [com.fulcrologic.rad.type-support.date-time :as datetime]
     #?(:clj [com.example.components.database-queries :as queries])))
 
 (defattr id :invoice/id :uuid
@@ -10,9 +12,11 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema :production
    ::auth/authority                                      :local})
 
-#_(defattr invoice-date :invoice/date :inst
-    {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
-     :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+(defattr date :invoice/date :instant
+  {::form/field-style                                        :date-at-noon
+   ::datetime/default-time-zone                              "America/Los_Angeles"
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
 (defattr line-items :invoice/line-items :ref
   {::attr/target                                             :line-item/id
@@ -34,5 +38,5 @@
                       #?(:clj
                          {:invoice/all-invoices (queries/get-all-invoices env query-params)}))})
 
-(def attributes [id #_invoice-date line-items customer all-invoices])
+(def attributes [id date line-items customer all-invoices])
 

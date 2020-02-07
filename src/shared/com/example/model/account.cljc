@@ -141,13 +141,12 @@
    :cljs
    (defmutation check-session [_]
      (ok-action [{:keys [state app result]}]
-       (let [{::auth/keys [provider]} (get-in result [:body `check-session])]
-         (let [{:account/keys [time-zone]
-                ::auth/keys   [status]} (some-> state deref ::auth/authorization provider)]
-           (when (= status :success)
-             (do
-               (log/info "Setting UI time zone" time-zone)
-               (datetime/set-timezone! time-zone))))
+       (let [{::auth/keys [provider]} (get-in result [:body `check-session])
+             {:account/keys [time-zone]
+              ::auth/keys   [status]} (some-> state deref ::auth/authorization (get provider))]
+         (when (= status :success)
+           (log/info "Setting UI time zone" time-zone)
+           (datetime/set-timezone! time-zone))
          (uism/trigger! app auth/machine-id :event/session-checked {:provider provider})))
      (remote [env]
        (m/returning env auth/Session))))
