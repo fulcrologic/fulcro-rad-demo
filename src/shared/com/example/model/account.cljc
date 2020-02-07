@@ -8,6 +8,7 @@
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [clojure.string :as str]
+    [com.example.model.timezone :as timezone]
     [com.wsscode.pathom.connect :as pc]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
@@ -32,6 +33,18 @@
    :db/unique                                                :db.unique/value
    ::attr/required?                                          true
    ::auth/authority                                          :local})
+
+(def account-time-zones (timezone/namespaced-time-zone-map "account.time-zone"))
+
+(defattr time-zone :account/time-zone :enum
+  {::attr/required?                                          true
+   ::attr/enumerated-values                                  (set (keys account-time-zones))
+   ::attr/enumerated-labels                                  account-time-zones
+   ::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}})
 
 (defattr active? :account/active? :boolean
   {::auth/authority                                          :local
@@ -60,9 +73,13 @@
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    ::attr/required?                                          true})
 
+(def account-roles {:account.role/superuser "Superuser"
+                    :account.role/user      "Normal User"})
+
 (defattr role :account/role :enum
   {::auth/authority                                          :local
-   ::attr/enumerated-values                                  #{:superuser :user}
+   ::attr/enumerated-values                                  (set (keys account-roles))
+   ::attr/enumerated-labels                                  account-roles
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}})
 
@@ -102,10 +119,10 @@
    :cljs
    (defmutation login [params]
      (ok-action [{:keys [app state]}]
-       (let [status (log/spy :info (some-> state deref ::auth/authorization :local ::auth/status))])
-       (if (= state :success)
-         (auth/logged-in! app :local)
-         (auth/failed! app :local)))
+       (let [status (some-> state deref ::auth/authorization :local ::auth/status)]
+         (if (= status :success)
+           (auth/logged-in! app :local)
+           (auth/failed! app :local))))
      (error-action [{:keys [app]}]
        (log/error "Login failed.")
        (auth/failed! app :local))
@@ -125,6 +142,6 @@
      (remote [env]
        (m/returning env auth/Session))))
 
-(def attributes [id name role email password password-iterations password-salt active? addresses all-accounts])
+(def attributes [id name time-zone role email password password-iterations password-salt active? addresses all-accounts])
 
 (def resolvers [login check-session])

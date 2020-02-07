@@ -19,7 +19,8 @@
     [com.fulcrologic.rad.rendering.semantic-ui.components :refer [ui-wrapped-dropdown]]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
-    [com.fulcrologic.rad.type-support.decimal :as math]))
+    [com.fulcrologic.rad.type-support.decimal :as math]
+    [com.example.model.timezone :as timezone]))
 
 (form/defsc-form ItemForm [this props]
   {::form/id           item/id
@@ -56,7 +57,7 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
-   ::form/attributes          [acct/name acct/email acct/active? acct/addresses]
+   ::form/attributes          [acct/name acct/role acct/time-zone acct/email acct/active? acct/addresses]
    ::form/default             {:account/active?   true
                                :account/addresses [{}]}
    ::form/validator           account-validator
