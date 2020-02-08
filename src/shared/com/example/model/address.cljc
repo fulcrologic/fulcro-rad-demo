@@ -34,7 +34,7 @@
   {::attr/enumerated-values                                  (set (keys states))
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   ::attr/labels                                             states})
+   ::attr/enumerated-labels                                  states})
 
 (defattr zip :address/zip :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}
