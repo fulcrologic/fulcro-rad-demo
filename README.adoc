@@ -15,7 +15,7 @@ $ yarn
 $ shadow-cljs watch example
 -----
 
-== Running an SQL-based Sever
+== Running an SQL-based Server
 
 The example code should work with most SQL databases, and the data source
 is configured in the `defaults.edn` config file in the sql source
@@ -34,21 +34,50 @@ user=> (require 'development)
 user=> (development/go)
 -----
 
-== Running a Datomic-based Sever
+== Running a Datomic-based Server
 
 The example code for Datomic components is in the `src/datomic` folder, along with a custom
 `development.clj`.
 
-Install Datomic, and configure it for a PostgreSQL storage engine, then update the config parameters
+Install Datomic, either Pro or Free. Configure Pro for either a PostgreSQL or MySQL storage engine, then update the config parameters
 in `defaults.edn` in the `src/datomic/config` directory to have the correct connection parameters.
 
-Then you can run it with the correct classpath using:
+For example, something like:
+[source, clojure]
+-----
+ :com.fulcrologic.rad.database-adapters.datomic/databases
+    {:main {:datomic/schema           :production
+            :datomic/driver           :postgresql ;; OR :mysql :free :mem
+            :datomic/database         "example"
+            :datomic/prevent-changes? true
+            :postgresql/host          "localhost"
+            :postgresql/port          5432
+            :postgresql/user          "datomic"
+            :postgresql/password      "datomic"
+            :postgresql/database      "datomic"
+            :free/host                "localhost"
+            :free/port                4334}}
+-----
 
+Then you can run it with the `:datomic` alias and the chosen storage driver alias:
+
+For Postgresql:
 [source, bash]
 -----
-$ clj -A:dev:datomic
+$ clj -A:dev:datomic:postgresql
 user=> (require 'development)
 user=> (development/go)
+-----
+
+Alternatively, for Mysql, Free, or Mem:
+[source, bash]
+-----
+$ clj -A:dev:datomic:mysql
+# OR
+$ clj -A:dev:datomic:free
+# OR
+$ clj -A:dev:datomic:mem
+
 -----
 
 == Restarting
