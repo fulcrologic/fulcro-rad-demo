@@ -58,7 +58,9 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
-   ::form/attributes          [acct/name acct/role acct/time-zone acct/email acct/active? acct/addresses]
+   ::form/attributes          [acct/name
+                               acct/primary-address
+                               acct/role acct/time-zone acct/email acct/active? acct/addresses]
    ::form/default             {:account/active?   true
                                :account/addresses [{}]}
    ::form/validator           account-validator
@@ -69,14 +71,15 @@
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   ::form/subforms            {:account/addresses {::form/ui              AddressForm
-                                                   ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                                   ::form/can-add-row?    (fn [parent] (< (count (:account/addresses parent)) 2))
-                                                   ::form/add-row-title   "Add Address"
-                                                   ;; Use computed props to inform subform of its role.
-                                                   ::form/subform-style   :inline}}})
-
-
+   ::form/subforms            {:account/primary-address {::form/ui              AddressForm
+                                                         ::form/can-delete-row? (fn [parent item] false)
+                                                         ::form/can-add-row?    (fn [parent] false)}
+                               :account/addresses       {::form/ui              AddressForm
+                                                         ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
+                                                         ::form/can-add-row?    (fn [parent] (< (count (:account/addresses parent)) 2))
+                                                         ::form/add-row-title   "Add Address"
+                                                         ;; Use computed props to inform subform of its role.
+                                                         ::form/subform-style   :inline}}})
 
 (form/defsc-form LineItemForm [this props]
   {::form/id           line-item/id
@@ -86,14 +89,12 @@
    ::form/route-prefix "line-item"
    ::form/title        "Line Items"
    ::form/layout       [[:line-item/item :line-item/quantity]]
-   ::form/subforms     {:line-item/item {::form/ui            form/ToOneEntityPicker
-                                         ::form/pick-one      {:options/query-key :item/all-items
-                                                               :options/subquery  [:item/id :item/name :item/price]
-                                                               :options/transform (fn [{:item/keys [id name price]}]
-                                                                                    {:text (str name " - " (math/numeric->currency-str price)) :value [:item/id id]})}
-                                         ::form/label         "Item"
-                                         ;; Use computed props to inform subform of its role.
-                                         ::form/subform-style :inline}}})
+   ::form/subforms     {:line-item/item {::form/ui       form/ToOneEntityPicker
+                                         ::form/pick-one {:options/query-key :item/all-items
+                                                          :options/subquery  [:item/id :item/name :item/price]
+                                                          :options/transform (fn [{:item/keys [id name price]}]
+                                                                               {:text (str name " - " (math/numeric->currency-str price)) :value [:item/id id]})}
+                                         ::form/label    "Item"}}})
 
 (def invoice-validator (fs/make-validator (fn [form field]
                                             (let [value (get form field)]

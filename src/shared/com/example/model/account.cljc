@@ -95,6 +95,16 @@
    :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    ::attr/required?                                          true})
 
+(defattr primary-address :account/primary-address :ref
+  {::attr/target                                             :address/id
+   ::attr/cardinality                                        :one
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :db/isComponent                                           true
+   ::auth/authority                                          :local})
+
 (defattr addresses :account/addresses :ref
   {::attr/target                                             :address/id
    ::attr/cardinality                                        :many
@@ -151,6 +161,6 @@
      (remote [env]
        (m/returning env auth/Session))))
 
-(def attributes [id name time-zone role email password password-iterations password-salt active? addresses all-accounts])
+(def attributes [id name primary-address time-zone role email password password-iterations password-salt active? addresses all-accounts])
 
 (def resolvers [login check-session])
