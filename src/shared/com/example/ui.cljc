@@ -59,10 +59,12 @@
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
    ::form/attributes          [acct/name
-                               acct/primary-address
+                               ;; Not working completely yet...
+                               ;;acct/primary-address
                                acct/role acct/time-zone acct/email acct/active? acct/addresses]
-   ::form/default             {:account/active?   true
-                               :account/addresses [{}]}
+   ::form/default             {:account/active?         true
+                               ;;:account/primary-address {}
+                               :account/addresses       [{}]}
    ::form/validator           account-validator
    ::form/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
    ::form/cancel-route        ["landing-page"]
@@ -71,7 +73,7 @@
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   ::form/subforms            {:account/primary-address {::form/ui              AddressForm
+   ::form/subforms            {#_#_:account/primary-address {::form/ui              AddressForm
                                                          ::form/can-delete-row? (fn [parent item] false)
                                                          ::form/can-add-row?    (fn [parent] false)}
                                :account/addresses       {::form/ui              AddressForm
