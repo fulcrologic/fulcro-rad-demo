@@ -14,7 +14,8 @@
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [edn-query-language.core :as eql]
     [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
+    [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
 ;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
 (def secured-request-middleware
@@ -55,6 +56,8 @@
 
 (defn init []
   (log/info "Starting App")
+  ;; a default tz until they log in
+  (datetime/set-timezone! "America/Los_Angeles")
   (form/install-ui-controls! app sui/all-controls)
   (attr/register-attributes! model/all-attributes)
   (app/mount! app Root "app"))
