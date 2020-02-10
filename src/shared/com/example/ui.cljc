@@ -70,8 +70,3 @@
         (ui-main-router router)))))
 
 (def ui-root (comp/factory Root))
-
-(comment
-  (time (reduce math/+ 0 (range 0 1000)))
-  (time (math/with-primitive-ops (reduce math/+ 0 (range 0 1000))))
-  )
