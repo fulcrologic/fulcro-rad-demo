@@ -1,5 +1,6 @@
 (ns com.example.ui
   (:require
+    [com.fulcrologic.rad.type-support.decimal :as math]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.example.ui.account-forms :refer [AccountForm AccountList]]
     [com.example.ui.item-forms :refer [ItemForm]]
@@ -69,3 +70,8 @@
         (ui-main-router router)))))
 
 (def ui-root (comp/factory Root))
+
+(comment
+  (time (reduce math/+ 0 (range 0 1000)))
+  (time (math/with-primitive-ops (reduce math/+ 0 (range 0 1000))))
+  )
