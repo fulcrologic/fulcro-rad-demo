@@ -12,7 +12,7 @@ able to edit it, just start a shadow-cljs watch:
 [source, bash]
 -----
 $ yarn
-$ shadow-cljs watch example
+$ shadow-cljs watch main
 -----
 
 == Running an SQL-based Server
