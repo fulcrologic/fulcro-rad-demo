@@ -30,12 +30,11 @@
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
    ::form/attributes          [acct/name
-                               ;; Not working completely yet...
-                               ;;acct/primary-address
+                               acct/primary-address
                                acct/role acct/time-zone acct/email acct/active? acct/addresses]
-   ::form/default             {:account/active?   true
-                               ;;:account/primary-address {}
-                               :account/addresses [{}]}
+   ::form/default             {:account/active?         true
+                               :account/primary-address {}
+                               :account/addresses       [{}]}
    ::form/validator           account-validator
    ::form/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
    ::form/cancel-route        ["landing-page"]
@@ -44,15 +43,13 @@
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   ::form/subforms            {#_#_:account/primary-address {::form/ui              AddressForm
-                                                             ::form/can-delete-row? (fn [parent item] false)
-                                                             ::form/can-add-row?    (fn [parent] false)}
-                               :account/addresses {::form/ui              AddressForm
-                                                   ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                                   ::form/can-add-row?    (fn [parent] (< (count (:account/addresses parent)) 2))
-                                                   ::form/add-row-title   "Add Address"
-                                                   ;; Use computed props to inform subform of its role.
-                                                   ::form/subform-style   :inline}}})
+   ::form/subforms            {:account/primary-address {::form/ui                  AddressForm
+                                                         ::form/title               "Primary Address"
+                                                         ::form/autocreate-on-load? true}
+                               :account/addresses       {::form/ui              AddressForm
+                                                         ::form/title           "Additional Addresses"
+                                                         ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
+                                                         ::form/can-add-row?    (fn [parent] (< (count (:account/addresses parent)) 2))}}})
 
 (defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
   {::report/columns         [:account/name :account/active? :account/last-login]
@@ -71,8 +68,13 @@
 (def ui-account-list-item (comp/factory AccountListItem {:keyfn :account/id}))
 
 (report/defsc-report AccountList [this props]
-  {::report/BodyItem         AccountListItem
-   ::report/source-attribute :account/all-accounts
-   ::report/parameters       {:ui/show-inactive? :boolean}
-   ::report/route            "accounts"})
+  {::report/title                    "All Accounts"
+   ::report/source-attribute         :account/all-accounts
+   ::report/BodyItem                 AccountListItem
+   ::report/run-on-mount?            true
+   ::report/run-on-parameter-change? true
+   ::report/parameters               {:ui/show-inactive? {:type  :boolean
+                                                          :label "Show Inactive Accounts?"}}
+   ::report/initial-parameters       {:ui/show-inactive? false}
+   ::report/route                    "accounts"})
 

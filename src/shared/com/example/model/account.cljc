@@ -27,13 +27,13 @@
    ::auth/authority                                      :local})
 
 (defattr email :account/email :string
-  {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
-   :db/unique                                                :db.unique/value
-   ::attr/required?                                          true
-   ::auth/authority                                          :local})
+  {:com.fulcrologic.rad.database-adapters.datomic/schema           :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
+   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
+   :com.fulcrologic.rad.database-adapters.sql/schema               :production
+   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+   ::attr/required?                                                true
+   ::auth/authority                                                :local})
 
 (def account-time-zones (timezone/namespaced-time-zone-labels "account.time-zone"))
 
@@ -57,10 +57,10 @@
    ::form/default-value                                      true})
 
 (defattr password :password/hashed-value :string
-  {::auth/authority                                          :local
+  {::attr/required?                                          true
+   ::auth/authority                                          :local
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
-   ::attr/required?                                          true})
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}})
 
 (defattr password-salt :password/salt :string
   {::auth/authority                                          :local
@@ -96,14 +96,14 @@
    ::attr/required?                                          true})
 
 (defattr primary-address :account/primary-address :ref
-  {::attr/target                                             :address/id
-   ::attr/cardinality                                        :one
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
-   :db/isComponent                                           true
-   ::auth/authority                                          :local})
+  {::attr/target                                                   :address/id
+   ::attr/cardinality                                              :one
+   :com.fulcrologic.rad.database-adapters.datomic/schema           :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
+   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
+   :com.fulcrologic.rad.database-adapters.sql/schema               :production
+   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+   ::auth/authority                                                :local})
 
 (defattr addresses :account/addresses :ref
   {::attr/target                                             :address/id
