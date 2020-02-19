@@ -1,6 +1,7 @@
 (ns com.example.components.middleware
   (:require
     [com.fulcrologic.fulcro.server.api-middleware :as server]
+    [com.fulcrologic.fulcro.networking.file-upload :as file-upload]
     [mount.core :refer [defstate]]
     [hiccup.page :refer [html5]]
     [ring.middleware.defaults :refer [wrap-defaults]]
@@ -53,6 +54,7 @@
   (let [defaults-config (:ring.middleware/defaults-config config/config)]
     (-> not-found-handler
       (wrap-api "/api")
+      (file-upload/wrap-mutation-file-uploads {})
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
       (wrap-html-routes)

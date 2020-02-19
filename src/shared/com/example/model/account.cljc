@@ -13,6 +13,8 @@
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.rad.middleware.save-middleware :as save-middleware]
+    [com.fulcrologic.rad.blob :as blob]
     [taoensso.timbre :as log]
     [com.fulcrologic.fulcro.ui-state-machines :as uism]
     [com.fulcrologic.rad.type-support.date-time :as datetime]))
@@ -105,6 +107,23 @@
    :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
    ::auth/authority                                                :local})
 
+(defattr avatar-url :account/avatar-url :string
+  {::attr/target                                             :address/id
+   ::attr/cardinality                                        :one
+
+   ;; The field style give you a specific control, and the blob settings
+   ;; are used by middleware to target a particular store (you must config).
+   ::form/field-style                                        ::blob/file-upload
+   ::blob/accept-file-types                                  "image/*"
+   ::blob/store                                              :avatar-images
+   ::blob/remote                                             :remote
+
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   ::auth/authority                                          :local})
+
 (defattr addresses :account/addresses :ref
   {::attr/target                                             :address/id
    ::attr/cardinality                                        :many
@@ -161,6 +180,15 @@
      (remote [env]
        (m/returning env auth/Session))))
 
-(def attributes [id name primary-address time-zone role email password password-iterations password-salt active? addresses all-accounts])
+#?(:clj
+   (defmethod save-middleware/rewrite-value :account/id
+     [env [_ id] {:account/keys [avatar-url] :as value}]
+     (let [{:keys [before after]} avatar-url]
+       (if (str/includes? after "/")
+         value
+         (assoc-in value [:account/avatar-url :after] (str "/images/" after))))))
+
+(def attributes [id name primary-address time-zone role email password password-iterations password-salt active?
+                 addresses all-accounts avatar-url])
 
 (def resolvers [login check-session])

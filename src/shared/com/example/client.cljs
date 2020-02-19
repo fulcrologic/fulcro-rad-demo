@@ -15,17 +15,18 @@
     [edn-query-language.core :as eql]
     [taoensso.timbre :as log]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
-    [com.fulcrologic.rad.type-support.date-time :as datetime]))
+    [com.fulcrologic.rad.type-support.date-time :as datetime]
+    [com.fulcrologic.fulcro.networking.file-upload :as file-upload]))
 
 ;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
 (def secured-request-middleware
   ;; The CSRF token is embedded via server_components/html.clj
   (->
+    (net/wrap-fulcro-request)
+    (file-upload/wrap-file-upload)
     (net/wrap-csrf-token (if (undefined? js/fulcro_network_csrf_token)
                            "TOKEN-NOT-IN-HTML!"
-                           (log/spy :info js/fulcro_network_csrf_token)))
-    (net/wrap-fulcro-request)))
-
+                           (log/spy :info js/fulcro_network_csrf_token)))))
 
 (defonce app (app/fulcro-app {:remotes              {:remote (http/fulcro-http-remote {:url                "/api"
                                                                                        :request-middleware secured-request-middleware})}
@@ -37,6 +38,7 @@
                                                                     (let [ns (some-> k kw-namespace)]
                                                                       (or
                                                                         (= k '[:com.fulcrologic.fulcro.ui-state-machines/asm-id _])
+                                                                        (= k ':com.fulcrologic.rad.blob/blobs)
                                                                         (= k df/marker-table)
                                                                         (= k ::fs/config)
                                                                         (and
@@ -52,7 +54,7 @@
 
 (comment
   (dr/change-route app (dr/path-to ui/AccountForm {:action "new"
-                                                   :id (str (random-uuid))})))
+                                                   :id     (str (random-uuid))})))
 
 (defn init []
   (log/info "Starting App")

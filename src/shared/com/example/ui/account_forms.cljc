@@ -30,6 +30,7 @@
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
    ::form/attributes          [acct/name
+                               acct/avatar-url
                                acct/primary-address
                                acct/role acct/time-zone acct/email acct/active? acct/addresses]
    ::form/default             {:account/active?         true

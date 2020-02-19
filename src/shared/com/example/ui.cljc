@@ -13,6 +13,7 @@
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
+    [taoensso.timbre :as log]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
 
 (defsc LandingPage [this props]
@@ -23,8 +24,14 @@
   (dom/div "Hello World"))
 
 ;; This will just be a normal router...but there can be many of them.
-(defrouter MainRouter [this props]
-  {:router-targets [LandingPage ItemForm InvoiceForm AccountList AccountForm]})
+(defrouter MainRouter [this {:keys [route-factory route-props] :as props}]
+  {:router-targets [LandingPage ItemForm InvoiceForm AccountList AccountForm]}
+  ;; Normal Fulcro code to show a loader on slow route change (assuming Semantic UI here, should
+  ;; be generalized for RAD so UI-specific code isn't necessary)
+  (dom/div
+    (dom/div :.ui.active.loader)
+    (when route-factory
+      (route-factory route-props))))
 
 (def ui-main-router (comp/factory MainRouter))
 
