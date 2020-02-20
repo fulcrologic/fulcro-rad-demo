@@ -34,10 +34,13 @@
                                         com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-SNAPSHOT"}}}
 
            :datomic      {:extra-paths ["src/datomic" "src/datomic-tests"]
-                          :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-3"}
-                                        com.datomic/datomic-pro            {:mvn/version "0.9.5966"
-                                                                            :exclusions  [org.slf4j/slf4j-nop]}
-                                        org.postgresql/postgresql          {:mvn/version "42.2.8"}}}
+                          :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-3"}}}
+           :free         {:extra-deps {com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}}}
+           :mem          {:extra-deps {com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}}}
+           :postgresql   {:extra-deps {com.datomic/datomic-pro   {:mvn/version "0.9.5966" :exclusions [org.slf4j/slf4j-nop]}
+                                       org.postgresql/postgresql {:mvn/version "42.2.8"}}}
+           :mysql        {:extra-deps {com.datomic/datomic-pro    {:mvn/version "0.9.5966" :exclusions [org.slf4j/slf4j-nop]}
+                                       mysql/mysql-connector-java {:mvn/version "8.0.18"}}}
 
            :run-tests    {:main-opts  ["-m" "kaocha.runner"]
                           :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-590"}}}

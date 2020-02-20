@@ -3,14 +3,22 @@
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
                                     {:main {:datomic/schema           :production
-                                            :datomic/driver           :postgresql
+                                            :datomic/driver           :postgresql ;; OR :mysql :free :mem 
                                             :datomic/database         "example"
                                             :datomic/prevent-changes? true
                                             :postgresql/host          "localhost"
                                             :postgresql/port          5432
                                             :postgresql/user          "datomic"
                                             :postgresql/password      "datomic"
-                                            :postgresql/database      "datomic"}}
+                                            :postgresql/database      "datomic"
+                                            :mysql/host               "localhost"
+                                            :mysql/port               3306
+                                            :mysql/user               "datomic"
+                                            :mysql/password           "datomic"
+                                            :mysql/database           "datomic"
+                                            :free/host                "localhost"
+                                            :free/port                4334}}
+
 
  :com.fulcrologic.rad.database-adapters.sql/databases
                                     {:main {:flyway/migrate?          true
