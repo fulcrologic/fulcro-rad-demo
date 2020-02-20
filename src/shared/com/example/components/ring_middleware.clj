@@ -1,4 +1,4 @@
-(ns com.example.components.middleware
+(ns com.example.components.ring-middleware
   (:require
     [com.fulcrologic.fulcro.server.api-middleware :as server]
     [com.fulcrologic.fulcro.networking.file-upload :as file-upload]

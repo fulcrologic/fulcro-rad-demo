@@ -4,7 +4,7 @@
     [mount.core :refer [defstate]]
     [taoensso.timbre :as log]
     [com.example.components.config :refer [config]]
-    [com.example.components.middleware :refer [middleware]]))
+    [com.example.components.ring-middleware :refer [middleware]]))
 
 (defstate http-server
   :start

@@ -4,7 +4,7 @@
     [clojure.pprint :refer [pprint]]
     [clojure.repl :refer [doc source]]
     [clojure.tools.namespace.repl :as tools-ns :refer [disable-reload! refresh clear set-refresh-dirs]]
-    [com.example.components.middleware]
+    [com.example.components.ring-middleware]
     [com.example.components.server]
     [com.example.components.connection-pools]
     [com.example.components.database-queries :as queries]

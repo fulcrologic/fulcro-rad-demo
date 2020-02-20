@@ -4,7 +4,7 @@
     [clojure.repl :refer [doc source]]
     [clojure.tools.namespace.repl :as tools-ns :refer [disable-reload! refresh clear set-refresh-dirs]]
     [com.example.components.datomic :refer [datomic-connections]]
-    [com.example.components.middleware]
+    [com.example.components.ring-middleware]
     [com.example.components.server]
     [com.example.model.seed :as seed]
     [com.example.model.account :as account]
