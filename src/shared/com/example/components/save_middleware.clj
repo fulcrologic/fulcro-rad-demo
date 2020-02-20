@@ -11,6 +11,6 @@
 
 (def middleware
   (->
-    (datomic/wrap-datomic-save (fn [env] {:production (:main datomic-connections)}))
+    (datomic/wrap-datomic-save)
     (blob/wrap-persist-images model/all-attributes)
     (r.s.middleware/wrap-rewrite-values)))
