@@ -44,7 +44,7 @@
                                                  :not-modified-responses true}
                                      :session   true
                                      :static    {:resources "public"}
-                                     :security  {:anti-forgery   true
+                                     :security  {:anti-forgery   false
                                                  :hsts           true
                                                  :ssl-redirect   false
                                                  :frame-options  :sameorigin
@@ -57,7 +57,7 @@
                                      :log-requests?  true
                                      :log-responses? true}
 
- :taoensso.timbre/logging-config    {:level        :info
+ :taoensso.timbre/logging-config    {:level        :debug
                                      :ns-whitelist []
                                      :ns-blacklist ["com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool"
                                                     "com.mchange.v2.c3p0.stmt.GooGooStatementCache"

@@ -184,9 +184,9 @@
    (defmethod save-middleware/rewrite-value :account/id
      [env [_ id] {:account/keys [avatar-url] :as value}]
      (let [{:keys [before after]} avatar-url]
-       (if (str/includes? after "/")
-         value
-         (assoc-in value [:account/avatar-url :after] (str "/images/" after))))))
+       (if (and after (not= before after) (not (str/includes? after "/")))
+         (assoc-in value [:account/avatar-url :after] (str "/images/" after))
+         value))))
 
 (def attributes [id name primary-address time-zone role email password password-iterations password-salt active?
                  addresses all-accounts avatar-url])
