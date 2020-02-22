@@ -107,7 +107,12 @@
    :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
    ::auth/authority                                                :local})
 
-(defattr avatar-url :account/avatar-url :string
+;; NOTE: How to do file SHA->URL stuff...
+#_(pc/defresolver image-resolver [env input]
+    {::pc/input  #{:file/sha ::blob/store}
+     ::pc/output [:file/url]})
+
+(defattr avatar-url :account/avatar :string
   {::attr/target                                             :address/id
    ::attr/cardinality                                        :one
 
@@ -184,9 +189,7 @@
    (defmethod save-middleware/rewrite-value :account/id
      [env [_ id] {:account/keys [avatar-url] :as value}]
      (let [{:keys [before after]} avatar-url]
-       (if (and after (not= before after) (not (str/includes? after "/")))
-         (assoc-in value [:account/avatar-url :after] (str "/images/" after))
-         value))))
+       value)))
 
 (def attributes [id name primary-address time-zone role email password password-iterations password-salt active?
                  addresses all-accounts avatar-url])

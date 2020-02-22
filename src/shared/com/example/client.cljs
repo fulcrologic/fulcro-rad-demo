@@ -3,6 +3,7 @@
     [com.example.model :as model]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
+    [com.fulcrologic.fulcro.rendering.keyframe-render2 :as kr2]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.data-fetch :as df]
@@ -45,6 +46,7 @@
                                                                           (string? ns)
                                                                           (= "ui" ns))))))
                                                           mutation? (update :children conj (eql/expr->ast :tempids)))))
+                              :optimized-render!    kr2/render!
                               :client-did-mount     (fn [app]
                                                       (auth/start! app [LoginForm])
                                                       (dr/change-route app (dr/path-to ui/LandingPage)))}))

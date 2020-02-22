@@ -29,14 +29,15 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
-   ::form/attributes          [acct/name
-                               acct/avatar-url
+   ::form/attributes          [acct/avatar-url
+                               acct/name
                                acct/primary-address
                                acct/role acct/time-zone acct/email acct/active? acct/addresses]
    ::form/default             {:account/active?         true
                                :account/primary-address {}
                                :account/addresses       [{}]}
    ::form/validator           account-validator
+   ::form/query-inclusion     [:account.avatar/url]
    ::form/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
    ::form/cancel-route        ["landing-page"]
    ::form/route-prefix        "account"

@@ -2,13 +2,15 @@
   (:require
     [com.fulcrologic.fulcro.server.api-middleware :as server]
     [com.fulcrologic.fulcro.networking.file-upload :as file-upload]
+    [com.fulcrologic.rad.blob :as blob]
     [mount.core :refer [defstate]]
     [hiccup.page :refer [html5]]
     [ring.middleware.defaults :refer [wrap-defaults]]
     [com.example.components.config :as config]
     [com.example.components.parser :as parser]
     [taoensso.timbre :as log]
-    [ring.util.response :as resp]))
+    [ring.util.response :as resp]
+    [com.example.components.blob-store :as bs]))
 
 (defn index [csrf-token]
   (html5
@@ -17,7 +19,7 @@
       [:title "Application"]
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"}]
-      [:link {:href "https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.8/dist/semantic.min.css"
+      [:link {:href "/css/semantic.min.css"
               :rel  "stylesheet"}]
       [:link {:rel "shortcut icon" :href "data:image/x-icon;," :type "image/x-icon"}]
       [:script (str "var fulcro_network_csrf_token = '" csrf-token "';")]]
@@ -55,6 +57,7 @@
     (-> not-found-handler
       (wrap-api "/api")
       (file-upload/wrap-mutation-file-uploads {})
+      (blob/wrap-blob-service "/images" bs/image-blob-store)
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
       (wrap-html-routes)

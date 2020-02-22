@@ -6,9 +6,10 @@
     [com.example.components.save-middleware :as save]
     [com.example.components.delete-middleware :as delete]
     [com.example.model.account :as account]
+    [com.example.model :refer [all-attributes]]
     [com.fulcrologic.rad.blob :as blob]
-    [com.fulcrologic.rad.blob-storage :as storage]
     [com.fulcrologic.rad.form :as form]
+    [com.example.components.blob-store :as bs]
     [com.fulcrologic.rad.pathom :as pathom]
     [mount.core :refer [defstate]]
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]))
@@ -18,10 +19,9 @@
   (pathom/new-parser config
     [(form/pathom-plugin save/middleware delete/middleware)
      (datomic/pathom-plugin (fn [env] {:production (:main datomic-connections)}))
-     ;; TASK: make defstate for these that check dev sys property and use leaky store during dev only
-     (blob/pathom-plugin (storage/leaky-blob-store) {:avatar-images (storage/leaky-blob-store)})]
+     (blob/pathom-plugin bs/temporary-blob-store {:avatar-images bs/image-blob-store})]
     [automatic-resolvers
      form/resolvers
-     blob/resolvers
+     (blob/resolvers all-attributes)
      account/login
      account/check-session]))

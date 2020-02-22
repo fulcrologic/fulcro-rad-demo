@@ -7,7 +7,7 @@
 
 (form/defsc-form LineItemForm [this props]
   {::form/id           line-item/id
-   ::form/attributes   [line-item/item line-item/quantity]
+   ::form/attributes   [line-item/item line-item/quantity ]
    ::form/validator    model/all-attribute-validator
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "line-item"

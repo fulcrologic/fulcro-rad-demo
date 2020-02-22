@@ -5,9 +5,9 @@
 
 (defstate temporary-blob-store
   :start
-  (storage/leaky-blob-store))
+  (storage/leaky-blob-store ""))
 
 (defstate image-blob-store
   :start
-  (storage/leaky-blob-store))
+  (storage/leaky-blob-store "/images"))
 

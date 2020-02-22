@@ -6,6 +6,10 @@
                        :asset-path "/js/main"
                        :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}}}}
                        :modules    {:main {:init-fn com.example.client/init}}
+                       #_#_:js-options {:resolve {"react-dom" {:target  :npm
+                                                               :require "react-dom/cjs/react-dom.production.min.js"}
+                                                  "react"     {:target  :npm
+                                                               :require "react/cjs/react.production.min.js"}}}
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/refresh}}
 
