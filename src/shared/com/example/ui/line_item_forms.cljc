@@ -15,7 +15,7 @@
    ::form/layout       [[:line-item/item :line-item/quantity]]
    ::form/subforms     {:line-item/item {::form/ui       form/ToOneEntityPicker
                                          ::form/pick-one {:options/query-key :item/all-items
-                                                          :options/subquery  [:item/id :item/name :item/price]
+                                                          :options/subquery  [:item/id :item/name :item/price :item/n-in-stock]
                                                           :options/transform (fn [{:item/keys [id name price]}]
                                                                                {:text (str name " - " (math/numeric->currency-str price)) :value [:item/id id]})}
                                          ::form/label    "Item"}}})

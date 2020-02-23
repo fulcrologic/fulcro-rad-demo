@@ -58,6 +58,7 @@
       (wrap-api "/api")
       (file-upload/wrap-mutation-file-uploads {})
       (blob/wrap-blob-service "/images" bs/image-blob-store)
+      (blob/wrap-blob-service "/files" bs/file-blob-store)
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
       (wrap-html-routes)

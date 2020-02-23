@@ -4,12 +4,14 @@
     [com.example.model :as model]
     [com.example.model.account :as acct]
     [com.example.ui.address-forms :refer [AddressForm]]
+    [com.example.ui.file-forms :refer [FileForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.rad.form :as form]
-    [com.fulcrologic.rad.report :as report]))
+    [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.rad.blob :as blob]))
 
 (def account-validator (fs/make-validator (fn [form field]
                                             (case field
@@ -29,15 +31,17 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {::form/id                  acct/id
-   ::form/attributes          [acct/avatar-url
+   ::form/attributes          [acct/avatar
                                acct/name
                                acct/primary-address
-                               acct/role acct/time-zone acct/email acct/active? acct/addresses]
+                               ;; TODO: Fix performance of large dropdowns (time zone)
+                               acct/role #_acct/time-zone acct/email
+                               acct/active? acct/addresses
+                               acct/files]
    ::form/default             {:account/active?         true
                                :account/primary-address {}
                                :account/addresses       [{}]}
    ::form/validator           account-validator
-   ::form/query-inclusion     [:account.avatar/url]
    ::form/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
    ::form/cancel-route        ["landing-page"]
    ::form/route-prefix        "account"
@@ -48,10 +52,13 @@
    ::form/subforms            {:account/primary-address {::form/ui                  AddressForm
                                                          ::form/title               "Primary Address"
                                                          ::form/autocreate-on-load? true}
-                               :account/addresses       {::form/ui              AddressForm
-                                                         ::form/title           "Additional Addresses"
-                                                         ::form/can-delete-row? (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                                         ::form/can-add-row?    (fn [parent] (< (count (:account/addresses parent)) 2))}}})
+                               :account/files           {::form/ui                FileForm
+                                                         ::form/can-delete?       (fn [_ _] true)
+                                                         ::form/added-via-upload? true}
+                               :account/addresses       {::form/ui          AddressForm
+                                                         ::form/title       "Additional Addresses"
+                                                         ::form/can-delete? (fn [parent item] (< 1 (count (:account/addresses parent))))
+                                                         ::form/can-add?    (fn [parent] (< (count (:account/addresses parent)) 2))}}})
 
 (defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
   {::report/columns         [:account/name :account/active? :account/last-login]

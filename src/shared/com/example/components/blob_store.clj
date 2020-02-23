@@ -11,3 +11,7 @@
   :start
   (storage/leaky-blob-store "/images"))
 
+(defstate file-blob-store
+  :start
+  (storage/leaky-blob-store "/files"))
+

@@ -34,12 +34,12 @@
                                              ::form/label         "Customer"
                                              ;; Use computed props to inform subform of its role.
                                              ::form/subform-style :inline}
-                        :invoice/line-items {::form/ui              LineItemForm
-                                             ::form/can-delete-row? (fn [parent item] true)
-                                             ::form/can-add-row?    (fn [parent] true)
-                                             ::form/add-row-title   "Add Item"
+                        :invoice/line-items {::form/ui            LineItemForm
+                                             ::form/can-delete?   (fn [parent item] true)
+                                             ::form/can-add?      (fn [parent] true)
+                                             ::form/add-row-title "Add Item"
                                              ;; Use computed props to inform subform of its role.
-                                             ::form/subform-style   :inline}}
+                                             ::form/subform-style :inline}}
    ::form/cancel-route ["landing-page"]
    ::form/route-prefix "invoice"
    ::form/title        "Edit Invoice"})

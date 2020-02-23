@@ -112,10 +112,9 @@
     {::pc/input  #{:file/sha ::blob/store}
      ::pc/output [:file/url]})
 
-(defattr avatar-url :account/avatar :string
-  {::attr/target                                             :address/id
-   ::attr/cardinality                                        :one
-
+;; NOTE: Not quite done yet...
+(defattr avatar :account/avatar :string
+  {
    ;; The field style give you a specific control, and the blob settings
    ;; are used by middleware to target a particular store (you must config).
    ::form/field-style                                        ::blob/file-upload
@@ -128,6 +127,14 @@
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    ::auth/authority                                          :local})
+
+(defattr files :account/files :ref
+  {::attr/target                                             :file/id
+   ::attr/cardinality                                        :many
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}})
 
 (defattr addresses :account/addresses :ref
   {::attr/target                                             :address/id
@@ -192,6 +199,6 @@
        value)))
 
 (def attributes [id name primary-address time-zone role email password password-iterations password-salt active?
-                 addresses all-accounts avatar-url])
+                 addresses all-accounts avatar files])
 
 (def resolvers [login check-session])

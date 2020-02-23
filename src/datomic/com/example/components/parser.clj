@@ -19,7 +19,8 @@
   (pathom/new-parser config
     [(form/pathom-plugin save/middleware delete/middleware)
      (datomic/pathom-plugin (fn [env] {:production (:main datomic-connections)}))
-     (blob/pathom-plugin bs/temporary-blob-store {:avatar-images bs/image-blob-store})]
+     (blob/pathom-plugin bs/temporary-blob-store {:files         bs/file-blob-store
+                                                  :avatar-images bs/image-blob-store})]
     [automatic-resolvers
      form/resolvers
      (blob/resolvers all-attributes)
