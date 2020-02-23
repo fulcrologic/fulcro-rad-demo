@@ -54,6 +54,7 @@
                                                          ::form/autocreate-on-load? true}
                                :account/files           {::form/ui                FileForm
                                                          ::form/can-delete?       (fn [_ _] true)
+                                                         ::form/layout-styles     {:ref-container :file}
                                                          ::form/added-via-upload? true}
                                :account/addresses       {::form/ui          AddressForm
                                                          ::form/title       "Additional Addresses"
