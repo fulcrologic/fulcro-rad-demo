@@ -13,8 +13,6 @@
                                             (let [value (get form field)]
                                               (case field
                                                 :invoice/customer (eql/ident? value)
-                                                :invoice/date (let [now (datetime/now)]
-                                                                (and value (< (inst-ms value) (inst-ms now))))
                                                 :invoice/line-items (> (count value) 0)
                                                 (= :valid (model/all-attribute-validator form field)))))))
 

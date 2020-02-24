@@ -1,7 +1,7 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro      {:mvn/version "3.1.13"}
-           com.fulcrologic/fulcro-rad  {:mvn/version "0.0.1-alpha-6-1"}
+ :deps    {com.fulcrologic/fulcro      {:mvn/version "3.1.15-SNAPSHOT"}
+           com.fulcrologic/fulcro-rad  {:mvn/version "0.0.1-alpha-7-SNAPSHOT"}
            com.fulcrologic/fulcro-i18n {:mvn/version "0.0.1-alpha-1"}
            com.rpl/specter             {:mvn/version "1.1.3"}
            com.wsscode/pathom          {:mvn/version "2.2.31"}
@@ -34,7 +34,7 @@
                                       com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-SNAPSHOT"}}}
 
            :datomic    {:extra-paths ["src/datomic" "src/datomic-tests"]
-                        :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-4"}}}
+                        :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-5-SNAPSHOT"}}}
            :free       {:extra-deps {com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}}}
            :mem        {:extra-deps {com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}}}
            :postgresql {:extra-deps {com.datomic/datomic-pro   {:mvn/version "0.9.5966" :exclusions [org.slf4j/slf4j-nop]}
