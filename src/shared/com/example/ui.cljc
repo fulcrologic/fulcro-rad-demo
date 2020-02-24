@@ -6,6 +6,8 @@
     [com.example.ui.item-forms :refer [ItemForm]]
     [com.example.ui.invoice-forms :refer [InvoiceForm]]
     [com.example.ui.login-dialog :refer [LoginForm]]
+    [com.fulcrologic.fulcro.dom.html-entities :as ent]
+    [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
@@ -40,13 +42,16 @@
 (def ui-authenticator (comp/factory Authenticator))
 
 (defsc Root [this {::auth/keys [authorization]
+                   ::app/keys  [active-remotes]
                    :keys       [authenticator router]}]
   {:query         [{:authenticator (comp/get-query Authenticator)}
                    {:router (comp/get-query MainRouter)}
+                   ::app/active-remotes
                    ::auth/authorization]
    :initial-state {:router        {}
                    :authenticator {}}}
   (let [logged-in? (= :success (some-> authorization :local ::auth/status))
+        busy?      (seq active-remotes)
         username   (some-> authorization :local :account/name)]
     (dom/div
       (div :.ui.top.menu
@@ -57,11 +62,12 @@
             (dom/a :.ui.item {:onClick (fn [] (form/edit! this ItemForm (new-uuid 200)))} "Some Item")
             (dom/a :.ui.item {:onClick (fn [] (form/create! this AccountForm))} "New Account")
             (dom/a :.ui.item {:onClick (fn [] (form/create! this InvoiceForm))} "New Invoice")
-            (dom/a :.ui.item {:onClick (fn [] (form/delete! this :com.example.model.account/id (new-uuid 102)))}
-              "Delete account 2")
             (dom/a :.ui.item {:onClick (fn []
                                          (dr/change-route this (dr/path-to AccountList)))} "List Accounts")))
         (div :.right.menu
+          (div :.item
+            (div :.ui.tiny.loader {:classes [(when busy? "active")]})
+            ent/nbsp ent/nbsp ent/nbsp ent/nbsp)
           (if logged-in?
             (comp/fragment
               (div :.ui.item
