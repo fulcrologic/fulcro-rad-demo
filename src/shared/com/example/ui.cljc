@@ -56,7 +56,7 @@
     (dom/div
       (div :.ui.top.menu
         (div :.ui.item "Demo")
-        (when true #_logged-in?
+        (when logged-in?
           (comp/fragment
             (dom/a :.ui.item {:onClick (fn [] (form/edit! this AccountForm (new-uuid 101)))} "My Account")
             (dom/a :.ui.item {:onClick (fn [] (form/edit! this ItemForm (new-uuid 200)))} "Some Item")
@@ -73,7 +73,10 @@
               (div :.ui.item
                 (str "Logged in as " username))
               (div :.ui.item
-                (dom/button :.ui.button {:onClick #(auth/logout! this :local)}
+                (dom/button :.ui.button {:onClick (fn []
+                                                    ;; TODO: check if we can change routes...
+                                                    (dr/change-route this (dr/path-to LandingPage))
+                                                    (auth/logout! this :local))}
                   "Logout")))
             (div :.ui.item
               (dom/button :.ui.primary.button {:onClick #(auth/authenticate! this :local nil)}
