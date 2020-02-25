@@ -12,12 +12,14 @@
     [com.example.components.blob-store :as bs]
     [com.fulcrologic.rad.pathom :as pathom]
     [mount.core :refer [defstate]]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]))
+    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
+    [com.fulcrologic.rad.attributes :as attr]))
 
 (defstate parser
   :start
   (pathom/new-parser config
-    [(form/pathom-plugin save/middleware delete/middleware)
+    [(attr/pathom-plugin all-attributes)
+     (form/pathom-plugin save/middleware delete/middleware)
      (datomic/pathom-plugin (fn [env] {:production (:main datomic-connections)}))
      (blob/pathom-plugin bs/temporary-blob-store {:files         bs/file-blob-store
                                                   :avatar-images bs/image-blob-store})]
