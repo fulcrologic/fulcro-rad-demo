@@ -34,6 +34,7 @@
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
    :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+   ::attr/identity?                                                true
    ::attr/required?                                                true
    ::auth/authority                                                :local})
 
