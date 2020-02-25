@@ -5,13 +5,13 @@
 
 (defstate temporary-blob-store
   :start
-  (storage/leaky-blob-store ""))
+  (storage/transient-blob-store "" 1))
 
 (defstate image-blob-store
   :start
-  (storage/leaky-blob-store "/images"))
+  (storage/transient-blob-store "/images" 10000))
 
 (defstate file-blob-store
   :start
-  (storage/leaky-blob-store "/files"))
+  (storage/transient-blob-store "/files" 10000))
 
