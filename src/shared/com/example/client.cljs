@@ -36,9 +36,11 @@
                                                             mutation?    (symbol? (:dispatch-key ast))]
                                                         (cond-> (df/elide-ast-nodes ast
                                                                   (fn [k]
-                                                                    (let [ns (some-> k kw-namespace)]
+                                                                    (let [k  (if (vector? k) (first k))
+                                                                          ns (some-> k kw-namespace)]
                                                                       (or
-                                                                        (= k '[:com.fulcrologic.fulcro.ui-state-machines/asm-id _])
+                                                                        (= k :com.fulcrologic.fulcro.ui-state-machines/asm-id)
+                                                                        (= k ::app/active-remotes)
                                                                         (= k ':com.fulcrologic.rad.blob/blobs)
                                                                         (= k df/marker-table)
                                                                         (= k ::fs/config)
