@@ -16,6 +16,10 @@
                                                 :invoice/line-items (> (count value) 0)
                                                 (= :valid (model/all-attribute-validator form field)))))))
 
+(defsc AccountQuery [_ _]
+  {:query [:account/id :account/name :account/email]
+   :ident :account/id})
+
 (form/defsc-form InvoiceForm [this props]
   {::form/id           invoice/id
    ;; So, a special (attr/derived-value key type style) would be useful for form logic display
@@ -26,7 +30,7 @@
                         [:invoice/line-items]]
    ::form/subforms     {:invoice/customer   {::form/ui            form/ToOneEntityPicker
                                              ::form/pick-one      {:options/query-key :account/all-accounts
-                                                                   :options/subquery  [:account/id :account/name :account/email]
+                                                                   :options/subquery  AccountQuery
                                                                    :options/transform (fn [{:account/keys [id name email]}]
                                                                                         {:text (str name ", " email) :value [:account/id id]})}
                                              ::form/label         "Customer"

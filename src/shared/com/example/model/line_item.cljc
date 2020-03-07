@@ -18,6 +18,12 @@
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-;; TODO: Add attribute that is a derived thing (subtotal)...in THIS case, I want a UI-derivation
+;; TODO: initial value should be pushed on from item selection
+(defattr quoted-price :line-item/quoted-price :decimal
+  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-(def attributes [id item quantity])
+;; TODO: Add attribute that is a derived thing (subtotal)...in THIS case, I want a UI-derivation
+(defattr subtotal :line-item/subtotal :decimal {})
+
+(def attributes [id item quantity quoted-price subtotal])
