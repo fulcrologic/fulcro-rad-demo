@@ -117,20 +117,21 @@
 
 (clara/defsession initial-session 'com.example.rules)
 
-(defn install-rules-engine! [app]
-  (let [{::app/keys [state-atom runtime-atom]} app]
-    (swap! runtime-atom assoc ::rules-session initial-session)
-    (add-watch state-atom ::rules-update (fn [_ _ old-state-map new-state-map]
-                                           ;; CAREFUL: Our swap to distribute results will re-trigger this watch, but
-                                           ;; if nothing changed we don't want to create a loop!
-                                           (when-not (= old-state-map new-state-map)
-                                             ;; Save the starting point for the rules session update, only once per
-                                             ;; scheduled update, which we run only once every 500ms.
-                                             (when-not (::old-state @runtime-atom)
-                                               (swap! runtime-atom assoc ::old-state old-state-map))
-                                             (sched/schedule! app ::fire-rules!
-                                               (fn []
-                                                 (process-rules! app)
-                                                 ;; rendering is not based on state map updates, so we have to ask for one.
-                                                 (app/schedule-render! app))
-                                               500))))))
+(defn install-rules-engine!
+  "Install our rules engine for calculating subtotals on invoices into the app."
+  [{::app/keys [state-atom runtime-atom] :as app}]
+  (swap! runtime-atom assoc ::rules-session initial-session)
+  (add-watch state-atom ::rules-update (fn [_ _ old-state-map new-state-map]
+                                         ;; CAREFUL: Our swap to distribute results will re-trigger this watch, but
+                                         ;; if nothing changed we don't want to create a loop!
+                                         (when-not (= old-state-map new-state-map)
+                                           ;; Save the starting point for the rules session update, only once per
+                                           ;; scheduled update, which we run only once every 500ms.
+                                           (when-not (::old-state @runtime-atom)
+                                             (swap! runtime-atom assoc ::old-state old-state-map))
+                                           (sched/schedule! app ::fire-rules!
+                                             (fn []
+                                               (process-rules! app)
+                                               ;; rendering is not based on state map updates, so we have to ask for one.
+                                               (app/schedule-render! app))
+                                             500)))))
