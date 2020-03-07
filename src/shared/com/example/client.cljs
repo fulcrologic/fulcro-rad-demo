@@ -10,48 +10,22 @@
     [com.fulcrologic.fulcro.networking.http-remote :as http]
     [com.fulcrologic.fulcro.networking.http-remote :as net]
     [com.fulcrologic.rad.attributes :as attr]
+    [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
+    [com.fulcrologic.fulcro.ui-state-machines :as uism]
     [edn-query-language.core :as eql]
     [taoensso.timbre :as log]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
-    [com.fulcrologic.fulcro.networking.file-upload :as file-upload]))
+    [com.fulcrologic.fulcro.networking.file-upload :as file-upload]
+    [clojure.walk :as walk]))
 
-;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
-(def secured-request-middleware
-  ;; The CSRF token is embedded via server_components/html.clj
-  (->
-    (net/wrap-fulcro-request)
-    (file-upload/wrap-file-upload)
-    (net/wrap-csrf-token (if (undefined? js/fulcro_network_csrf_token)
-                           "TOKEN-NOT-IN-HTML!"
-                           (log/spy :info js/fulcro_network_csrf_token)))))
-
-(defonce app (app/fulcro-app {:remotes              {:remote (http/fulcro-http-remote {:url                "/api"
-                                                                                       :request-middleware secured-request-middleware})}
-                              :global-eql-transform (fn [ast]
-                                                      (let [kw-namespace (fn [k] (and (keyword? k) (namespace k)))
-                                                            mutation?    (symbol? (:dispatch-key ast))]
-                                                        (cond-> (df/elide-ast-nodes ast
-                                                                  (fn [k]
-                                                                    (let [k  (if (vector? k) (first k))
-                                                                          ns (some-> k kw-namespace)]
-                                                                      (or
-                                                                        (= k :com.fulcrologic.fulcro.ui-state-machines/asm-id)
-                                                                        (= k ::app/active-remotes)
-                                                                        (= k ':com.fulcrologic.rad.blob/blobs)
-                                                                        (= k df/marker-table)
-                                                                        (= k ::fs/config)
-                                                                        (and
-                                                                          (string? ns)
-                                                                          (= "ui" ns))))))
-                                                          mutation? (update :children conj (eql/expr->ast :tempids)))))
-                              :optimized-render!    kr2/render!
-                              :client-did-mount     (fn [app]
-                                                      (auth/start! app [LoginForm])
-                                                      (dr/change-route app (dr/path-to ui/LandingPage)))}))
+(defonce app (rad-app/fulcro-rad-app
+               {:client-did-mount (fn [app]
+                                    (auth/start! app [LoginForm])
+                                    (dr/change-route app (dr/path-to ui/LandingPage)))}))
 
 (defn refresh []
   (app/mount! app Root "app"))
@@ -65,6 +39,5 @@
   ;; a default tz until they log in
   (datetime/set-timezone! "America/Los_Angeles")
   (form/install-ui-controls! app sui/all-controls)
-  (attr/register-attributes! model/all-attributes)
   (app/mount! app Root "app"))
 
