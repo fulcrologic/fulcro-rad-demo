@@ -17,6 +17,9 @@
            org.immutant/web            {:mvn/version "2.1.10"
                                         :exclusions  [ch.qos.logback/logback-classic]}
 
+           ;; Demo of using a rules engine with forms
+           com.cerner/clara-rules      {:mvn/version "0.20.0"}
+
            ;; Unified logging for server
            com.taoensso/timbre         {:mvn/version "4.10.0"}
            org.slf4j/log4j-over-slf4j  {:mvn/version "1.7.30"} ; auto sends log4j to slf4j

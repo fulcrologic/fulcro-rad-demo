@@ -9,6 +9,7 @@
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
     [taoensso.timbre :as log]
+    [com.example.rules :as rules]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
@@ -16,6 +17,7 @@
                {:client-did-mount (fn [app]
                                     (log/merge-config! {:output-fn prefix-output-fn
                                                         :appenders {:console (console-appender)}})
+                                    (rules/install-rules-engine! app)
                                     (auth/start! app [LoginForm])
                                     (dr/change-route app (dr/path-to ui/LandingPage)))}))
 

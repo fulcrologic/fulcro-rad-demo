@@ -18,7 +18,7 @@
    ::form/route-prefix "line-item"
    ::form/title        "Line Items"
    ::form/layout       [[:line-item/item :line-item/quantity :line-item/quoted-price :line-item/subtotal]]
-   ::form/triggers     {:on-change (fn [{::form/keys [form-instance props] :as form-env} k old-value new-value]
+   #_#_::form/triggers     {:on-change (fn [{::form/keys [form-instance props] :as form-env} k old-value new-value]
                                      (case k
                                        :line-item/quoted-price
                                        (let [{:line-item/keys [quantity]} props
