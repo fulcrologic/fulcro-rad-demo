@@ -41,7 +41,6 @@
                                           (comp/transact! form-instance
                                             `[(m/set-props ~{:line-item/quoted-price item-price
                                                              :line-item/subtotal     subtotal})]))
-
                                         nil))}
    ::form/field-styles  {:line-item/item :pick-one}
    ::form/field-options {:line-item/item {::picker-options/query-key       :item/all-items
