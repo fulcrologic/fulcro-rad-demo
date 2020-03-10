@@ -1,7 +1,10 @@
 (ns com.example.model.line-item
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
-    [com.fulcrologic.rad.authorization :as auth]))
+    [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.authorization :as auth]
+    [taoensso.timbre :as log]
+    [com.fulcrologic.rad.type-support.decimal :as math]))
 
 (defattr id :line-item/id :uuid
   {::attr/identity?                                      true
@@ -10,20 +13,26 @@
 
 (defattr item :line-item/item :ref
   {::attr/target                                             :item/id
+   ::attr/required?                                          true
    ::attr/cardinality                                        :one
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
 (defattr quantity :line-item/quantity :int
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
+  {::attr/required?                                          true
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-;; TODO: initial value should be pushed on from item selection
 (defattr quoted-price :line-item/quoted-price :decimal
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-;; TODO: Add attribute that is a derived thing (subtotal)...in THIS case, I want a UI-derivation
-(defattr subtotal :line-item/subtotal :decimal {})
+(defattr subtotal :line-item/subtotal :decimal
+  {::attr/read-only?                                         true
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production}
+  #_{::attr/computed-value (fn [{::form/keys [props] :as form-env} attr]
+                             (let [{:line-item/keys [quantity quoted-price]} props]
+                               (math/round (math/* quantity quoted-price) 2)))})
 
 (def attributes [id item quantity quoted-price subtotal])

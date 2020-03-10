@@ -9,7 +9,11 @@
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.fulcrologic.rad.form :as form]
     [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.application :as app]))
+    [com.fulcrologic.fulcro.application :as app]
+    [com.fulcrologic.fulcro.ui-state-machines :as uism]))
+
+(defn add-subtotal* [{:line-item/keys [quantity quoted-price] :as item}]
+  (assoc item :line-item/subtotal (math/* quantity quoted-price)))
 
 (form/defsc-form LineItemForm [this props]
   {::form/id            line-item/id
@@ -19,29 +23,19 @@
    ::form/route-prefix  "line-item"
    ::form/title         "Line Items"
    ::form/layout        [[:line-item/item :line-item/quantity :line-item/quoted-price :line-item/subtotal]]
-   ::form/triggers      {:on-change (fn [{::form/keys [form-instance props] :as form-env} k old-value new-value]
-                                      (case k
-                                        :line-item/quoted-price
-                                        (let [{:line-item/keys [quantity]} props
-                                              subtotal (math/round (math/* quantity new-value) 2)]
-                                          (comp/transact! form-instance
-                                            `[(m/set-props ~{:line-item/subtotal subtotal})]))
+   ::form/triggers      {;; TASK: Cascading dropdowns, with load of column!!!
+                         ;; 1. Make: clear list price and model, populate picker options
+                         ;; 2. Model: trigger load of list price
+                         ;; 3. List Price populated from load
+                         :derive-fields (fn [new-form-tree] (add-subtotal* new-form-tree))
+                         :on-change     (fn [{::uism/keys [state-map] :as uism-env} form-ident k old-value new-value]
+                                          (case k
+                                            :line-item/item
+                                            (let [item-price  (get-in state-map (conj new-value :item/price))
+                                                  target-path (conj form-ident :line-item/quoted-price)]
+                                              (uism/apply-action uism-env assoc-in target-path item-price))
 
-                                        :line-item/quantity
-                                        (let [{:line-item/keys [quoted-price]} props
-                                              subtotal (math/round (math/* new-value quoted-price) 2)]
-                                          (comp/transact! form-instance
-                                            `[(m/set-props ~{:line-item/subtotal subtotal})]))
-
-                                        :line-item/item
-                                        (let [state-map  (app/current-state form-instance)
-                                              {:line-item/keys [quantity]} props
-                                              item-price (get-in state-map (conj new-value :item/price))
-                                              subtotal   (math/round (math/* quantity item-price) 2)]
-                                          (comp/transact! form-instance
-                                            `[(m/set-props ~{:line-item/quoted-price item-price
-                                                             :line-item/subtotal     subtotal})]))
-                                        nil))}
+                                            uism-env))}
    ::form/field-styles  {:line-item/item :pick-one}
    ::form/field-options {:line-item/item {::picker-options/query-key       :item/all-items
                                           ::picker-options/query-component item-forms/ItemForm

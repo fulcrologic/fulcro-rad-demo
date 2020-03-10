@@ -9,8 +9,12 @@
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
     [taoensso.timbre :as log]
+    [taoensso.tufte :as tufte :refer [profile]]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.type-support.date-time :as datetime]))
+
+(defonce stats-accumulator
+  (tufte/add-accumulating-handler! {:ns-pattern "*"}))
 
 (defonce app (rad-app/fulcro-rad-app
                {:client-did-mount (fn [app]
@@ -23,6 +27,9 @@
   (app/mount! app Root "app"))
 
 (comment
+  (when-let [m (not-empty @stats-accumulator)]
+    (js/console.log
+      (tufte/format-grouped-pstats m)))
   (dr/change-route app (dr/path-to ui/AccountForm {:action "new"
                                                    :id     (str (random-uuid))})))
 
