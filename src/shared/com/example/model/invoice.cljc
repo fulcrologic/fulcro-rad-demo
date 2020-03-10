@@ -5,7 +5,9 @@
     [com.fulcrologic.rad.form :as form]
     [com.wsscode.pathom.connect :as pc]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
-    #?(:clj [com.example.components.database-queries :as queries])))
+    [com.fulcrologic.rad.type-support.decimal :as math]
+    #?(:clj [com.example.components.database-queries :as queries])
+    [taoensso.timbre :as log]))
 
 (defattr id :invoice/id :uuid
   {::attr/identity?                                      true
@@ -24,9 +26,22 @@
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
+(defattr total :invoice/total :decimal
+  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   ::attr/read-only?                                         true}
+  #_{::attr/computed-value (fn [{::form/keys [props]} attr]
+                             (let [total (reduce
+                                           (fn [t {:line-item/keys [quantity quoted-price]}]
+                                             (math/+ t (math/* quantity quoted-price)))
+                                           (math/zero)
+                                           (:invoice/line-items props))]
+                               total))})
+
 (defattr customer :invoice/customer :ref
   {::attr/cardinality                                        :one
    ::attr/target                                             :account/id
+   ::attr/required?                                          true
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
@@ -38,5 +53,5 @@
                       #?(:clj
                          {:invoice/all-invoices (queries/get-all-invoices env query-params)}))})
 
-(def attributes [id date line-items customer all-invoices])
+(def attributes [id date line-items customer all-invoices total])
 
