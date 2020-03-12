@@ -15,6 +15,8 @@ $ yarn
 $ shadow-cljs watch main
 -----
 
+if you don't have `yarn`, use `npm install` instead.
+
 == Running an SQL-based Server
 
 WARNING: The SQL adapter has not even reached a usable Alpha state yet. It is likely to be broken for now.
