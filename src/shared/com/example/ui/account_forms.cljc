@@ -57,10 +57,14 @@
                                                          ::form/can-delete?       (fn [_ _] true)
                                                          ::form/layout-styles     {:ref-container :file}
                                                          ::form/added-via-upload? true}
-                               :account/addresses       {::form/ui          AddressForm
-                                                         ::form/title       "Additional Addresses"
-                                                         ::form/can-delete? (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                                         ::form/can-add?    (fn [parent] (< (count (:account/addresses parent)) 2))}}})
+                               :account/addresses       {::form/ui            AddressForm
+                                                         ::form/title         "Additional Addresses"
+                                                         ::form/sort-children (fn [addresses] (sort-by :address/zip addresses))
+                                                         ::form/can-delete?   (fn [parent item] (< 1 (count (:account/addresses parent))))
+                                                         ::form/can-add?      (fn [parent]
+                                                                                (and
+                                                                                  (< (count (:account/addresses parent)) 4)
+                                                                                  :prepend))}}})
 
 (defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
   {::report/columns         [:account/name :account/active? :account/last-login]
