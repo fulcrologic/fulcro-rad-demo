@@ -49,16 +49,9 @@ For example, something like:
 -----
  :com.fulcrologic.rad.database-adapters.datomic/databases
     {:main {:datomic/schema           :production
-            :datomic/driver           :postgresql ;; OR :mysql :free :mem
+            :datomic/driver           :mem
             :datomic/database         "example"
-            :datomic/prevent-changes? true
-            :postgresql/host          "localhost"
-            :postgresql/port          5432
-            :postgresql/user          "datomic"
-            :postgresql/password      "datomic"
-            :postgresql/database      "datomic"
-            :free/host                "localhost"
-            :free/port                4334}}
+            :datomic/prevent-changes? true}}
 -----
 
 Then you can run it with the `:datomic` alias and the chosen storage driver alias:
@@ -66,20 +59,9 @@ Then you can run it with the `:datomic` alias and the chosen storage driver alia
 For Postgresql:
 [source, bash]
 -----
-$ clj -A:dev:datomic:postgresql
+$ clj -A:dev:datomic
 user=> (require 'development)
 user=> (development/go)
------
-
-Alternatively, for Mysql, Free, or Mem:
-[source, bash]
------
-$ clj -A:dev:datomic:mysql
-# OR
-$ clj -A:dev:datomic:free
-# OR
-$ clj -A:dev:datomic:mem
-
 -----
 
 == Restarting
