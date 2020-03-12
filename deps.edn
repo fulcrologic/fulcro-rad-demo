@@ -27,8 +27,6 @@
            org.slf4j/jcl-over-slf4j    {:mvn/version "1.7.30"} ; auto-sends java.common.logging to slf4j
            com.fzakaria/slf4j-timbre   {:mvn/version "0.3.19"} ; hooks slf4j to timbre
 
-           com.datomic/datomic-free    {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-
            org.clojure/clojure         {:mvn/version "1.10.1"}}
 
  :aliases {:test      {:extra-paths ["src/shared-tests"]
@@ -39,8 +37,8 @@
                                      com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-SNAPSHOT"}}}
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
-                       :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-8-SNAPSHOT"}}}
-
+                       :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-8-SNAPSHOT"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
                        :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-590"}}}
 
