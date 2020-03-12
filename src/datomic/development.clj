@@ -31,9 +31,23 @@
                                (seed/new-account (new-uuid 101) "Sam" "sam@example.com" "letmein")
                                (seed/new-account (new-uuid 102) "Sally" "sally@example.com" "letmein")
                                (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")
-                               (seed/new-item (new-uuid 200) "Widget" 33.99)
-                               (seed/new-item (new-uuid 201) "Tool" 14.99)
-                               (seed/new-item (new-uuid 202) "Toy" 4.99)]))))
+                               (seed/new-category "Tools")
+                               (seed/new-category "Toys")
+                               (seed/new-category "Misc")
+                               (seed/new-item (new-uuid 200) "Widget" 33.99
+                                 :item/category "Misc")
+                               (seed/new-item (new-uuid 201) "Screwdriver" 4.99
+                                 :item/category "Tools")
+                               (seed/new-item (new-uuid 202) "Wrench" 14.99
+                                 :item/category "Tools")
+                               (seed/new-item (new-uuid 203) "Hammer" 14.99
+                                 :item/category "Tools")
+                               (seed/new-item (new-uuid 204) "Doll" 4.99
+                                 :item/category "Toys")
+                               (seed/new-item (new-uuid 205) "Robot" 94.99
+                                 :item/category "Toys")
+                               (seed/new-item (new-uuid 206) "Building Blocks" 24.99
+                                 :item/category "Toys")]))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})

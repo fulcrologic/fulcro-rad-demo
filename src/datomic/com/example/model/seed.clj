@@ -32,6 +32,14 @@
      :address/zip    "99999"}
     extras))
 
+(defn new-category
+  "Seed helper. Uses label for tempid purposes."
+  [label & {:as extras}]
+  (merge
+    {:db/id          label
+     :category/label label}
+    extras))
+
 (defn new-item
   "Seed helper. Uses street at db/id for tempid purposes."
   [id name price & {:as extras}]

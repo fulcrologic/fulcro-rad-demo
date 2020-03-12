@@ -5,12 +5,14 @@
     [com.example.model.invoice :as invoice]
     [com.example.model.line-item :as line-item]
     [com.example.model.address :as address]
+    [com.example.model.category :as category]
     [com.example.model.file :as m.file]
     [com.fulcrologic.rad.attributes :as attr]))
 
 (def all-attributes (vec (concat
                            account/attributes
                            address/attributes
+                           category/attributes
                            item/attributes
                            invoice/attributes
                            line-item/attributes

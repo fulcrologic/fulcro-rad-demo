@@ -10,19 +10,25 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema :production
    ::auth/authority                                      :local})
 
+(defattr category :item/category :ref
+  {::attr/target                                             :category/id
+   ::attr/cardinality                                        :one
+   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+
 (defattr item-name :item/name :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-(defattr item-description :item/description :string
+(defattr description :item/description :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-(defattr item-price :item/price :decimal
+(defattr price :item/price :decimal
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
-(defattr item-in-stock :item/in-stock :int
+(defattr in-stock :item/in-stock :int
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
 
@@ -34,5 +40,5 @@
                       #?(:clj
                          {:item/all-items (queries/get-all-items env query-params)}))})
 
-(def attributes [id item-name item-description item-price item-in-stock all-items])
+(def attributes [id item-name category description price in-stock all-items])
 

@@ -35,3 +35,12 @@
                     ['?dbid :invoice/id '?uuid]] db)]
       (mapv (fn [id] {:invoice/id id}) ids))
     (log/error "No database atom for production schema!")))
+
+(defn get-all-categories
+  [env query-params]
+  (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
+    (let [ids (d/q '[:find [?e ...]
+                     :where
+                     [?e :category/label]] db)]
+      (mapv (fn [id] {:category/id id}) ids))
+    (log/error "No database atom for production schema!")))
