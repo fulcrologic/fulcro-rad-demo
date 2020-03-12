@@ -34,7 +34,6 @@
                                             (let [item-price  (get-in state-map (conj new-value :item/price))
                                                   target-path (conj form-ident :line-item/quoted-price)]
                                               (uism/apply-action uism-env assoc-in target-path item-price))
-
                                             uism-env))}
    ::form/field-styles  {:line-item/item :pick-one}
    ::form/field-options {:line-item/item {::picker-options/query-key       :item/all-items

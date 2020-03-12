@@ -3,32 +3,17 @@
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
                                     {:main {:datomic/schema           :production
-                                            :datomic/driver           :postgresql ;; OR :mysql :free :mem 
+                                            :datomic/driver           :mem
                                             :datomic/database         "example"
-                                            :datomic/prevent-changes? true
-                                            :postgresql/host          "localhost"
-                                            :postgresql/port          5432
-                                            :postgresql/user          "datomic"
-                                            :postgresql/password      "datomic"
-                                            :postgresql/database      "datomic"
-                                            :mysql/host               "localhost"
-                                            :mysql/port               3306
-                                            :mysql/user               "datomic"
-                                            :mysql/password           "datomic"
-                                            :mysql/database           "datomic"
-                                            :free/host                "localhost"
-                                            :free/port                4334}}
-
+                                            :datomic/prevent-changes? true}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases
                                     {:main {:flyway/migrate?          true
                                             :flyway/migrations        ["classpath:config/sql_migrations"]
-                                            :hikaricp/config          {"dataSourceClassName"     "org.postgresql.ds.PGSimpleDataSource"
-                                                                       "dataSource.user"         "postgres"
-                                                                       "dataSource.password"     ""
-                                                                       "dataSource.databaseName" "example"
-                                                                       "dataSource.portNumber"   "5432"
-                                                                       "dataSource.serverName"   "localhost"}
+                                            :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
+                                                                       "dataSource.user"     "sa"
+                                                                       "dataSource.password" "sa"
+                                                                       "dataSource.URL"      "jdbc:h2:~/test"}
                                             :sql/auto-create-missing? false
                                             :sql/schema               :production}}
 

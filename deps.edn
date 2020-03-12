@@ -27,29 +27,25 @@
            org.slf4j/jcl-over-slf4j    {:mvn/version "1.7.30"} ; auto-sends java.common.logging to slf4j
            com.fzakaria/slf4j-timbre   {:mvn/version "0.3.19"} ; hooks slf4j to timbre
 
+           com.datomic/datomic-free    {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
+
            org.clojure/clojure         {:mvn/version "1.10.1"}}
 
- :aliases {:test       {:extra-paths ["src/shared-tests"]
-                        :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.4"}}}
+ :aliases {:test      {:extra-paths ["src/shared-tests"]
+                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.4"}}}
 
-           :sql        {:extra-paths ["src/sql" "src/sql-tests"]
-                        :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199"}
-                                      com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-SNAPSHOT"}}}
+           :sql       {:extra-paths ["src/sql" "src/sql-tests"]
+                       :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199"}
+                                     com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-SNAPSHOT"}}}
 
-           :datomic    {:extra-paths ["src/datomic" "src/datomic-tests"]
-                        :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-8-SNAPSHOT"}}}
-           :free       {:extra-deps {com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}}}
-           :mem        {:extra-deps {com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}}}
-           :postgresql {:extra-deps {com.datomic/datomic-pro   {:mvn/version "0.9.5966" :exclusions [org.slf4j/slf4j-nop]}
-                                     org.postgresql/postgresql {:mvn/version "42.2.8"}}}
-           :mysql      {:extra-deps {com.datomic/datomic-pro    {:mvn/version "0.9.5966" :exclusions [org.slf4j/slf4j-nop]}
-                                     mysql/mysql-connector-java {:mvn/version "8.0.18"}}}
+           :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
+                       :extra-deps  {com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-8-SNAPSHOT"}}}
 
-           :run-tests  {:main-opts  ["-m" "kaocha.runner"]
-                        :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-590"}}}
+           :run-tests {:main-opts  ["-m" "kaocha.runner"]
+                       :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-590"}}}
 
-           :dev        {:extra-paths ["src/dev" "resources"]
-                        :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.8.91"}
-                                      com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.0"}
-                                      binaryage/devtools                  {:mvn/version "1.0.0"}
-                                      org.clojure/tools.namespace         {:mvn/version "0.3.1"}}}}}
+           :dev       {:extra-paths ["src/dev" "resources"]
+                       :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.8.91"}
+                                     com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.0"}
+                                     binaryage/devtools                  {:mvn/version "1.0.0"}
+                                     org.clojure/tools.namespace         {:mvn/version "0.3.1"}}}}}
