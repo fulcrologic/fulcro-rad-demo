@@ -32,7 +32,7 @@ set up the proper classpath:
 [source, bash]
 -----
 $ clj -A:dev:sql
-user=> (require 'development)
+user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
@@ -41,26 +41,12 @@ user=> (development/go)
 The example code for Datomic components is in the `src/datomic` folder, along with a custom
 `development.clj`.
 
-Install Datomic, either Pro or Free. Configure Pro for either a PostgreSQL or MySQL storage engine, then update the config parameters
-in `defaults.edn` in the `src/datomic/config` directory to have the correct connection parameters.
+You can run it with the `:datomic` deps alias:
 
-For example, something like:
-[source, clojure]
------
- :com.fulcrologic.rad.database-adapters.datomic/databases
-    {:main {:datomic/schema           :production
-            :datomic/driver           :mem
-            :datomic/database         "example"
-            :datomic/prevent-changes? true}}
------
-
-Then you can run it with the `:datomic` alias and the chosen storage driver alias:
-
-For Postgresql:
 [source, bash]
 -----
 $ clj -A:dev:datomic
-user=> (require 'development)
+user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
