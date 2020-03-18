@@ -51,6 +51,7 @@
                                                                                    (sort-by :category/label options)))
                                               ::picker-options/cache-time-ms   20000}
                          :line-item/item     {::picker-options/query-key        :item/all-items
+                                              ::picker-options/cache-key        (fn [_ {:line-item/keys [id]}] (keyword "item-list" (str id)))
                                               ::picker-options/query-component  item-forms/ItemForm
                                               ::picker-options/options-xform    (fn [_ options]
                                                                                   (mapv
