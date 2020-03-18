@@ -11,6 +11,10 @@
    :com.fulcrologic.rad.database-adapters.datomic/schema :production
    ::auth/authority                                      :local})
 
+(defattr category :line-item/category :ref
+  {::attr/target      :category/id
+   ::attr/cardinality :one})
+
 (defattr item :line-item/item :ref
   {::attr/target                                             :item/id
    ::attr/required?                                          true

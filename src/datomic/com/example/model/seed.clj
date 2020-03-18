@@ -34,9 +34,10 @@
 
 (defn new-category
   "Seed helper. Uses label for tempid purposes."
-  [label & {:as extras}]
+  [id label & {:as extras}]
   (merge
     {:db/id          label
+     :category/id id
      :category/label label}
     extras))
 

@@ -19,11 +19,18 @@
     (log/error "No database atom for production schema!")))
 
 (defn get-all-items
-  [env query-params]
+  [env {:category/keys [id]}]
   (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
-    (let [ids (d/q [:find '[?uuid ...]
-                    :where
-                    ['?dbid :item/id '?uuid]] db)]
+    (let [ids (if id
+                (d/q '[:find [?uuid ...]
+                       :in $ ?catid
+                       :where
+                       [?c :category/id ?catid]
+                       [?i :item/category ?c]
+                       [?i :item/id ?uuid]] db id)
+                (d/q '[:find [?uuid ...]
+                       :where
+                       [_ :item/id ?uuid]] db))]
       (mapv (fn [id] {:item/id id}) ids))
     (log/error "No database atom for production schema!")))
 
@@ -39,8 +46,9 @@
 (defn get-all-categories
   [env query-params]
   (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
-    (let [ids (d/q '[:find [?e ...]
+    (let [ids (d/q '[:find [?id ...]
                      :where
-                     [?e :category/label]] db)]
+                     [?e :category/label]
+                     [?e :category/id ?id]] db)]
       (mapv (fn [id] {:category/id id}) ids))
     (log/error "No database atom for production schema!")))

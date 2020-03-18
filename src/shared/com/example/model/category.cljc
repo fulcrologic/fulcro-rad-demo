@@ -2,13 +2,17 @@
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.wsscode.pathom.connect :as pc]
     #?(:clj [com.example.components.database-queries :as queries])))
 
-(defattr id :category/id :long
-  {::attr/identity?                                          true
-   :com.fulcrologic.rad.database-adapters.datomic/native-id? true
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+(defsc Category [_ _]
+  {:query [:category/id :category/label]
+   :ident :category/id})
+
+(defattr id :category/id :uuid
+  {::attr/identity?                                      true
+   :com.fulcrologic.rad.database-adapters.datomic/schema :production})
 
 (defattr label :category/label :string
   {::attr/required?                                          true

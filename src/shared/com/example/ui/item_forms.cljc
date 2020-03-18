@@ -3,7 +3,8 @@
     [com.example.model.item :as item]
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.fulcro.components :refer [defsc]]
-    [com.fulcrologic.rad.form :as form]))
+    [com.fulcrologic.rad.form :as form]
+    [taoensso.timbre :as log]))
 
 (defsc CategoryQuery [_ _]
   {:query [:category/id :category/label]

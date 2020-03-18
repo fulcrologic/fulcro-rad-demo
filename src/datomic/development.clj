@@ -31,9 +31,9 @@
                                (seed/new-account (new-uuid 101) "Sam" "sam@example.com" "letmein")
                                (seed/new-account (new-uuid 102) "Sally" "sally@example.com" "letmein")
                                (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")
-                               (seed/new-category "Tools")
-                               (seed/new-category "Toys")
-                               (seed/new-category "Misc")
+                               (seed/new-category (new-uuid 1000) "Tools")
+                               (seed/new-category (new-uuid 1002) "Toys")
+                               (seed/new-category (new-uuid 1003) "Misc")
                                (seed/new-item (new-uuid 200) "Widget" 33.99
                                  :item/category "Misc")
                                (seed/new-item (new-uuid 201) "Screwdriver" 4.99
