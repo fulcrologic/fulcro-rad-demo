@@ -52,3 +52,16 @@
                      [?e :category/id ?id]] db)]
       (mapv (fn [id] {:category/id id}) ids))
     (log/error "No database atom for production schema!")))
+
+(defn get-line-item-category [env line-item-id]
+  (log/spy :info line-item-id)
+  (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
+    (let [id (d/q '[:find ?cid .
+                    :in $ ?line-item-id
+                    :where
+                    [?e :line-item/id ?line-item-id]
+                    [?e :line-item/item ?item]
+                    [?item :item/category ?c]
+                    [?c :category/id ?cid]] db line-item-id)]
+      id)
+    (log/error "No database atom for production schema!")))

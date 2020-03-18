@@ -3,8 +3,9 @@
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.authorization :as auth]
+    [com.wsscode.pathom.connect :as pc]
     [taoensso.timbre :as log]
-    [com.fulcrologic.rad.type-support.decimal :as math]))
+    #?(:clj [com.example.components.database-queries :as queries])))
 
 (defattr id :line-item/id :uuid
   {::attr/identity?                                      true
@@ -13,6 +14,12 @@
 
 (defattr category :line-item/category :ref
   {::attr/target      :category/id
+   ::pc/input         #{:line-item/id}
+   ::pc/output        [{:line-item/category [:category/id]}]
+   ::pc/resolve       (fn [env {:line-item/keys [id]}]
+                        #?(:clj
+                           (when-let [cid (queries/get-line-item-category env id)]
+                             {:line-item/category {:category/id cid}})))
    ::attr/cardinality :one})
 
 (defattr item :line-item/item :ref
@@ -39,4 +46,4 @@
                              (let [{:line-item/keys [quantity quoted-price]} props]
                                (math/round (math/* quantity quoted-price) 2)))})
 
-(def attributes [id item quantity quoted-price subtotal])
+(def attributes [id category item quantity quoted-price subtotal])
