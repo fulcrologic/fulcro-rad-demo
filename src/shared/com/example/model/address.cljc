@@ -3,10 +3,11 @@
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]))
 
-(defattr id :address/id :uuid
-  {::attr/identity?                                      true
-   :com.fulcrologic.rad.database-adapters.datomic/schema :production
-   ::auth/authority                                      :local})
+(defattr id :address/id :long
+  {::attr/identity?                                          true
+   :com.fulcrologic.rad.database-adapters.datomic/native-id? true
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   ::auth/authority                                          :local})
 
 (defattr street :address/street :string
   {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}

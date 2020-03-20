@@ -25,7 +25,7 @@
   [id street & {:as extras}]
   (merge
     {:db/id          street
-     :address/id     id
+     ; :address/id     id
      :address/street street
      :address/city   "Sacramento"
      :address/state  :address.state/CA
