@@ -607,6 +607,8 @@
    :WET                              "WET"
    :Zulu                             "Zulu"})
 
+(def us-zone-names (filterv #(str/starts-with? % "US/") (vals time-zones)))
+
 (>defn namespaced-time-zone-labels
   "Returns a time zone map with all keys prefixed properly for Datomic enumerated names. `ns` should be something like
   \"account.timezone\"."

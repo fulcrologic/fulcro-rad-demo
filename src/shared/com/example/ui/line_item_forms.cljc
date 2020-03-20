@@ -49,7 +49,7 @@
                                                                                    (fn [{:category/keys [id label]}]
                                                                                      {:text (str label) :value [:category/id id]})
                                                                                    (sort-by :category/label options)))
-                                              ::picker-options/cache-time-ms   20000}
+                                              ::picker-options/cache-time-ms   10000}
                          :line-item/item     {::picker-options/query-key        :item/all-items
                                               ::picker-options/cache-key        (fn [_ {:line-item/keys [id] :as props}]
                                                                                   (keyword "item-list" (or
@@ -64,4 +64,4 @@
                                               ::picker-options/query-parameters (fn [app form-class props]
                                                                                   (let [category (get props :line-item/category)]
                                                                                     category))
-                                              ::picker-options/cache-time-ms    100}}})
+                                              ::picker-options/cache-time-ms    60000}}})
