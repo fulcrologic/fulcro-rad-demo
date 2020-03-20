@@ -35,7 +35,7 @@
                                acct/name
                                acct/primary-address
                                ;; TODO: Fix performance of large dropdowns (time zone)
-                               acct/role #_acct/time-zone acct/email
+                               acct/role acct/time-zone acct/email
                                acct/active? acct/addresses
                                acct/files]
    ::form/default             {:account/active?         true
