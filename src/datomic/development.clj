@@ -27,7 +27,7 @@
                                (seed/new-account (new-uuid 100) "Tony" "tony@example.com" "letmein"
                                  :account/addresses ["111 Main St."]
                                  :account/primary-address (seed/new-address (new-uuid 300) "222 Other")
-                                 :account/time-zone :account.time-zone/America-Los_Angeles)
+                                 :time-zone/zone-id :time-zone.zone-id/America-Los_Angeles)
                                (seed/new-account (new-uuid 101) "Sam" "sam@example.com" "letmein")
                                (seed/new-account (new-uuid 102) "Sally" "sally@example.com" "letmein")
                                (seed/new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein")
@@ -69,19 +69,3 @@
 
 (def reset #'restart)
 
-(comment
-  (d/delete-database "datomic:sql://example?jdbc:postgresql://localhost:5432/datomic?user=datomic&password=datomic")
-
-  (d/q
-    '[:find (pull ?e [*])
-      :where
-      [?e :item/id]]
-    (d/db (:main datomic-connections)))
-
-  (d/q
-    '[:find (pull ?e [* {:invoice/customer [:account/name]}
-                      {:invoice/line-items [*
-                                            {:line-item/item [*]}]}])
-      :where
-      [?e :invoice/id]]
-    (d/db (:main datomic-connections))))

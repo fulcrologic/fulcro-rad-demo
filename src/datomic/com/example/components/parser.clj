@@ -1,19 +1,20 @@
 (ns com.example.components.parser
   (:require
     [com.example.components.auto-resolvers :refer [automatic-resolvers]]
+    [com.example.components.blob-store :as bs]
     [com.example.components.config :refer [config]]
     [com.example.components.datomic :refer [datomic-connections]]
-    [com.example.components.save-middleware :as save]
     [com.example.components.delete-middleware :as delete]
-    [com.example.model.account :as account]
+    [com.example.components.save-middleware :as save]
     [com.example.model :refer [all-attributes]]
+    [com.example.model.account :as account]
+    [com.example.model.timezone :as timezone]
+    [com.fulcrologic.rad.attributes :as attr]
     [com.fulcrologic.rad.blob :as blob]
-    [com.fulcrologic.rad.form :as form]
-    [com.example.components.blob-store :as bs]
-    [com.fulcrologic.rad.pathom :as pathom]
-    [mount.core :refer [defstate]]
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
-    [com.fulcrologic.rad.attributes :as attr]))
+    [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.pathom :as pathom]
+    [mount.core :refer [defstate]]))
 
 (defstate parser
   :start
@@ -26,5 +27,5 @@
     [automatic-resolvers
      form/resolvers
      (blob/resolvers all-attributes)
-     account/login
-     account/check-session]))
+     account/resolvers
+     timezone/resolvers]))

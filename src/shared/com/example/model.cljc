@@ -1,5 +1,6 @@
 (ns com.example.model
   (:require
+    [com.example.model.timezone :as timezone]
     [com.example.model.account :as account]
     [com.example.model.item :as item]
     [com.example.model.invoice :as invoice]
@@ -16,6 +17,7 @@
                            item/attributes
                            invoice/attributes
                            line-item/attributes
-                           m.file/attributes)))
+                           m.file/attributes
+                           timezone/attributes)))
 
 (def all-attribute-validator (attr/make-attribute-validator all-attributes))

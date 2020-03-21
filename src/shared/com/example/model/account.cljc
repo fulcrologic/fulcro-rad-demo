@@ -37,39 +37,6 @@
    ::attr/required?                                                true
    ::auth/authority                                                :local})
 
-(def account-time-zones (timezone/namespaced-time-zone-labels "account.time-zone"))
-
-(defattr time-zone :account/time-zone :enum
-  {::attr/required?                                          true
-   ::attr/enumerated-values                                  (set (keys account-time-zones))
-   ::attr/enumerated-labels                                  account-time-zones
-   ;; Enumerations with lots of values should use autocomplete instead of pushing all possible values to UI
-   ::form/field-style                                        :autocomplete
-   ::form/field-options                                      {:autocomplete/search-key       :autocomplete/time-zone
-                                                              :autocomplete/debounce-ms      100
-                                                              :autocomplete/minimum-input    1
-                                                              :autocomplete/selection->value (fn [option]
-                                                                                               (when (seq option)
-                                                                                                 (keyword "account.time-zone" option)))}
-   ::auth/authority                                          :local
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}})
-
-(pc/defresolver all-time-zones [{:keys [query-params]} _]
-  {::pc/output [{:autocomplete/time-zone [:autocomplete/value]}]}
-  (let [{:autocomplete/keys [search-string]} query-params]
-    {:all-time-zones
-     (if (seq search-string)
-       (let [search-string (str/lower-case search-string)]
-         (into []
-           (comp
-             (filter #(str/includes? (str/lower-case %) search-string))
-             (map #(array-map :autocomplete/value %))
-             (take 10))
-           (vals timezone/time-zones)))
-       timezone/us-zone-names)}))
 
 (defattr active? :account/active? :boolean
   {::auth/authority                                          :local
@@ -183,12 +150,13 @@
    :cljs
    (defmutation login [params]
      (ok-action [{:keys [app state]}]
-       (let [{:account/keys [time-zone]
+       (let [{:time-zone/keys [zone-id]
               ::auth/keys   [status]} (some-> state deref ::auth/authorization :local)]
          (if (= status :success)
            (do
-             (log/info "Setting UI time zone" time-zone)
-             (datetime/set-timezone! time-zone)
+             (when zone-id
+               (log/info "Setting UI time zone" zone-id)
+               (datetime/set-timezone! zone-id))
              (auth/logged-in! app :local))
            (auth/failed! app :local))))
      (error-action [{:keys [app]}]
@@ -205,11 +173,12 @@
    (defmutation check-session [_]
      (ok-action [{:keys [state app result]}]
        (let [{::auth/keys [provider]} (get-in result [:body `check-session])
-             {:account/keys [time-zone]
-              ::auth/keys   [status]} (some-> state deref ::auth/authorization (get provider))]
+             {:time-zone/keys [zone-id]
+              ::auth/keys     [status]} (some-> state deref ::auth/authorization (get provider))]
          (when (= status :success)
-           (log/info "Setting UI time zone" time-zone)
-           (datetime/set-timezone! time-zone))
+           (when zone-id
+             (log/info "Setting UI time zone" zone-id)
+             #_(datetime/set-timezone! time-zone)))
          (uism/trigger! app auth/machine-id :event/session-checked {:provider provider})))
      (remote [env]
        (m/returning env auth/Session))))
@@ -220,7 +189,7 @@
      (let [{:keys [before after]} avatar-url]
        value)))
 
-(def attributes [id name primary-address time-zone role email password password-iterations password-salt active?
+(def attributes [id name primary-address role email password password-iterations password-salt active?
                  addresses all-accounts avatar files])
 
-(def resolvers [login check-session all-time-zones])
+(def resolvers [login check-session])

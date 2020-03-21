@@ -3,6 +3,7 @@
     [clojure.string :as str]
     [com.example.model :as model]
     [com.example.model.account :as acct]
+    [com.example.model.timezone :as timezone]
     [com.example.ui.address-forms :refer [AddressForm]]
     [com.example.ui.file-forms :refer [FileForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
@@ -35,7 +36,7 @@
                                acct/name
                                acct/primary-address
                                ;; TODO: Fix performance of large dropdowns (time zone)
-                               acct/role acct/time-zone acct/email
+                               acct/role timezone/zone-id acct/email
                                acct/active? acct/addresses
                                acct/files]
    ::form/default             {:account/active?         true

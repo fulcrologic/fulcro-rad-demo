@@ -9,28 +9,26 @@
     [taoensso.timbre :as log]
     [com.example.model.timezone :as timezone]))
 
-(def zone-key->zone-id
-  (timezone/namespaced-time-zone-ids "account.time-zone"))
-
 (defn login!
   "Implementation of login. This is database-specific and is not further generalized for the demo."
   [{::datomic/keys [databases] :as env} {:keys [username password]}]
   (log/info "Attempt login for" username)
   (enc/if-let [db                   @(:production databases)
-               {:account/keys  [name time-zone]
-                :password/keys [hashed-value salt iterations]} (d/pull db [:account/name
-                                                                           {:account/time-zone [:db/ident]}
-                                                                           :password/hashed-value
-                                                                           :password/salt
-                                                                           :password/iterations]
-                                                                 [:account/email username])
+               {:account/keys   [name]
+                :time-zone/keys [zone-id]
+                :password/keys  [hashed-value salt iterations]} (d/pull db [:account/name
+                                                                            {:time-zone/zone-id [:db/ident]}
+                                                                            :password/hashed-value
+                                                                            :password/salt
+                                                                            :password/iterations]
+                                                                  [:account/email username])
                current-hashed-value (attr/encrypt password salt iterations)]
     (if (= hashed-value current-hashed-value)
       (do
         (log/info "Login for" username)
         (let [s {::auth/provider    :local
                  ::auth/status      :success
-                 :account/time-zone (some-> time-zone :db/ident zone-key->zone-id)
+                 :time-zone/zone-id (-> zone-id :db/ident timezone/datomic-time-zones)
                  :account/name      name}]
           (fmw/augment-response s (fn [resp]
                                     (let [current-session (-> env :ring/request :session)]
