@@ -7,12 +7,10 @@
 
 (defn get-all-accounts
   [env query-params]
-  (let [db             (get-in env [::sql/databases :production])
+  (let [data-source    (get-in env [::sql/connection-pools :production])
         show-inactive? (:ui/show-inactive? query-params)
         sql            (str "SELECT id FROM account" (when-not show-inactive? " WHERE active = true"))
-        rows           (jdbc/query db sql {:keywordize    false
-                                           :result-set-fn vec
-                                           :identifiers   (partial add-namespace "com.example.model.account")})]
+        rows           (mapv #(hash-map :account/id (:ACCOUNT/ID %)) (jdbc/query data-source [sql]))]
     rows))
 
 (defn get-all-items
@@ -33,4 +31,11 @@
 (defn get-login-info
   "Get the account name, time zone, and password info via a username (email)."
   [env username]
-  )
+  (let [data-source (get-in env [::sql/connection-pools :production])
+        rows        (jdbc/query data-source ["SELECT * FROM account WHERE email = ?" username])
+        {:ACCOUNT/keys [NAME PASSWORD PASSWORD_SALT PASSWORD_ITERATIONS]} (first rows)]
+    (when NAME
+      {:account/name          NAME
+       :password/hashed-value PASSWORD
+       :password/salt         PASSWORD_SALT
+       :password/iterations   PASSWORD_ITERATIONS})))

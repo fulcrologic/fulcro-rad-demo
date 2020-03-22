@@ -55,12 +55,16 @@
 
 (defattr password-salt :password/salt :string
   {::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.sql/column-name    "password_salt"
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    ::attr/required?                                          true})
 
 (defattr password-iterations :password/iterations :int
   {::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.sql/column-name    "password_iterations"
+   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    ::attr/required?                                          true})
@@ -151,7 +155,7 @@
    (defmutation login [params]
      (ok-action [{:keys [app state]}]
        (let [{:time-zone/keys [zone-id]
-              ::auth/keys   [status]} (some-> state deref ::auth/authorization :local)]
+              ::auth/keys     [status]} (some-> state deref ::auth/authorization :local)]
          (if (= status :success)
            (do
              (when zone-id

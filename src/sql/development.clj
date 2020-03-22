@@ -25,36 +25,39 @@
   "Returns a clojure jdbc compatible data source config."
   []
   (let [ds ^HikariDataSource (some-> pools/connection-pools :main)]
-    {:datasource ds}))
+    ds))
+
+(defn add-namespace [nspc k] (keyword nspc (name k)))
+(comment
+  (sql/query (get-jdbc-datasource) ["SELECT * FROM account WHERE email = ?" "sam@example.com"]
+    {:column-fn (fn [k] (name k))})
+  (sql/insert! (get-jdbc-datasource) "account" {:id (new-uuid 1) :name "Tony"})
+  (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"])
+  )
+
+(defn new-account [id name email password salt iterations & {:as add-ons}]
+  (merge
+    {:id                  id
+     :name                name
+     :email               email
+     :password_salt       salt
+     :password_iterations iterations
+     :password            (attr/encrypt password salt iterations)}
+    add-ons))
 
 (defn seed! []
-  (let [db (get-jdbc-datasource)]
-    (jdbc/execute! db ["DELETE FROM ACCOUNT"])
-    (doseq [row [{:id       (new-uuid 1)
-                  :name     "Joe Blow"
-                  :email    "joe@example.com"
-                  :active   true
-                  :password (attr/encrypt "letmein" "some-salt"
-                              (::attr/encrypt-iterations account/password))}
-                 {:id       (new-uuid 2)
-                  :name     "Sam Hill"
-                  :email    "sam@example.com"
-                  :active   false
-                  :password (attr/encrypt "letmein" "some-salt"
-                              (::attr/encrypt-iterations account/password))}
-                 {:id       (new-uuid 3)
-                  :name     "Jose Haplon"
-                  :email    "jose@example.com"
-                  :active   true
-                  :password (attr/encrypt "letmein" "some-salt"
-                              (::attr/encrypt-iterations account/password))}
-                 {:id       (new-uuid 4)
-                  :name     "Rose Small"
-                  :email    "rose@example.com"
-                  :active   true
-                  :password (attr/encrypt "letmein" "some-salt"
-                              (::attr/encrypt-iterations account/password))}]]
+  (let [db         (get-jdbc-datasource)
+        salt       "lkjhasdf908dasyu"
+        iterations 1000]
+    ;(jdbc/execute! db ["DELETE FROM ACCOUNT"])
+    (doseq [row [(new-account (new-uuid 1) "Tony" "tony@example.com" "letmein" salt iterations)
+                 (new-account (new-uuid 2) "Sam" "sam@example.com" "letmein" salt iterations)
+                 (new-account (new-uuid 3) "Rose" "rose@example.com" "letmein" salt iterations)
+                 (new-account (new-uuid 4) "Bill" "bill@example.com" "letmein" salt iterations)]]
       (sql/insert! db "account" row))))
+
+(comment
+  (seed!))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})

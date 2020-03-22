@@ -13,7 +13,7 @@
                                             :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
                                                                        "dataSource.user"     "sa"
                                                                        "dataSource.password" "sa"
-                                                                       "dataSource.URL"      "jdbc:h2:~/test"}
+                                                                       "dataSource.URL"      "jdbc:h2:mem:dev-db"}
                                             :sql/auto-create-missing? false
                                             :sql/schema               :production}}
 
