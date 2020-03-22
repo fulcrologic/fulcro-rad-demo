@@ -2,7 +2,8 @@
   (:require
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [datomic.api :as d]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [taoensso.encore :as enc]))
 
 (defn get-all-accounts
   [env query-params]
@@ -65,3 +66,14 @@
                     [?c :category/id ?cid]] db line-item-id)]
       id)
     (log/error "No database atom for production schema!")))
+
+(defn get-login-info
+  "Get the account name, time zone, and password info via a username (email)."
+  [{::datomic/keys [databases] :as env} username]
+  (enc/if-let [db @(:production databases)]
+    (d/pull db [:account/name
+                {:time-zone/zone-id [:db/ident]}
+                :password/hashed-value
+                :password/salt
+                :password/iterations]
+      [:account/email username])))

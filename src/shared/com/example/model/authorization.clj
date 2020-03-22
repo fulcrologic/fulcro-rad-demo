@@ -2,26 +2,19 @@
   (:require
     [com.fulcrologic.fulcro.server.api-middleware :as fmw]
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.attributes :as attr]
-    [datomic.api :as d]
+    [com.example.components.database-queries :as queries]
     [taoensso.encore :as enc]
     [taoensso.timbre :as log]
     [com.example.model.timezone :as timezone]))
 
 (defn login!
   "Implementation of login. This is database-specific and is not further generalized for the demo."
-  [{::datomic/keys [databases] :as env} {:keys [username password]}]
+  [env {:keys [username password]}]
   (log/info "Attempt login for" username)
-  (enc/if-let [db                   @(:production databases)
-               {:account/keys   [name]
+  (enc/if-let [{:account/keys   [name]
                 :time-zone/keys [zone-id]
-                :password/keys  [hashed-value salt iterations]} (d/pull db [:account/name
-                                                                            {:time-zone/zone-id [:db/ident]}
-                                                                            :password/hashed-value
-                                                                            :password/salt
-                                                                            :password/iterations]
-                                                                  [:account/email username])
+                :password/keys  [hashed-value salt iterations]} (queries/get-login-info env username)
                current-hashed-value (attr/encrypt password salt iterations)]
     (if (= hashed-value current-hashed-value)
       (do

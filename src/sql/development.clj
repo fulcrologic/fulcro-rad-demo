@@ -1,6 +1,5 @@
 (ns development
   (:require
-    [clojure.java.jdbc :as jdbc]
     [clojure.pprint :refer [pprint]]
     [clojure.repl :refer [doc source]]
     [clojure.tools.namespace.repl :as tools-ns :refer [disable-reload! refresh clear set-refresh-dirs]]
@@ -10,17 +9,26 @@
     [com.example.components.database-queries :as queries]
     [com.example.model.account :as account]
     [com.fulcrologic.rad.attributes :as attr]
-    [com.fulcrologic.rad.database-adapters.sql :as sql]
+    [com.fulcrologic.rad.database-adapters.sql :as rad.sql]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.resolvers :as res]
     [mount.core :as mount]
     [taoensso.timbre :as log]
-    [com.example.components.connection-pools :as pools]))
+    [next.jdbc :as jdbc]
+    [next.jdbc.sql :as sql]
+    [com.example.components.connection-pools :as pools])
+  (:import (com.zaxxer.hikari HikariDataSource)))
 
 (set-refresh-dirs "src/main" "src/sql" "src/dev" "src/shared")
 
+(defn get-jdbc-datasource
+  "Returns a clojure jdbc compatible data source config."
+  []
+  (let [ds ^HikariDataSource (some-> pools/connection-pools :main)]
+    {:datasource ds}))
+
 (defn seed! []
-  (let [db (pools/get-jdbc-datasource)]
+  (let [db (get-jdbc-datasource)]
     (jdbc/execute! db ["DELETE FROM ACCOUNT"])
     (doseq [row [{:id       (new-uuid 1)
                   :name     "Joe Blow"
@@ -46,7 +54,7 @@
                   :active   true
                   :password (attr/encrypt "letmein" "some-salt"
                               (::attr/encrypt-iterations account/password))}]]
-      (jdbc/insert! db "account" row))))
+      (sql/insert! db "account" row))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})
@@ -75,17 +83,17 @@
             :user     "postgres"
             :password ""}]
     #_(queries/get-all-accounts {:sql/databases {:production db}} {:ui/show-inactive? true})
-    (sql/entity-query {::sql/schema                          :production
-                       ::sql/attributes                      account/attributes
-                       :com.wsscode.pathom.core/parent-query [::account/name ::account/active?]
-                       ::sql/id-attribute                    account/id
-                       ::sql/databases                       {:production db}} {::account/id #uuid "ffffffff-ffff-ffff-ffff-000000000001"})
+    (rad.sql/entity-query {::rad.sql/schema                      :production
+                           ::rad.sql/attributes                  account/attributes
+                           :com.wsscode.pathom.core/parent-query [::account/name ::account/active?]
+                           ::rad.sql/id-attribute                account/id
+                           ::rad.sql/databases                   {:production db}} {::account/id #uuid "ffffffff-ffff-ffff-ffff-000000000001"})
     #_(jdbc/query db ["SELECT * FROM account"])
-    #_(jdbc/execute! db [(sql/automatic-schema :production account/attributes)]))
+    #_(jdbc/execute! db [(rad.sql/automatic-schema :production account/attributes)]))
 
-  (sql/generate-resolvers account/attributes :production)
+  (rad.sql/generate-resolvers account/attributes :production)
 
-  (sql/column-names account/attributes [::account/id ::account/active?])
+  (rad.sql/column-names account/attributes [::account/id ::account/active?])
 
   (contains? #{::account/name} (::attr/qualified-key account/name))
   )

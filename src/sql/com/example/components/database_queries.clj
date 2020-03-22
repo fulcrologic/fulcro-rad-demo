@@ -1,7 +1,7 @@
 (ns com.example.components.database-queries
   (:require
     [com.fulcrologic.rad.database-adapters.sql :as sql]
-    [clojure.java.jdbc :as jdbc]))
+    [next.jdbc.sql :as jdbc]))
 
 (defn add-namespace [nspc k] (keyword nspc (name k)))
 
@@ -15,3 +15,22 @@
                                            :identifiers   (partial add-namespace "com.example.model.account")})]
     rows))
 
+(defn get-all-items
+  [env {:category/keys [id]}]
+  )
+
+(defn get-all-invoices
+  [env query-params]
+  )
+
+(defn get-all-categories
+  [env query-params]
+  )
+
+(defn get-line-item-category [env line-item-id]
+  )
+
+(defn get-login-info
+  "Get the account name, time zone, and password info via a username (email)."
+  [env username]
+  )
