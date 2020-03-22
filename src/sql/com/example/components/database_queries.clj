@@ -13,6 +13,7 @@
         rows           (mapv #(hash-map :account/id (:ACCOUNT/ID %)) (jdbc/query data-source [sql]))]
     rows))
 
+;; TASK: finish making queries for SQL things
 (defn get-all-items
   [env {:category/keys [id]}]
   )

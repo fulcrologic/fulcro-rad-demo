@@ -19,7 +19,7 @@
     [com.example.components.connection-pools :as pools])
   (:import (com.zaxxer.hikari HikariDataSource)))
 
-(set-refresh-dirs "src/main" "src/sql" "src/dev" "src/shared")
+(set-refresh-dirs "src/main" "src/sql" "src/dev" "src/shared" "../fulcro-rad/src/main" "../fulcro-rad-sql/src/main")
 
 (defn get-jdbc-datasource
   "Returns a clojure jdbc compatible data source config."
@@ -29,12 +29,14 @@
 
 (defn add-namespace [nspc k] (keyword nspc (name k)))
 (comment
-  (sql/query (get-jdbc-datasource) ["SELECT * FROM account WHERE email = ?" "sam@example.com"]
-    {:column-fn (fn [k] (name k))})
-  (sql/insert! (get-jdbc-datasource) "account" {:id (new-uuid 1) :name "Tony"})
-  (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"])
-  )
+  (sql/query (get-jdbc-datasource) ["SELECT * FROM account WHERE email = ?" "sam@example.com"] )
+  (sql/query (get-jdbc-datasource) [
 
+                                    "SELECT id,name,active FROM account WHERE id IN ('ffffffff-ffff-ffff-ffff-000000000001','ffffffff-ffff-ffff-ffff-000000000002','ffffffff-ffff-ffff-ffff-000000000003','ffffffff-ffff-ffff-ffff-000000000004')"])
+  (sql/insert! (get-jdbc-datasource) "account" {:id (new-uuid 1) :name "Tony"})
+  (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"]))
+
+;; TASK: See datomic seeding, and match it (development.clj in datomic src dir)
 (defn new-account [id name email password salt iterations & {:as add-ons}]
   (merge
     {:id                  id

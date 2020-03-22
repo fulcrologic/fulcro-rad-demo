@@ -25,7 +25,7 @@
    ;; independent experimentation. In a normal project you'd use ns aliasing.
    :com.fulcrologic.rad.database-adapters.datomic/schema :production
    :com.fulcrologic.rad.database-adapters.sql/schema     :production
-   :com.fulcrologic.rad.database-adapters.sql/tables     #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/table      "account"
    ::auth/authority                                      :local})
 
 (defattr email :account/email :string
@@ -33,38 +33,43 @@
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
-   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
+   ::attr/identities                                               #{:account/id}
    ::attr/required?                                                true
    ::auth/authority                                                :local})
 
 
 (defattr active? :account/active? :boolean
   {::auth/authority                                          :local
+   ::attr/identities                                         #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.sql/column-name    "active"
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    ::form/default-value                                      true})
 
 (defattr password :password/hashed-value :string
   {::attr/required?                                          true
+   ::attr/identities                                         #{:account/id}
    ::auth/authority                                          :local
+   :com.fulcrologic.rad.database-adapters.sql/column-name    "password"
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}})
 
 (defattr password-salt :password/salt :string
   {::auth/authority                                          :local
+   ::attr/identities                                         #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/column-name    "password_salt"
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    ::attr/required?                                          true})
 
 (defattr password-iterations :password/iterations :int
   {::auth/authority                                          :local
+   ::attr/identities                                         #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/column-name    "password_iterations"
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    ::attr/required?                                          true})
@@ -74,6 +79,7 @@
 
 (defattr role :account/role :enum
   {::auth/authority                                          :local
+   ::attr/identities                                         #{:account/id}
    ::attr/enumerated-values                                  (set (keys account-roles))
    ::attr/enumerated-labels                                  account-roles
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
@@ -82,22 +88,22 @@
 (defattr name :account/name :string
   {::auth/authority                                          :local
    ::form/field-label                                        "Name"
+   ::attr/identities                                         #{:account/id}
    ;::attr/valid?                                             (fn [v] (str/starts-with? v "Bruce"))
    ;::attr/validation-message                                 (fn [v] "Your name's not Bruce then??? How 'bout we just call you Bruce?")
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    ::attr/required?                                          true})
 
 (defattr primary-address :account/primary-address :ref
   {::attr/target                                                   :address/id
    ::attr/cardinality                                              :one
+   ::attr/identities                                               #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema           :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
-   :com.fulcrologic.rad.database-adapters.sql/tables               #{"account"}
    ::auth/authority                                                :local})
 
 ;; NOTE: How to do file SHA->URL stuff...
