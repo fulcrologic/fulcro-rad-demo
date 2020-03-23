@@ -19,7 +19,7 @@
     [com.fulcrologic.fulcro.ui-state-machines :as uism]
     [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
-(defattr id :account/id :long
+(defattr id :account/id :uuid
   {::attr/identity?                                          true
    ;; NOTE: These are spelled out so we don't have to have either on classpath, which allows
    ;; independent experimentation. In a normal project you'd use ns aliasing.
@@ -32,7 +32,6 @@
   {::attr/identities                                               #{:account/id}
    ::attr/required?                                                true
    ::attr/schema                                                   :production
-   ::attr/identities                                               #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
    ::auth/authority                                                :local})
 
@@ -41,7 +40,6 @@
   {::auth/authority                                       :local
    ::attr/identities                                      #{:account/id}
    ::attr/schema                                          :production
-   ::attr/identities                                      #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/column-name "active"
    ::form/default-value                                   true})
 
@@ -50,12 +48,10 @@
    ::attr/identities                                      #{:account/id}
    ::auth/authority                                       :local
    :com.fulcrologic.rad.database-adapters.sql/column-name "password"
-   ::attr/schema                                          :production
-   ::attr/identities                                      #{:account/id}})
+   ::attr/schema                                          :production})
 
 (defattr password-salt :password/salt :string
   {::auth/authority                                       :local
-   ::attr/identities                                      #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/column-name "password_salt"
    ::attr/schema                                          :production
    ::attr/identities                                      #{:account/id}
@@ -66,7 +62,6 @@
    ::attr/identities                                      #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/column-name "password_iterations"
    ::attr/schema                                          :production
-   ::attr/identities                                      #{:account/id}
    ::attr/required?                                       true})
 
 (def account-roles {:account.role/superuser "Superuser"
@@ -77,8 +72,7 @@
    ::attr/identities        #{:account/id}
    ::attr/enumerated-values (set (keys account-roles))
    ::attr/enumerated-labels account-roles
-   ::attr/schema            :production
-   ::attr/identities        #{:account/id}})
+   ::attr/schema            :production})
 
 (defattr name :account/name :string
   {::auth/authority   :local
@@ -87,13 +81,12 @@
    ;::attr/valid?                                             (fn [v] (str/starts-with? v "Bruce"))
    ;::attr/validation-message                                 (fn [v] "Your name's not Bruce then??? How 'bout we just call you Bruce?")
    ::attr/schema      :production
-   ::attr/identities  #{:account/id}
+
    ::attr/required?   true})
 
 (defattr primary-address :account/primary-address :ref
   {::attr/target                                                   :address/id
    ::attr/cardinality                                              :one
-   ::attr/identities                                               #{:account/id}
    ::attr/identities                                               #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
    ::attr/schema                                                   :production
@@ -129,7 +122,6 @@
 (defattr addresses :account/addresses :ref
   {::attr/target      :address/id
    ::attr/cardinality :many
-   ::attr/identities  #{:account/id}
    ::attr/identities  #{:account/id}
    ::attr/schema      :production
    :db/isComponent    true

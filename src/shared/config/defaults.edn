@@ -8,13 +8,13 @@
                                             :datomic/prevent-changes? true}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases
-                                    {:main {:flyway/migrate?          true
+                                    {:main {:flyway/migrate?          false
                                             :flyway/migrations        ["classpath:config/sql_migrations"]
                                             :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
                                                                        "dataSource.user"     "sa"
                                                                        "dataSource.password" "sa"
                                                                        "dataSource.URL"      "jdbc:h2:mem:dev-db"}
-                                            :sql/auto-create-missing? false
+                                            :sql/auto-create-missing? true
                                             :sql/schema               :production}}
 
 

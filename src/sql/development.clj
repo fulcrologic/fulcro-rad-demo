@@ -35,7 +35,9 @@
 (comment
   (schema/tables-and-columns (attr/attribute-map account/attributes) account/name)
   (mig/attr->ops :production (attr/attribute-map account/attributes) account/name)
-  (jdbc/execute! (get-jdbc-datasource) [(mig/automatic-schema :production all-attributes)])
+  (doseq [stmt (mig/automatic-schema :production all-attributes)]
+    (log/info stmt)
+    (jdbc/execute! (get-jdbc-datasource) [stmt]))
 
   (sql/query (get-jdbc-datasource) ["show tables"])
   (sql/query (get-jdbc-datasource) ["show columns from address"])
@@ -64,7 +66,10 @@
                  (new-account (new-uuid 2) "Sam" "sam@example.com" "letmein" salt iterations)
                  (new-account (new-uuid 3) "Rose" "rose@example.com" "letmein" salt iterations)
                  (new-account (new-uuid 4) "Bill" "bill@example.com" "letmein" salt iterations)]]
-      (sql/insert! db "account" row))))
+      (try
+        (sql/insert! db "account" row)
+        (catch Exception e
+          (log/error e row))))))
 
 (comment
   (seed!))

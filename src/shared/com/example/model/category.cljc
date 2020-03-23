@@ -18,7 +18,6 @@
   {::attr/required?                                      true
    ::attr/identities                                     #{:category/id}
    :com.fulcrologic.rad.database-adapters.sql/max-length 120
-   ::attr/identities                                     #{:category/id}
    ::attr/schema                                         :production})
 
 (defattr all-categories :category/all-categories :ref
