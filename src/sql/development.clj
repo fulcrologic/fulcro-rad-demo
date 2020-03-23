@@ -52,6 +52,7 @@
     {:id                  id
      :name                name
      :email               email
+     :active              true
      :password_salt       salt
      :password_iterations iterations
      :password            (attr/encrypt password salt iterations)}
