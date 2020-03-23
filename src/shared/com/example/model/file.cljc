@@ -5,28 +5,24 @@
     [com.fulcrologic.rad.blob :as blob]))
 
 (defattr id :file/id :uuid
-  {::attr/identity?                                          true
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:file/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"file"}})
+  {::attr/identity?                                  true
+   ::attr/identities                                 #{:file/id}
+   ::attr/schema                                     :production
+   :com.fulcrologic.rad.database-adapters.sql/tables #{"file"}})
 
 (blob/defblobattr sha :file/sha :files :remote
-  {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:file/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"file"}})
+  { ::attr/identities                                #{:file/id}
+   ::attr/schema                                     :production
+   :com.fulcrologic.rad.database-adapters.sql/tables #{"file"}})
 
 (defattr filename :file.sha/filename :string
-  {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:file/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"file"}})
+  {::attr/schema                                     :production
+   ::attr/identities                                 #{:file/id}
+   :com.fulcrologic.rad.database-adapters.sql/tables #{"file"}})
 
 (defattr uploaded-on :file/uploaded-on :instant
-  {:com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:file/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"file"}})
+  {::attr/schema                                     :production
+   ::attr/identities                                 #{:file/id}
+   :com.fulcrologic.rad.database-adapters.sql/tables #{"file"}})
 
 (def attributes [id sha filename uploaded-on])

@@ -6,22 +6,19 @@
 (defattr id :address/id :long
   {::attr/identity?                                          true
    :com.fulcrologic.rad.database-adapters.sql/table          "address"
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
    :com.fulcrologic.rad.database-adapters.datomic/native-id? true
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   ::attr/schema                                             :production
    ::auth/authority                                          :local})
 
 (defattr street :address/street :string
-  {:com.fulcrologic.rad.database-adapters.sql/schema         :production
-   ::attr/identities                                         #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/schema     :production
+   ::attr/identities #{:address/id}
+   ::attr/identities #{:address/id} })
 
 (defattr city :address/city :string
-  {:com.fulcrologic.rad.database-adapters.sql/schema         :production
-   ::attr/identities                                         #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/schema     :production
+   ::attr/identities #{:address/id}
+   ::attr/identities #{:address/id} })
 
 (def states #:address.state {:AZ "Arizona"
                              :AL "Alabama"
@@ -38,16 +35,15 @@
                              :WA "Washington"})
 
 (defattr state :address/state :enum
-  {::attr/enumerated-values                                  (set (keys states))
-   ::attr/identities                                         #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   ::attr/enumerated-labels                                  states})
+  {::attr/enumerated-values (set (keys states))
+   ::attr/identities        #{:address/id}
+   ::attr/identities        #{:address/id}
+   ::attr/schema            :production
+   ::attr/enumerated-labels states})
 
 (defattr zip :address/zip :string
-  {::attr/identities                                         #{:address/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:address/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/identities #{:address/id}
+   ::attr/identities #{:address/id}
+   ::attr/schema     :production})
 
 (def attributes [id street city state zip])

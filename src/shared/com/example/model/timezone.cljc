@@ -634,18 +634,16 @@
 (def datomic-time-zones (namespaced-time-zone-ids "time-zone.zone-id"))
 
 (defattr zone-id :time-zone/zone-id :enum
-  {::attr/required?                                          true
-   ::attr/enumerated-values                                  (set (keys datomic-time-zones))
-   ::attr/enumerated-labels                                  datomic-time-zones
+  {::attr/required?         true
+   ::attr/identities        #{:account/id}
+   ::attr/schema            :production
+   ::attr/enumerated-values (set (keys datomic-time-zones))
+   ::attr/enumerated-labels datomic-time-zones
    ;; Enumerations with lots of values should use autocomplete instead of pushing all possible values to UI
-   ::form/field-style                                        :autocomplete
-   ::form/field-options                                      {:autocomplete/search-key    :autocomplete/time-zone-options
-                                                              :autocomplete/debounce-ms   100
-                                                              :autocomplete/minimum-input 1}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}})
+   ::form/field-style       :autocomplete
+   ::form/field-options     {:autocomplete/search-key    :autocomplete/time-zone-options
+                             :autocomplete/debounce-ms   100
+                             :autocomplete/minimum-input 1}})
 
 #?(:clj
    (pc/defresolver all-time-zones [{:keys [query-params]} _]

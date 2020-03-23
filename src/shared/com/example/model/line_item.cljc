@@ -8,9 +8,9 @@
     #?(:clj [com.example.components.database-queries :as queries])))
 
 (defattr id :line-item/id :uuid
-  {::attr/identity?                                      true
-   :com.fulcrologic.rad.database-adapters.datomic/schema :production
-   ::auth/authority                                      :local})
+  {::attr/identity? true
+   ::attr/schema    :production
+   ::auth/authority :local})
 
 (defattr category :line-item/category :ref
   {::attr/target      :category/id
@@ -23,25 +23,25 @@
    ::attr/cardinality :one})
 
 (defattr item :line-item/item :ref
-  {::attr/target                                             :item/id
-   ::attr/required?                                          true
-   ::attr/cardinality                                        :one
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/target      :item/id
+   ::attr/required?   true
+   ::attr/cardinality :one
+   ::attr/identities  #{:line-item/id}
+   ::attr/schema      :production})
 
 (defattr quantity :line-item/quantity :int
-  {::attr/required?                                          true
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/required?  true
+   ::attr/identities #{:line-item/id}
+   ::attr/schema     :production})
 
 (defattr quoted-price :line-item/quoted-price :decimal
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/identities #{:line-item/id}
+   ::attr/schema     :production})
 
 (defattr subtotal :line-item/subtotal :decimal
-  {::attr/read-only?                                         true
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:line-item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production}
+  {::attr/read-only? true
+   ::attr/identities #{:line-item/id}
+   ::attr/schema     :production}
   #_{::attr/computed-value (fn [{::form/keys [props] :as form-env} attr]
                              (let [{:line-item/keys [quantity quoted-price]} props]
                                (math/round (math/* quantity quoted-price) 2)))})

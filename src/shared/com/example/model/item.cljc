@@ -6,31 +6,31 @@
     #?(:clj [com.example.components.database-queries :as queries])))
 
 (defattr id :item/id :uuid
-  {::attr/identity?                                      true
-   :com.fulcrologic.rad.database-adapters.datomic/schema :production
-   ::auth/authority                                      :local})
+  {::attr/identity? true
+   ::attr/schema    :production
+   ::auth/authority :local})
 
 (defattr category :item/category :ref
-  {::attr/target                                             :category/id
-   ::attr/cardinality                                        :one
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/target      :category/id
+   ::attr/cardinality :one
+   ::attr/identities  #{:item/id}
+   ::attr/schema      :production})
 
 (defattr item-name :item/name :string
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/identities #{:item/id}
+   ::attr/schema     :production})
 
 (defattr description :item/description :string
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/identities #{:item/id}
+   ::attr/schema     :production})
 
 (defattr price :item/price :decimal
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/identities #{:item/id}
+   ::attr/schema     :production})
 
 (defattr in-stock :item/in-stock :int
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:item/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/identities #{:item/id}
+   ::attr/schema     :production})
 
 (defattr all-items :item/all-items :ref
   {::attr/target    :item/id

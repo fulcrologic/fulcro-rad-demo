@@ -10,26 +10,26 @@
     [taoensso.timbre :as log]))
 
 (defattr id :invoice/id :uuid
-  {::attr/identity?                                      true
-   :com.fulcrologic.rad.database-adapters.datomic/schema :production
-   ::auth/authority                                      :local})
+  {::attr/identity? true
+   ::attr/schema    :production
+   ::auth/authority :local})
 
 (defattr date :invoice/date :instant
-  {::form/field-style                                        :date-at-noon
-   ::datetime/default-time-zone                              "America/Los_Angeles"
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::form/field-style           :date-at-noon
+   ::datetime/default-time-zone "America/Los_Angeles"
+   ::attr/identities            #{:invoice/id}
+   ::attr/schema                :production})
 
 (defattr line-items :invoice/line-items :ref
-  {::attr/target                                             :line-item/id
-   ::attr/cardinality                                        :many
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/target      :line-item/id
+   ::attr/cardinality :many
+   ::attr/identities  #{:invoice/id}
+   ::attr/schema      :production})
 
 (defattr total :invoice/total :decimal
-  {:com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
-   ::attr/read-only?                                         true}
+  {::attr/identities #{:invoice/id}
+   ::attr/schema     :production
+   ::attr/read-only? true}
   #_{::attr/computed-value (fn [{::form/keys [props]} attr]
                              (let [total (reduce
                                            (fn [t {:line-item/keys [quantity quoted-price]}]
@@ -39,11 +39,11 @@
                                total))})
 
 (defattr customer :invoice/customer :ref
-  {::attr/cardinality                                        :one
-   ::attr/target                                             :account/id
-   ::attr/required?                                          true
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:invoice/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/cardinality :one
+   ::attr/target      :account/id
+   ::attr/required?   true
+   ::attr/identities  #{:invoice/id}
+   ::attr/schema      :production})
 
 (defattr all-invoices :invoice/all-invoices :ref
   {::attr/target    :invoice/id

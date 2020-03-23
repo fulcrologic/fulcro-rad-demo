@@ -96,7 +96,7 @@
             :user     "postgres"
             :password ""}]
     #_(queries/get-all-accounts {:sql/databases {:production db}} {:ui/show-inactive? true})
-    (rad.sql/entity-query {::rad.sql/schema                      :production
+    (rad.sql/entity-query {::attr/schema                         :production
                            ::rad.sql/attributes                  account/attributes
                            :com.wsscode.pathom.core/parent-query [::account/name ::account/active?]
                            ::rad.sql/id-attribute                account/id

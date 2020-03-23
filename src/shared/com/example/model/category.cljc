@@ -11,17 +11,15 @@
    :ident :category/id})
 
 (defattr id :category/id :uuid
-  {::attr/identity?                                      true
-   :com.fulcrologic.rad.database-adapters.sql/schema     :production
-   :com.fulcrologic.rad.database-adapters.datomic/schema :production})
+  {::attr/identity? true
+   ::attr/schema    :production})
 
 (defattr label :category/label :string
-  {::attr/required?                                          true
-   ::attr/identities                                         #{:category/id}
-   :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/max-length     120
-   :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:category/id}
-   :com.fulcrologic.rad.database-adapters.datomic/schema     :production})
+  {::attr/required?                                      true
+   ::attr/identities                                     #{:category/id}
+   :com.fulcrologic.rad.database-adapters.sql/max-length 120
+   ::attr/identities                                     #{:category/id}
+   ::attr/schema                                         :production})
 
 (defattr all-categories :category/all-categories :ref
   {::attr/target :category/id
