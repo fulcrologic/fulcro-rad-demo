@@ -8,8 +8,12 @@
     [com.example.components.connection-pools]
     [com.example.components.database-queries :as queries]
     [com.example.model.account :as account]
+    [com.example.model.category :as category]
+    [com.example.model :refer [all-attributes]]
     [com.fulcrologic.rad.attributes :as attr]
     [com.fulcrologic.rad.database-adapters.sql :as rad.sql]
+    [com.fulcrologic.rad.database-adapters.sql.migration :as mig]
+    [com.fulcrologic.rad.database-adapters.sql.schema :as schema]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.resolvers :as res]
     [mount.core :as mount]
@@ -29,10 +33,14 @@
 
 (defn add-namespace [nspc k] (keyword nspc (name k)))
 (comment
-  (sql/query (get-jdbc-datasource) ["SELECT * FROM account WHERE email = ?" "sam@example.com"] )
-  (sql/query (get-jdbc-datasource) [
+  (schema/tables-and-columns (attr/attribute-map account/attributes) account/name)
+  (mig/attr->ops :production (attr/attribute-map account/attributes) account/name)
+  (jdbc/execute! (get-jdbc-datasource) [(mig/automatic-schema :production all-attributes)])
 
-                                    "SELECT id,name,active FROM account WHERE id IN ('ffffffff-ffff-ffff-ffff-000000000001','ffffffff-ffff-ffff-ffff-000000000002','ffffffff-ffff-ffff-ffff-000000000003','ffffffff-ffff-ffff-ffff-000000000004')"])
+  (sql/query (get-jdbc-datasource) ["show tables"])
+  (sql/query (get-jdbc-datasource) ["show columns from address"])
+  (sql/query (get-jdbc-datasource) ["SELECT * FROM account WHERE email = ?" "sam@example.com"])
+  (sql/query (get-jdbc-datasource) ["SELECT id,name,active FROM account WHERE id IN ('ffffffff-ffff-ffff-ffff-000000000001','ffffffff-ffff-ffff-ffff-000000000002','ffffffff-ffff-ffff-ffff-000000000003','ffffffff-ffff-ffff-ffff-000000000004')"])
   (sql/insert! (get-jdbc-datasource) "account" {:id (new-uuid 1) :name "Tony"})
   (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"]))
 

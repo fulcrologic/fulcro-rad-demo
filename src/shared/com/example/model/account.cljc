@@ -19,22 +19,23 @@
     [com.fulcrologic.fulcro.ui-state-machines :as uism]
     [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
-(defattr id :account/id :uuid
-  {::attr/identity?                                      true
+(defattr id :account/id :long
+  {::attr/identity?                                          true
    ;; NOTE: These are spelled out so we don't have to have either on classpath, which allows
    ;; independent experimentation. In a normal project you'd use ns aliasing.
-   :com.fulcrologic.rad.database-adapters.datomic/schema :production
-   :com.fulcrologic.rad.database-adapters.sql/schema     :production
-   :com.fulcrologic.rad.database-adapters.sql/table      "account"
-   ::auth/authority                                      :local})
+   :com.fulcrologic.rad.database-adapters.datomic/schema     :production
+   :com.fulcrologic.rad.database-adapters.datomic/native-id? true
+   :com.fulcrologic.rad.database-adapters.sql/schema         :production
+   :com.fulcrologic.rad.database-adapters.sql/table          "account"
+   ::auth/authority                                          :local})
 
 (defattr email :account/email :string
-  {:com.fulcrologic.rad.database-adapters.datomic/schema           :production
+  {::attr/identities                                               #{:account/id}
+   ::attr/required?                                                true
+   :com.fulcrologic.rad.database-adapters.datomic/schema           :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids       #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
    :com.fulcrologic.rad.database-adapters.sql/schema               :production
-   ::attr/identities                                               #{:account/id}
-   ::attr/required?                                                true
    ::auth/authority                                                :local})
 
 
@@ -138,10 +139,10 @@
 (defattr addresses :account/addresses :ref
   {::attr/target                                             :address/id
    ::attr/cardinality                                        :many
+   ::attr/identities                                         #{:account/id}
    :com.fulcrologic.rad.database-adapters.datomic/schema     :production
    :com.fulcrologic.rad.database-adapters.datomic/entity-ids #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/schema         :production
-   :com.fulcrologic.rad.database-adapters.sql/tables         #{"account"}
    :db/isComponent                                           true
    ::auth/authority                                          :local})
 
