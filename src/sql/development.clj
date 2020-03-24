@@ -41,7 +41,8 @@
 
   (sql/query (get-jdbc-datasource) ["show tables"])
   (sql/query (get-jdbc-datasource) ["show columns from address"])
-  (sql/query (get-jdbc-datasource) ["SELECT * FROM account WHERE email = ?" "sam@example.com"])
+  (sql/query (get-jdbc-datasource) ["SELECT account.id, array_agg(address.id) AS addrs FROM account LEFT JOIN address ON address.account_addresses_account_id = account.id
+  WHERE email IN ('sam@example.com', 'rose@example.com') GROUP BY account.id" ])
   (sql/query (get-jdbc-datasource) ["SELECT id,name,active FROM account WHERE id IN ('ffffffff-ffff-ffff-ffff-000000000001','ffffffff-ffff-ffff-ffff-000000000002','ffffffff-ffff-ffff-ffff-000000000003','ffffffff-ffff-ffff-ffff-000000000004')"])
   (sql/insert! (get-jdbc-datasource) "account" {:id (new-uuid 1) :name "Tony"})
   (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"]))
@@ -58,6 +59,12 @@
      :password            (attr/encrypt password salt iterations)}
     add-ons))
 
+(defn new-address [id street & {:as add-ons}]
+  (merge
+    {:id     id
+     :street street}
+    add-ons))
+
 (defn seed! []
   (let [db         (get-jdbc-datasource)
         salt       "lkjhasdf908dasyu"
@@ -69,6 +76,16 @@
                  (new-account (new-uuid 4) "Bill" "bill@example.com" "letmein" salt iterations)]]
       (try
         (sql/insert! db "account" row)
+        (catch Exception e
+          (log/error e row))))
+    (doseq [row [(new-address (new-uuid 10) "123 Main St" :account_addresses_account_id (new-uuid 2))
+                 (new-address (new-uuid 11) "125 Main St" :account_addresses_account_id (new-uuid 2))
+                 (new-address (new-uuid 12) "128 Main St" :account_addresses_account_id (new-uuid 2))
+                 (new-address (new-uuid 13) "128 Main St" :account_addresses_account_id (new-uuid 3))
+                 (new-address (new-uuid 14) "128 Main St" :account_addresses_account_id (new-uuid 3))
+                 ]]
+      (try
+        (sql/insert! db "address" row)
         (catch Exception e
           (log/error e row))))))
 
