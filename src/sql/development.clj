@@ -87,9 +87,11 @@
     (doseq [row [(new-address (new-uuid 300) "222 Other")
                  (new-account (new-uuid 100) "Tony" "tony@example.com" "letmein" salt iterations
                    :account/primary_address (new-uuid 300)
+                   :account/role ":account.role/superuser"
                    #_#_:time-zone/zone-id ":time-zone.zone-id/America-Los_Angeles")
                  (new-address (new-uuid 1) "111 Main St." :account_addresses_account_id (new-uuid 100))
-                 (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations)
+                 (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations
+                   :account/role ":account.role/user")
                  (new-account (new-uuid 102) "Sally" "sally@example.com" "letmein" salt iterations)
                  (new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein" salt iterations)
                  (new-category (new-uuid 1000) "Tools")
