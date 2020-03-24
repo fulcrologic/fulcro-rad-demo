@@ -11,6 +11,7 @@
     [com.example.model.timezone :as timezone]
     [com.wsscode.pathom.connect :as pc]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.middleware.save-middleware :as save-middleware]
@@ -76,6 +77,7 @@
 (defattr name :account/name :string
   {::auth/authority   :local
    ::form/field-label "Name"
+   ;::report/field-formatter (fn [v] (str "ATTR" v))
    ::attr/identities  #{:account/id}
    ;::attr/valid?                                             (fn [v] (str/starts-with? v "Bruce"))
    ;::attr/validation-message                                 (fn [v] "Your name's not Bruce then??? How 'bout we just call you Bruce?")

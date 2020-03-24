@@ -69,31 +69,31 @@
                                                                                   :prepend))}}})
 
 (defsc AccountListItem [this
-                        {:account/keys [id name active?] :as props}
-                        {:keys [report-instance row-class ::report/idx]}]
-  {:query [:account/id :account/name :account/active?]
-   :ident :account/id}
-  (let [{::report/keys [edit-form]} (comp/component-options report-instance)]
-    (dom/div :.item
-      (dom/i :.large.github.middle.aligned.icon)
-      (div :.content
-        (if edit-form
-          (dom/a :.header {:onClick (fn [] (form/edit! this edit-form id))} name)
-          (dom/div :.header name))
-        (dom/div :.description
-          (str (if active? "Active" "Inactive"))))))
-  #_(dom/tr
-      (dom/td name)
-      (dom/td (str active?))))
-
-(def ui-account-list-item (comp/computed-factory AccountListItem {:keyfn :account/id}))
+                            {:account/keys [id name active?] :as props}
+                            {:keys [report-instance row-class ::report/idx]}]
+      {:query [:account/id :account/name :account/active?]
+       :ident :account/id}
+      #_(let [{::report/keys [edit-form]} (comp/component-options report-instance)]
+        (dom/div :.item
+          (dom/i :.large.github.middle.aligned.icon)
+          (div :.content
+            (if edit-form
+              (dom/a :.header {:onClick (fn [] (form/edit! this edit-form id))} name)
+              (dom/div :.header name))
+            (dom/div :.description
+              (str (if active? "Active" "Inactive"))))))
+      (dom/tr
+          (dom/td :.right.aligned name)
+          (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
   {::report/title                    "All Accounts"
-   ;   ::report/layout-style             :list
+   ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
    ::report/edit-form                AccountForm
+   ::report/field-formatters         {:account/name (fn [v] v)}
+   ;::report/column-headings          {:account/name "Account Name"}
    ::report/columns                  [account/name account/active?]
    ::report/column-key               account/id
    ::report/source-attribute         :account/all-accounts
