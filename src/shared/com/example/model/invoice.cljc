@@ -21,10 +21,12 @@
    ::attr/schema                :production})
 
 (defattr line-items :invoice/line-items :ref
-  {::attr/target      :line-item/id
-   ::attr/cardinality :many
-   ::attr/identities  #{:invoice/id}
-   ::attr/schema      :production})
+  {::attr/target                                                   :line-item/id
+   :com.fulcrologic.rad.database-adapters.sql/delete-referent?     true
+   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
+   ::attr/cardinality                                              :many
+   ::attr/identities                                               #{:invoice/id}
+   ::attr/schema                                                   :production})
 
 (defattr total :invoice/total :decimal
   {::attr/identities #{:invoice/id}
