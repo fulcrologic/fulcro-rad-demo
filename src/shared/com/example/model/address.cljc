@@ -1,39 +1,23 @@
 (ns com.example.model.address
   (:require
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]))
 
-(defattr id ::id :uuid
-  {::attr/unique?   true
-   ::datomic/schema :production
-   ::datomic/entity ::address
-   ::attr/index?    true
-   ::attr/required? true
-   ::auth/authority :local})
+(defattr id :address/id :uuid
+  {::attr/identity?                                          true
+   :com.fulcrologic.rad.database-adapters.sql/table          "address"
+   ::attr/schema                                             :production
+   ::auth/authority                                          :local})
 
-(defattr street ::street :string
-  {::attr/index?        true
-   ::datomic/entity-ids #{::id}
-   ::datomic/schema     :production
-   ::datomic/entity     ::address
-   ::attr/required?     true})
+(defattr street :address/street :string
+  {::attr/schema     :production
+   ::attr/identities #{:address/id} })
 
-(defattr city ::city :string
-  {::attr/index?        true
-   ::datomic/entity-ids #{::id}
-   ::datomic/schema     :production
-   ::datomic/entity     ::address
-   ::attr/required?     true})
+(defattr city :address/city :string
+  {::attr/schema     :production
+   ::attr/identities #{:address/id} })
 
-(defattr state ::state :enum
-  {::attr/enumerated-values #{:AZ :AL :AK :CA :CT :DE :GA :HI :KS :MS :MO :MN :OR :WA}
-   ::datomic/entity-ids     #{::id}
-   ::datomic/schema         :production
-   ::datomic/entity         ::address
-   ::attr/index?            true
-   ::attr/required?         true
-   ::attr/labels            {:AZ "Arizona"
+(def states #:address.state {:AZ "Arizona"
                              :AL "Alabama"
                              :AK "Alaska"
                              :CA "California"
@@ -45,13 +29,16 @@
                              :MS "Mississippi"
                              :MO "Missouri"
                              :OR "Oregon"
-                             :WA "Washington"}})
+                             :WA "Washington"})
 
-(defattr zip ::zip :string
-  {::attr/index?        true
-   ::datomic/entity-ids #{::id}
-   ::datomic/schema     :production
-   ::datomic/entity     ::address
-   ::attr/required?     true})
+(defattr state :address/state :enum
+  {::attr/enumerated-values (set (keys states))
+   ::attr/identities        #{:address/id}
+   ::attr/schema            :production
+   ::attr/enumerated-labels states})
+
+(defattr zip :address/zip :string
+  {::attr/identities #{:address/id}
+   ::attr/schema     :production})
 
 (def attributes [id street city state zip])

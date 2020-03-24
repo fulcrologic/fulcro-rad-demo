@@ -1,1 +1,17 @@
-{}
+{ :ring.middleware/defaults-config {:params    {:keywordize true
+                                               :multipart  true
+                                               :nested     true
+                                               :urlencoded true}
+                                   :cookies   true
+                                   :responses {:absolute-redirects     true
+                                               :content-types          true
+                                               :default-charset        "utf-8"
+                                               :not-modified-responses true}
+                                   :session   true
+                                   :static    {:resources "public"}
+                                   :security  {:anti-forgery   true
+                                               :hsts           true
+                                               :ssl-redirect   false
+                                               :frame-options  :sameorigin
+                                               :xss-protection {:enable? true
+                                                                :mode    :block}}}}

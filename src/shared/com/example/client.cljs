@@ -2,40 +2,41 @@
   (:require
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
-    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.fulcrologic.fulcro.application :as app]
-    [com.fulcrologic.fulcro.networking.http-remote :as http]
-    [com.fulcrologic.rad.controller :as controller]
+    [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.fulcro.ui-state-machines :as uism]
-    [com.fulcrologic.fulcro.components :as comp]
-    [com.fulcrologic.fulcro.data-fetch :as df]
-    [com.fulcrologic.rad.attributes :as attr]
+    [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
+    [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
     [taoensso.timbre :as log]
-    [com.example.model.account :as account]
-    [com.example.model.tag :as tag]
-    [com.example.model.address :as address]))
+    [taoensso.tufte :as tufte :refer [profile]]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
+    [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
-;; TODO: Constructor function. Allow option to completely autogenerate forms if desired.
+(defonce stats-accumulator
+  (tufte/add-accumulating-handler! {:ns-pattern "*"}))
 
-(defonce app (app/fulcro-app {:remotes              {:remote (http/fulcro-http-remote {})}
-                              :global-eql-transform (fn [ast]
-                                                      (let [kw-namespace (fn [k] (and (keyword? k) (namespace k)))]
-                                                        (df/elide-ast-nodes ast (fn [k]
-                                                                                  (let [ns (some-> k kw-namespace)]
-                                                                                    (or
-                                                                                      (= k '[:com.fulcrologic.fulcro.ui-state-machines/asm-id _])
-                                                                                      (= k df/marker-table)
-                                                                                      (= k ::fs/config)
-                                                                                      (and
-                                                                                        (string? ns)
-                                                                                        (= "ui" ns))))))))
-                              :client-did-mount     (fn [app]
-                                                      (auth/start! app {:local (uism/with-actor-class (comp/get-ident LoginForm {}) LoginForm)})
-                                                      (controller/start! app
-                                                        {::attr/all-attributes  [account/attributes tag/attributes address/attributes]
-                                                         ::controller/home-page ["landing-page"]
-                                                         ::controller/router    ui/MainRouter
-                                                         ::controller/id        :main-controller}))}))
+(defonce app (rad-app/fulcro-rad-app
+               {:client-did-mount (fn [app]
+                                    (log/merge-config! {:output-fn prefix-output-fn
+                                                        :appenders {:console (console-appender)}})
+                                    (auth/start! app [LoginForm])
+                                    (dr/change-route app (dr/path-to ui/LandingPage)))}))
 
-(defn start [] (app/mount! app Root "app"))
+(defn refresh []
+  (app/mount! app Root "app"))
+
+(comment
+  (when-let [m (not-empty @stats-accumulator)]
+    (js/console.log
+      (tufte/format-grouped-pstats m)))
+  (dr/change-route app (dr/path-to ui/AccountForm {:action "new"
+                                                   :id     (str (random-uuid))})))
+
+(defn init []
+  (log/info "Starting App")
+  ;; a default tz until they log in
+  (datetime/set-timezone! "America/Los_Angeles")
+  (form/install-ui-controls! app sui/all-controls)
+  (app/mount! app Root "app"))
+

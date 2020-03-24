@@ -1,215 +1,55 @@
-= Datomic Database Plugin
+= Fulcro RAD Demo
 
-This is a plugin for Fulcro RAD that adds support for using Datomic databases as the back-end technology.
+This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
+common to any project, and then separate source directories that have specific files that would be
+needed to work with specific back-end technologies (currently SQL and Datomic).
 
-== Conventions
+== Building the SPA
 
-The following namespace aliases are used in the content of this document:
+You must compile the CLJS source to run the client. If you want to be
+able to edit it, just start a shadow-cljs watch:
 
-[source, clojure]
+[source, bash]
 -----
-(ns x
-  (:require
-    [com.fulcrologic.rad.attributes :as attr]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]))
------
-
-== Schemas
-
-It is common for larger applications to desire some kind of sharding of their data, particularly
-in cases of high write load.  The Datomic plugin has you model attributes on a Datomic schema
-which can then be applied to any number of runtime databases in your application. Of course, you
-must have some scheme for selecting the *correct* runtime database for mutations and read resolvers
-during operation.
-
-=== Attribute Facets
-
-Every attribute in the system that is stored in Datomic using this plugin *must* include
-a `::datomic/schema <k>` entry, where `<k>` is a keyword representing a schema name. All attributes
-that share the same schema name will be stored together in a database that has that schema (see
-Selecting a Database During Operation).
-
-The following common attribute keys are supported automatically:
-
-`::attr/unique?`:: Causes the attribute to be a unique *value*, unless a Datomic-specific
-override for uniqueness is supplied or the attribute is marked as an `::attr/identity?`.
-`::attr/identity?`:: Causes the attribute to be a unique *identity*. If supplied, then `::attr/unique?` is
-assumed.
-`::attr/cardinality`:: `:one` or `:many` (or you can specify it with normal datomic keys).
-
-The plugin-specific attribute parameters are:
-
-`::datomic/schema keyword`:: (required) A name that groups together attributes that go together in a schema
-on a database. A schema can be used on any number of databased (e.g. for sharding).
-`::datomic/entity-ids #{k k2 ...}`:: Required on *non*-identity attributes.
-A set of attribute keys that are `:attr/identity? true`. This
-set indicates that the attribute can be *placed* on an entity that is identified by one of those identity attributes.
-This allows the Datomic plugin to figure out which properties can be co-located on an entity for storage
-in form saves and queries in resolvers. It is a set in order to support the fact that Datomic allows
-an attribute to appear on any entity, but your domain model will put it on a more limited subset of
-different entities. Failing to list this entry will result in failure to generate resolvers
-or form save logic for the attribute.
-
-*Any* of the normal Datomic schema definition attributes can be included as well (e.g. `:db/cardinality`), and
-will take precedence over anything above. Be careful when changing these, as the result can cause
-incompatible change errors.
-
-=== Automatic Generation
-
-During development you may choose to create a transaction that can be used to create/update
-the schema in one or more Datomic databases. This feature is will work as long as your team
-follows a strict policy of only ever making compatible changes to schema (e.g. mostly additions).
-
-This feature is great for early development, but it may become necessary over time to
-adopt a migration system or other more manual schema management policy. This feature
-is therefore easy to opt in/out of at any time.
-
-You can pull the current generated schema from the attribute database using
-`(datomic/automatic-schema schema-key)`.  NOTE: You must require all namespaces in
-your model that define attributes to ensure that they are all included in the generated
-schema.
-
-==== Enumerations
-
-The idiomatic way to represent enumerations in Datomic is with a ref and a set of entities known by
-well-known idents. The following is supported during automatic schema generation:
-
-[source, clojure]
------
-(new-attribute :address/state :enum
-  {:attr/enumerated-values #{:AL :address.state/CA {:db/ident :address.state/OR :db/doc "Oregon"}}})
+$ yarn
+$ shadow-cljs watch main
 -----
 
-All three of the above forms are allowed. An unqualified keyword will be auto-qualified (AL and CA above
-could be represented either way), and a map will be treated like a full-blown entity definition
-(will be passed through untouched to the schema).
+if you don't have `yarn`, use `npm install` instead.
 
-=== Validation
+== Running an SQL-based Server
 
-If you are not using automatic schema generation then it is recommended that you at least
-enable schema *validation*.  This feature can be used to check the schema of an existing
-database against the current code of your attributes to detect inconsistencies between
-the two at startup. This ensures you will not run into runtime errors due to code that
-does not match the schema of the target database.
+The example code should work with most SQL databases (and defaults to using an in-memory H2 db). The data source
+is configured in the `defaults.edn` config file in the sql source
+directory. See the HikariCP connection pool documentation.
 
-TODO: Write the validator, and document it.
+The SQL example has a custom `development` namespace in the `src/sql` source
+folder, along with components needed to run that server.
 
-== Databases
+You can start the server-side version for SQL using the deps aliases that
+set up the proper classpath:
 
-It is up to you to configure, create, migrate, and manage your database infrastructure; however,
-this plugin comes with various ustilities that can help you set up and manage the runtime
-environment. You *must* follow certain conventions for things to work at all, and *may choose* to
-opt into various features that make it easy to get started and evolve your system.
-
-== Runtime Operation
-
-=== Mocked Connections during Development
-
-The Datomock library is a particularly useful tool during experimental phases of development where
-you have yet to stabilize a particular portion of schema (attribute declarations). It allows you to
-"fork" a real database connection such that any changes (to schema or otherwise) are thrown away on
-application restarts.
-
-This allows you to play with new schema without worrying about incompatible schema changes.
-
-It is also quite useful for testing, since it can be used to pre-create (and cache) an in memory database
-that can be used to exercise Datomic code against your schema without the complete overhead of
-starting an external database with new schema.
-
-=== Selecting a Database During Operation
-
-When you set up your Pathom parser you can provide plugins that modify the environment that will
-be passed by Pathom to all resolvers and mutations on the server.  The generated resolvers and mutations
-for the Datomic plugin need to be able to decide *which* database should be used for a
-particular schema in the context of the request. Atomic consistency on reads requires that such a database
-be provided as a value, whereas mutations will need a connection.
-
-The `env` must therefore be augmented to contain the following well-known things:
-
-`::datomic/connections` - A map, keyed by schema, of the database connection that should be used
-in the context of the current request.
-`::datomic/databases` - A map, keyed by schema, of the most recent database value that
-should be used in the context of the current request (for consistent reads across multiple resolvers).
-
-TODO: Supply helper funtions that can help with this
-
-== Testing
-
-Custom mutations and resolvers are easiest to write if you have a simple way of
-testing them against a database that looks like your real one.
-This plugin supports some helpful testing tools that leverage Datomock to give you a
-fast an consistent starting point for your tests.
-
-=== Seeding Development Data
-
-We recommend using UUID domain IDs for all entities (e.g. `:account/id`). This not only enables
-much of the resolver logic, it also allows you to easily and consistently seed development
-data for things like live coding and tests.
-
-The `com.fulcrologic.rad.ids/new-uuid` function can be used to generate a new random UUID in CLJC, but
-it can also be used to generate a constant (well-known) UUID for testing.
-
-=== A Sample Test
-
-The core function to use is `datomic/empty-db-connection`, which can work with
-automatically-generated schema or a manual schema. It returns a Datomic connection
-which has the supplied schema (and is memoized for fast startup on sequences of tests).
-
-A typical test might look like the following:
-
-[source, clojure]
+[source, bash]
 -----
-(deftest sample-test
-  ;; the empty-db-connection can accept a schema txn if needed.
-  (let [conn        (datomic/empty-db-connection :production)
-        sample-data [{::acct/id   (new-uuid 1)
-                      ::acct/name "Joe"}]]
-    @(d/transact conn sample-data)
-
-    (let [db (d/db conn)
-          a  (d/pull db [::acct/name] [::acct/id (new-uuid 1)])]
-      (is (= "Joe" (::acct/name a))))))
+$ clj -A:dev:sql
+user=> (clojure.core/require 'development)
+user=> (development/go)
 -----
 
-NOTE: The connection is memoized based on the schema key (not any supplied migration data). You
-can use `(datomic/reset-test-schema k)` to forget the current memoized version.
+== Running a Datomic-based Server
 
-== Resolver Generation
+The example code for Datomic components is in the `src/datomic` folder, along with a custom
+`development.clj`. It defaults to using an in-memory datomic-free database.
 
+You can run it with the `:datomic` deps alias:
 
+[source, bash]
+-----
+$ clj -A:dev:datomic
+user=> (clojure.core/require 'development)
+user=> (development/go)
+-----
 
-== Contributing to This Library
+== Restarting
 
-We use git (with git flow) for source control. Please branch and make PRs against the `develop` branch.
-
-The source of this repository includes an example application that can be used when developing features.
-It is enabled on the source path using the Clj deps `dev` alias. This alias also overrides the `fulcro-rad` dependency
-to a local disk directory (you need to check out and edit deps). This allows you to work on the RAD source code
-at the same time as the Datomic and example code.
-
-In general you will clone both this repository and the `fulcro-rad` one as well.
-
-You will need Datomic using a PostgreSQL backend to run the example. Follow the instructions for setting that up, and then
-edit the `defaults.edn` file in `src/example/config` and update the database parameters to match your system.
-
-Once you have Datomic running you'll need to start a cljs build.
-
-[source,bash]
-------
-$ shadow-cljs server
-------
-
-Then go to dashboard URL and start the `example` CLJS build at http://localhost:9630. Then, you'll start a REPL
-for working on the CLJ stuff:
-
-[source,bash]
-------
-$ clj -A:dev
-user=> (require 'development)
-user=> (in-ns 'development)
-development=> (go)
-------
-
-will start a server and should make the demo accessible at http://localhost:3000/index.html. The `(restart)` function
-will stop the server, refresh server source, and restart it.
-
+The `development/restart` will stop the server, reload source, and start the server.
