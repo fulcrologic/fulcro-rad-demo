@@ -4,12 +4,14 @@
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.example.model :as model]
+    [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [com.fulcrologic.rad.report :as report]))
 
 (def invoice-validator (fs/make-validator (fn [form field]
                                             (let [value (get form field)]
@@ -58,6 +60,15 @@
    ::form/route-prefix  "invoice"
    ::form/title         "Edit Invoice"})
 
-(comment
-  (comp/component-options InvoiceForm))
+(report/defsc-report InvoiceList [this props]
+  {::report/title            "All Invoices"
+   ::report/source-attribute :invoice/all-invoices
+   ::report/column-key       invoice/id
+   ::report/columns          [invoice/date account/name invoice/total]
+   ::report/column-headings  {:account/name "Customer Name"}
+   ::report/row-actions      {:delete (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}
+   ::report/edit-form        InvoiceForm
+   ::report/run-on-mount?    true
+   ::report/route            "invoices"})
+
 

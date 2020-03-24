@@ -14,7 +14,8 @@
     [com.example.model :refer [all-attributes]]
     [com.example.model.account :as account]
     [com.example.model.timezone :as timezone]
-    [com.fulcrologic.rad.attributes :as rad.attr]))
+    [com.fulcrologic.rad.attributes :as rad.attr]
+    [com.example.model.invoice :as invoice]))
 
 (defstate parser
   :start
@@ -28,4 +29,5 @@
      form/resolvers
      (blob/resolvers all-attributes)
      account/resolvers
+     invoice/resolvers
      timezone/resolvers]))

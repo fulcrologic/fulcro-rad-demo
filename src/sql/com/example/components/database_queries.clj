@@ -10,7 +10,7 @@
 (defn get-all-accounts
   [env query-params]
   (let [data-source    (get-in env [::sql/connection-pools :production])
-        show-inactive? (:ui/show-inactive? query-params)
+        show-inactive? (:show-inactive? query-params)
         sql            (str "SELECT id FROM account" (when-not show-inactive? " WHERE active = true"))
         rows           (mapv #(hash-map :account/id (:id %)) (jdbc/query data-source [sql] {:builder-fn query/row-builder}))]
     rows))
@@ -30,6 +30,14 @@
         query-params ["SELECT id FROM invoice"]
         rows         (mapv #(hash-map :invoice/id (:id %)) (jdbc/query data-source query-params {:builder-fn query/row-builder}))]
     rows))
+
+(defn get-invoice-customer-id
+  [env invoice-id]
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params ["SELECT account.id FROM account INNER JOIN invoice on invoice.customer = account.id WHERE invoice.id = ?" invoice-id]]
+    (-> (jdbc/query data-source query-params {:builder-fn query/row-builder})
+      first
+      :id)))
 
 (defn get-all-categories
   [env _]

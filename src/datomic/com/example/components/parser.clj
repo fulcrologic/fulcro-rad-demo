@@ -28,4 +28,5 @@
      form/resolvers
      (blob/resolvers all-attributes)
      account/resolvers
+     invoice/resolvers
      timezone/resolvers]))

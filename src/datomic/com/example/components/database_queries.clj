@@ -8,7 +8,7 @@
 (defn get-all-accounts
   [env query-params]
   (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
-    (let [ids (if (:ui/show-inactive? query-params)
+    (let [ids (if (:show-inactive? query-params)
                 (d/q [:find '[?uuid ...]
                       :where
                       ['?dbid :account/id '?uuid]] db)
@@ -42,6 +42,17 @@
                     :where
                     ['?dbid :invoice/id '?uuid]] db)]
       (mapv (fn [id] {:invoice/id id}) ids))
+    (log/error "No database atom for production schema!")))
+
+(defn get-invoice-customer-id
+  [env invoice-id]
+  (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
+    (d/q '[:find ?account-uuid .
+           :in $ ?invoice-uuid
+           :where
+           [?i :invoice/id ?invoice-uuid]
+           [?i :invoice/customer ?c]
+           [?c :account/id ?account-uuid]] db invoice-id)
     (log/error "No database atom for production schema!")))
 
 (defn get-all-categories

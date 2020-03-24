@@ -45,6 +45,13 @@
    ::attr/identities  #{:invoice/id}
    ::attr/schema      :production})
 
+;; Fold account details into the invoice details, if desired
+#?(:clj
+   (pc/defresolver customer-id [env {:invoice/keys [id]}]
+     {::pc/input  #{:invoice/id}
+      ::pc/output [:account/id]}
+     {:account/id (queries/get-invoice-customer-id env id)}))
+
 (defattr all-invoices :invoice/all-invoices :ref
   {::attr/target    :invoice/id
    ::auth/authority :local
@@ -54,4 +61,5 @@
                          {:invoice/all-invoices (queries/get-all-invoices env query-params)}))})
 
 (def attributes [id date line-items customer all-invoices total])
-
+#?(:clj
+   (def resolvers [customer-id]))

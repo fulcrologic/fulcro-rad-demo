@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as str]
     [com.example.model :as model]
-    [com.example.model.account :as acct]
+    [com.example.model.account :as account]
     [com.example.model.timezone :as timezone]
     [com.example.ui.address-forms :refer [AddressForm]]
     [com.example.ui.file-forms :refer [FileForm]]
@@ -12,6 +12,7 @@
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.report :as report]
+    [taoensso.timbre :as log]
     [com.fulcrologic.rad.blob :as blob]))
 
 (def account-validator (fs/make-validator (fn [form field]
@@ -31,14 +32,14 @@
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
-  {::form/id                  acct/id
-   ::form/attributes          [acct/avatar
-                               acct/name
-                               acct/primary-address
+  {::form/id                  account/id
+   ::form/attributes          [account/avatar
+                               account/name
+                               account/primary-address
                                ;; TODO: Fix performance of large dropdowns (time zone)
-                               acct/role timezone/zone-id acct/email
-                               acct/active? acct/addresses
-                               acct/files]
+                               account/role timezone/zone-id account/email
+                               account/active? account/addresses
+                               account/files]
    ::form/default             {:account/active?         true
                                :account/primary-address {}
                                :account/addresses       [{}]}
@@ -67,30 +68,39 @@
                                                                                   (< (count (:account/addresses parent)) 4)
                                                                                   :prepend))}}})
 
-(defsc AccountListItem [this {:account/keys [id name active? last-login] :as props}]
-  {::report/columns         [:account/name :account/active? :account/last-login]
-   ::report/column-headings ["Name" "Active?" "Last Login"]
-   ::report/row-actions     {:delete (fn [this id] (form/delete! this :account/id id))}
-   ::report/edit-form       AccountForm
-   :query                   [:account/id :account/name :account/active? :account/last-login]
-   :ident                   :account/id}
-  #_(dom/div :.item
+(defsc AccountListItem [this
+                        {:account/keys [id name active?] :as props}
+                        {:keys [report-instance row-class ::report/idx]}]
+  {:query [:account/id :account/name :account/active?]
+   :ident :account/id}
+  (let [{::report/keys [edit-form]} (comp/component-options report-instance)]
+    (dom/div :.item
       (dom/i :.large.github.middle.aligned.icon)
       (div :.content
-        (dom/a :.header {:onClick (fn [] (form/edit! this AccountForm id))} name)
+        (if edit-form
+          (dom/a :.header {:onClick (fn [] (form/edit! this edit-form id))} name)
+          (dom/div :.header name))
         (dom/div :.description
-          (str (if active? "Active" "Inactive") ". Last logged in " last-login)))))
+          (str (if active? "Active" "Inactive"))))))
+  #_(dom/tr
+      (dom/td name)
+      (dom/td (str active?))))
 
-(def ui-account-list-item (comp/factory AccountListItem {:keyfn :account/id}))
+(def ui-account-list-item (comp/computed-factory AccountListItem {:keyfn :account/id}))
 
 (report/defsc-report AccountList [this props]
   {::report/title                    "All Accounts"
+   ;   ::report/layout-style             :list
+   ;::report/row-style                :list
+   ;::report/BodyItem                 AccountListItem
+   ::report/edit-form                AccountForm
+   ::report/columns                  [account/name account/active?]
+   ::report/column-key               account/id
    ::report/source-attribute         :account/all-accounts
-   ::report/BodyItem                 AccountListItem
    ::report/run-on-mount?            true
    ::report/run-on-parameter-change? true
-   ::report/parameters               {:ui/show-inactive? {:type  :boolean
-                                                          :label "Show Inactive Accounts?"}}
-   ::report/initial-parameters       {:ui/show-inactive? false}
+   ::report/parameters               {:show-inactive? {:type  :boolean
+                                                       :label "Show Inactive Accounts?"}}
+   ::report/initial-parameters       {:show-inactive? false}
    ::report/route                    "accounts"})
 
