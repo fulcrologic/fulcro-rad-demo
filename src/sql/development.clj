@@ -42,52 +42,72 @@
   (sql/query (get-jdbc-datasource) ["show tables"])
   (sql/query (get-jdbc-datasource) ["show columns from address"])
   (sql/query (get-jdbc-datasource) ["SELECT account.id, array_agg(address.id) AS addrs FROM account LEFT JOIN address ON address.account_addresses_account_id = account.id
-  WHERE email IN ('sam@example.com', 'rose@example.com') GROUP BY account.id" ])
+  WHERE email IN ('sam@example.com', 'rose@example.com') GROUP BY account.id"])
   (sql/query (get-jdbc-datasource) ["SELECT id,name,active FROM account WHERE id IN ('ffffffff-ffff-ffff-ffff-000000000001','ffffffff-ffff-ffff-ffff-000000000002','ffffffff-ffff-ffff-ffff-000000000003','ffffffff-ffff-ffff-ffff-000000000004')"])
   (sql/insert! (get-jdbc-datasource) "account" {:id (new-uuid 1) :name "Tony"})
   (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"]))
 
-;; TASK: See datomic seeding, and match it (development.clj in datomic src dir)
 (defn new-account [id name email password salt iterations & {:as add-ons}]
-  (merge
-    {:id                  id
-     :name                name
-     :email               email
-     :active              true
-     :password_salt       salt
-     :password_iterations iterations
-     :password            (attr/encrypt password salt iterations)}
-    add-ons))
+  ["account" (merge
+               {:id                  id
+                :name                name
+                :email               email
+                :active              true
+                :password_salt       salt
+                :password_iterations iterations
+                :password            (attr/encrypt password salt iterations)}
+               add-ons)])
 
 (defn new-address [id street & {:as add-ons}]
-  (merge
-    {:id     id
-     :street street}
-    add-ons))
+  ["address" (merge
+               {:id     id
+                :street street}
+               add-ons)])
+
+(defn new-category [id label & {:as add-ons}]
+  ["category" (merge
+                {:id    id
+                 :label label}
+                add-ons)])
+
+(defn new-item [id label price category-id]
+  ["item" {:id       id
+           :name     label
+           :price    price
+           :category category-id}])
 
 (defn seed! []
   (let [db         (get-jdbc-datasource)
         salt       "lkjhasdf908dasyu"
-        iterations 1000]
-    ;(jdbc/execute! db ["DELETE FROM ACCOUNT"])
-    (doseq [row [(new-account (new-uuid 1) "Tony" "tony@example.com" "letmein" salt iterations)
-                 (new-account (new-uuid 2) "Sam" "sam@example.com" "letmein" salt iterations)
-                 (new-account (new-uuid 3) "Rose" "rose@example.com" "letmein" salt iterations)
-                 (new-account (new-uuid 4) "Bill" "bill@example.com" "letmein" salt iterations)]]
+        iterations 1000
+        misc-id    (new-uuid 1003)
+        toys-id    (new-uuid 1002)
+        tools-id   (new-uuid 1000)]
+    (log/info "Seeding development data")
+    (doseq [row [(new-address (new-uuid 300) "222 Other")
+                 (new-account (new-uuid 100) "Tony" "tony@example.com" "letmein" salt iterations
+                   :account/primary_address (new-uuid 300)
+                   #_#_:time-zone/zone-id ":time-zone.zone-id/America-Los_Angeles")
+                 (new-address (new-uuid 1) "111 Main St." :account_addresses_account_id (new-uuid 100))
+                 (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations)
+                 (new-account (new-uuid 102) "Sally" "sally@example.com" "letmein" salt iterations)
+                 (new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein" salt iterations)
+                 (new-category (new-uuid 1000) "Tools")
+                 (new-category (new-uuid 1002) "Toys")
+                 (new-category (new-uuid 1003) "Misc")
+                 (new-item (new-uuid 200) "Widget" 33.99 misc-id)
+                 (new-item (new-uuid 201) "Screwdriver" 4.99 tools-id)
+                 (new-item (new-uuid 202) "Wrench" 14.99 tools-id)
+                 (new-item (new-uuid 203) "Hammer" 14.99 tools-id)
+                 (new-item (new-uuid 204) "Doll" 4.99 toys-id)
+                 (new-item (new-uuid 205) "Robot" 94.99 toys-id)
+                 (new-item (new-uuid 206) "Building Blocks" 24.99 toys-id)]]
       (try
-        (sql/insert! db "account" row)
+        (let [[table entity] row]
+          (sql/insert! db table entity))
         (catch Exception e
           (log/error e row))))
-    (doseq [row [(new-address (new-uuid 10) "123 Main St" :account_addresses_account_id (new-uuid 2))
-                 (new-address (new-uuid 11) "125 Main St" :account_addresses_account_id (new-uuid 2))
-                 (new-address (new-uuid 12) "128 Main St" :account_addresses_account_id (new-uuid 2))
-                 (new-address (new-uuid 13) "128 Main St" :account_addresses_account_id (new-uuid 3))
-                 (new-address (new-uuid 14) "128 Main St" :account_addresses_account_id (new-uuid 3))
-                 ]]
-      (try
-        (sql/insert! db "address" row)
-        (catch Exception e
-          (log/error e row))))))
+    ))
 
 (comment
   (seed!))

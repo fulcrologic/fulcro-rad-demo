@@ -13,21 +13,36 @@
         rows           (mapv #(hash-map :account/id (:ACCOUNT/ID %)) (jdbc/query data-source [sql]))]
     rows))
 
-;; TASK: finish making queries for SQL things
 (defn get-all-items
   [env {:category/keys [id]}]
-  )
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params (if id
+                       ["SELECT id FROM item WHERE category = ?" id]
+                       ["SELECT id FROM item"])
+        rows         (mapv #(hash-map :item/id (:ITEM/ID %)) (jdbc/query data-source query-params))]
+    rows))
 
 (defn get-all-invoices
-  [env query-params]
-  )
+  [env _]
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params ["SELECT id FROM invoice"]
+        rows         (mapv #(hash-map :invoice/id (:INVOICE/ID %)) (jdbc/query data-source query-params))]
+    rows))
 
 (defn get-all-categories
-  [env query-params]
-  )
+  [env _]
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params ["SELECT id FROM category"]
+        rows         (mapv #(hash-map :category/id (:CATEGORY/ID %)) (jdbc/query data-source query-params))]
+    rows))
 
 (defn get-line-item-category [env line-item-id]
-  )
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params [(str
+                        "SELECT item.category FROM item "
+                        "INNER JOIN line_item ON line_item.item = item.id "
+                        "WHERE line_item.id = ?") line-item-id]]
+    {:category/id (:ITEM/CATEGORY (first (jdbc/query data-source query-params)))}))
 
 (defn get-login-info
   "Get the account name, time zone, and password info via a username (email)."

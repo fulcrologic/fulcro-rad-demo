@@ -55,7 +55,6 @@
     (log/error "No database atom for production schema!")))
 
 (defn get-line-item-category [env line-item-id]
-  (log/spy :info line-item-id)
   (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
     (let [id (d/q '[:find ?cid .
                     :in $ ?line-item-id
