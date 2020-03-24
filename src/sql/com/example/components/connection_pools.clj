@@ -4,8 +4,7 @@
     [com.example.model :refer [all-attributes]]
     [com.example.components.config :refer [config]]
     [com.fulcrologic.rad.database-adapters.sql.result-set :as rs]
-    [com.fulcrologic.rad.database-adapters.sql.connection :as pools])
-  (:import (com.zaxxer.hikari HikariDataSource)))
+    [com.fulcrologic.rad.database-adapters.sql.connection :as pools]))
 
 (defstate connection-pools
   :start
