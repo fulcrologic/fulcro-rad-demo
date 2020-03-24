@@ -40,7 +40,7 @@
     (jdbc/execute! (get-jdbc-datasource) [stmt]))
 
   (sql/query (get-jdbc-datasource) ["show tables"])
-  (sql/query (get-jdbc-datasource) ["show columns from address"])
+  (sql/query (get-jdbc-datasource) ["show columns from account"])
   (sql/query (get-jdbc-datasource) ["SELECT account.id, array_agg(address.id) AS addrs FROM account LEFT JOIN address ON address.account_addresses_account_id = account.id
   WHERE email IN ('sam@example.com', 'rose@example.com') GROUP BY account.id"])
   (sql/query (get-jdbc-datasource) ["SELECT id,name,active FROM account WHERE id IN ('ffffffff-ffff-ffff-ffff-000000000001','ffffffff-ffff-ffff-ffff-000000000002','ffffffff-ffff-ffff-ffff-000000000003','ffffffff-ffff-ffff-ffff-000000000004')"])
@@ -88,7 +88,7 @@
                  (new-account (new-uuid 100) "Tony" "tony@example.com" "letmein" salt iterations
                    :account/primary_address (new-uuid 300)
                    :account/role ":account.role/superuser"
-                   #_#_:time-zone/zone-id ":time-zone.zone-id/America-Los_Angeles")
+                   :zone_id ":time-zone.zone-id/America-Los_Angeles")
                  (new-address (new-uuid 1) "111 Main St." :account_addresses_account_id (new-uuid 100))
                  (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations
                    :account/role ":account.role/user")
