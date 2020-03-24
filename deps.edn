@@ -33,7 +33,7 @@
                        :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.4"}}}
 
            :sql       {:extra-paths ["src/sql" "src/sql-tests"]
-                       :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199"}
+                       :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199" :exclusions [org.slf4j/slf4j-nop]}
                                      com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-alpha-1-SNAPSHOT"}}}
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]

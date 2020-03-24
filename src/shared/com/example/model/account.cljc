@@ -24,7 +24,6 @@
    ;; NOTE: These are spelled out so we don't have to have either on classpath, which allows
    ;; independent experimentation. In a normal project you'd use ns aliasing.
    ::attr/schema                                             :production
-   :com.fulcrologic.rad.database-adapters.datomic/native-id? true
    :com.fulcrologic.rad.database-adapters.sql/table          "account"
    ::auth/authority                                          :local})
 

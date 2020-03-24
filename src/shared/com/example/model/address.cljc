@@ -6,7 +6,6 @@
 (defattr id :address/id :uuid
   {::attr/identity?                                          true
    :com.fulcrologic.rad.database-adapters.sql/table          "address"
-   :com.fulcrologic.rad.database-adapters.datomic/native-id? true
    ::attr/schema                                             :production
    ::auth/authority                                          :local})
 

@@ -19,6 +19,10 @@
 
 (set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared" "../fulcro-rad-datomic/src/main" "../fulcro-rad/src/main")
 
+(comment
+  (let [db (d/db (:main datomic-connections))]
+    (d/pull db '[*] [:account/id (new-uuid 100)])))
+
 (defn seed! []
   (let [connection (:main datomic-connections)]
     (when connection

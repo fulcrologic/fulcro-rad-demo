@@ -3,7 +3,8 @@
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
     [com.wsscode.pathom.connect :as pc]
-    #?(:clj [com.example.components.database-queries :as queries])))
+    #?(:clj [com.example.components.database-queries :as queries])
+    [taoensso.timbre :as log]))
 
 (defattr id :item/id :uuid
   {::attr/identity? true
@@ -38,7 +39,7 @@
    ::pc/output      [{:item/all-items [:item/id]}]
    ::pc/resolve     (fn [{:keys [query-params] :as env} _]
                       #?(:clj
-                         {:item/all-items (queries/get-all-items env query-params)}))})
+                         {:item/all-items (queries/get-all-items env (log/spy :info query-params))}))})
 
 (def attributes [id item-name category description price in-stock all-items])
 
