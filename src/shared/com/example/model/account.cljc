@@ -88,6 +88,7 @@
   {::attr/target                                                   :address/id
    ::attr/cardinality                                              :one
    ::attr/identities                                               #{:account/id}
+   :com.fulcrologic.rad.database-adapters.sql/delete-referent?     true
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
    ::attr/schema                                                   :production
    ::auth/authority                                                :local})
@@ -102,30 +103,29 @@
   {
    ;; The field style give you a specific control, and the blob settings
    ;; are used by middleware to target a particular store (you must config).
-   ::form/field-style                                ::blob/file-upload
-   ::blob/accept-file-types                          "image/*"
-   ::blob/store                                      :avatar-images
-   ::blob/remote                                     :remote
+   ::form/field-style       ::blob/file-upload
+   ::blob/accept-file-types "image/*"
+   ::blob/store             :avatar-images
+   ::blob/remote            :remote
 
-   ::attr/identities                                 #{:account/id}
-   ::attr/schema                                     :production
-   :com.fulcrologic.rad.database-adapters.sql/tables #{"account"}
-   ::auth/authority                                  :local})
+   ::attr/identities        #{:account/id}
+   ::attr/schema            :production
+   ::auth/authority         :local})
 
 (defattr files :account/files :ref
-  {::attr/target                                     :file/id
-   ::attr/cardinality                                :many
-   ::attr/identities                                 #{:account/id}
-   ::attr/schema                                     :production
-   :com.fulcrologic.rad.database-adapters.sql/tables #{"account"}})
-
-(defattr addresses :account/addresses :ref
-  {::attr/target      :address/id
+  {::attr/target      :file/id
    ::attr/cardinality :many
    ::attr/identities  #{:account/id}
-   ::attr/schema      :production
-   :db/isComponent    true
-   ::auth/authority   :local})
+   ::attr/schema      :production})
+
+(defattr addresses :account/addresses :ref
+  {::attr/target                                                   :address/id
+   ::attr/cardinality                                              :many
+   ::attr/identities                                               #{:account/id}
+   ::attr/schema                                                   :production
+   :com.fulcrologic.rad.database-adapters.sql/delete-referent?     true
+   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
+   ::auth/authority                                                :local})
 
 (defattr all-accounts :account/all-accounts :ref
   {::attr/target    :account/id
