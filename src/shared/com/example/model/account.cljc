@@ -21,12 +21,12 @@
     [com.fulcrologic.rad.type-support.date-time :as datetime]))
 
 (defattr id :account/id :uuid
-  {::attr/identity?                                          true
+  {::attr/identity?                                 true
    ;; NOTE: These are spelled out so we don't have to have either on classpath, which allows
    ;; independent experimentation. In a normal project you'd use ns aliasing.
-   ::attr/schema                                             :production
-   :com.fulcrologic.rad.database-adapters.sql/table          "account"
-   ::auth/authority                                          :local})
+   ::attr/schema                                    :production
+   :com.fulcrologic.rad.database-adapters.sql/table "account"
+   ::auth/authority                                 :local})
 
 (defattr email :account/email :string
   {::attr/identities                                               #{:account/id}
@@ -182,7 +182,23 @@
      (let [{:keys [before after]} avatar-url]
        value)))
 
+(declare disable-account)
+
+#?(:clj
+   (defmutation set-account-active [env {:account/keys [id active?]}]
+     {::pc/params #{:account/id}
+      ::pc/output [:account/id]}
+     (form/save-form* env {::form/id        id
+                           ::form/master-pk :account/id
+                           ::form/delta     {[:account/id id] {:account/active? {:before (not active?) :after (boolean active?)}}}}))
+   :cljs
+   (defmutation set-account-active [{:account/keys [id active?]}]
+     (action [{:keys [state]}]
+       (swap! state assoc-in [:account/id id :account/active?] active?))
+     (remote [_] true)))
+
 (def attributes [id name primary-address role email password password-iterations password-salt active?
                  addresses all-accounts avatar files])
 
-(def resolvers [login check-session])
+#?(:clj
+   (def resolvers [login check-session set-account-active]))

@@ -7,13 +7,15 @@
     [com.example.ui.address-forms :refer [AddressForm]]
     [com.example.ui.file-forms :refer [FileForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.mutations :refer [defmutation]]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.report :as report]
     [taoensso.timbre :as log]
-    [com.fulcrologic.rad.blob :as blob]))
+    [com.fulcrologic.rad.blob :as blob]
+    [com.fulcrologic.rad.options-util :as opts]))
 
 (def account-validator (fs/make-validator (fn [form field]
                                             (case field
@@ -69,29 +71,29 @@
                                                                                   :prepend))}}})
 
 (defsc AccountListItem [this
-                            {:account/keys [id name active?] :as props}
-                            {:keys [report-instance row-class ::report/idx]}]
-      {:query [:account/id :account/name :account/active?]
-       :ident :account/id}
-      #_(let [{::report/keys [edit-form]} (comp/component-options report-instance)]
-        (dom/div :.item
-          (dom/i :.large.github.middle.aligned.icon)
-          (div :.content
-            (if edit-form
-              (dom/a :.header {:onClick (fn [] (form/edit! this edit-form id))} name)
-              (dom/div :.header name))
-            (dom/div :.description
-              (str (if active? "Active" "Inactive"))))))
-      (dom/tr
-          (dom/td :.right.aligned name)
-          (dom/td (str active?))))
+                        {:account/keys [id name active?] :as props}
+                        {:keys [report-instance row-class ::report/idx]}]
+  {:query [:account/id :account/name :account/active?]
+   :ident :account/id}
+  (let [{:keys [edit-form entity-id]} (report/form-link report-instance props :account/name)]
+    (dom/div :.item
+      (dom/i :.large.github.middle.aligned.icon)
+      (div :.content
+        (if edit-form
+          (dom/a :.header {:onClick (fn [] (form/edit! this edit-form entity-id))} name)
+          (dom/div :.header name))
+        (dom/div :.description
+          (str (if active? "Active" "Inactive"))))))
+  #_(dom/tr
+      (dom/td :.right.aligned name)
+      (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
   {::report/title                    "All Accounts"
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   ::report/edit-form                AccountForm
+   ::report/form-links               {account/name AccountForm}
    ::report/field-formatters         {:account/name (fn [v] v)}
    ;::report/column-headings          {:account/name "Account Name"}
    ::report/columns                  [account/name account/active?]
@@ -99,8 +101,25 @@
    ::report/source-attribute         :account/all-accounts
    ::report/run-on-mount?            true
    ::report/run-on-parameter-change? true
+   ::report/actions                  [{:label  "New Account"
+                                       :action (fn [this] (form/create! this AccountForm))}]
+   ::report/row-actions              [{:label     "Enable"
+                                       :action    (fn [report-instance {:account/keys [id]}]
+                                                    (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                                  :account/active? true})]))
+                                       ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
+                                       :disabled? (fn [_ row-props] (:account/active? row-props))}
+                                      {:label     "Disable"
+                                       :action    (fn [report-instance {:account/keys [id]}]
+                                                    (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                                  :account/active? false})]))
+                                       ;:visible?  (fn [_ row-props] (:account/active? row-props))
+                                       :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
    ::report/parameters               {:show-inactive? {:type  :boolean
                                                        :label "Show Inactive Accounts?"}}
    ::report/initial-parameters       {:show-inactive? false}
    ::report/route                    "accounts"})
 
+(comment
+
+  (comp/get-query AccountList-Row))

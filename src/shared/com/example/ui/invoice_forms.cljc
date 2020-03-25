@@ -8,6 +8,7 @@
     [com.example.model.invoice :as invoice]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
+    [com.example.ui.account-forms :refer [AccountForm]]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [taoensso.timbre :as log]
@@ -66,9 +67,18 @@
    ::report/row-pk           invoice/id
    ::report/columns          [invoice/date account/name invoice/total]
    ::report/column-headings  {:account/name "Customer Name"}
-   ::report/row-actions      {:delete (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}
-   ::report/edit-form        InvoiceForm
+   ::report/actions          [{:label  "New Invoice"
+                               :action (fn [this] (form/create! this InvoiceForm))}
+                              {:label  "New Account"
+                               :action (fn [this] (form/create! this AccountForm))}]
+   ::report/row-actions      [{:label  "Delete"
+                               :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
+   ;; form can be a class or registry key
+   ::report/form-links       {:invoice/date  InvoiceForm
+                              :invoice/total InvoiceForm
+                              :account/name  AccountForm}
    ::report/run-on-mount?    true
    ::report/route            "invoices"})
 
-
+(comment
+  (comp/get-query InvoiceList-Row))
