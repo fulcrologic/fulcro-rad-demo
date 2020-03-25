@@ -4,6 +4,8 @@ This is a demo repository for Fulcro RAD. It includes a shared source directory 
 common to any project, and then separate source directories that have specific files that would be
 needed to work with specific back-end technologies (currently SQL and Datomic).
 
+IMPORTANT: Login is `tony@example.com` with password `letmein`.
+
 == Building the SPA
 
 You must compile the CLJS source to run the client. If you want to be
