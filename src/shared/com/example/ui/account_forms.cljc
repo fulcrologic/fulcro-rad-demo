@@ -95,7 +95,7 @@
    ::report/field-formatters         {:account/name (fn [v] v)}
    ;::report/column-headings          {:account/name "Account Name"}
    ::report/columns                  [account/name account/active?]
-   ::report/column-key               account/id
+   ::report/row-pk                   account/id
    ::report/source-attribute         :account/all-accounts
    ::report/run-on-mount?            true
    ::report/run-on-parameter-change? true

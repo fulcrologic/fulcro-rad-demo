@@ -63,7 +63,7 @@
 (report/defsc-report InvoiceList [this props]
   {::report/title            "All Invoices"
    ::report/source-attribute :invoice/all-invoices
-   ::report/column-key       invoice/id
+   ::report/row-pk           invoice/id
    ::report/columns          [invoice/date account/name invoice/total]
    ::report/column-headings  {:account/name "Customer Name"}
    ::report/row-actions      {:delete (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}
