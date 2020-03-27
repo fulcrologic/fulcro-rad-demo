@@ -42,7 +42,7 @@
                                account/role timezone/zone-id account/email
                                account/active? account/addresses
                                account/files]
-   ::form/default             {:account/active?         true
+   ::form/default-values      {:account/active?         true
                                :account/primary-address {}
                                :account/addresses       [{}]}
    ::form/validator           account-validator
