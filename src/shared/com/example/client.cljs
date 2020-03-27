@@ -26,17 +26,17 @@
 (defn refresh []
   (app/mount! app Root "app"))
 
-(comment
-  (when-let [m (not-empty @stats-accumulator)]
-    (js/console.log
-      (tufte/format-grouped-pstats m)))
-  (dr/change-route app (dr/path-to ui/AccountForm {:action "new"
-                                                   :id     (str (random-uuid))})))
-
 (defn init []
   (log/info "Starting App")
   ;; a default tz until they log in
   (datetime/set-timezone! "America/Los_Angeles")
-  (form/install-ui-controls! app sui/all-controls)
+  (rad-app/install-ui-controls! app sui/all-controls)
   (app/mount! app Root "app"))
 
+(defonce performance-stats (tufte/add-accumulating-handler! {}))
+
+(defn pperf
+  "Dump the currently-collected performance stats"
+  []
+  (let [stats (not-empty @performance-stats)]
+    (println (tufte/format-grouped-pstats stats))))
