@@ -24,6 +24,9 @@
                                     (dr/change-route app (dr/path-to ui/LandingPage)))}))
 
 (defn refresh []
+  ;; hot code reload of installed controls
+  (log/info "Reinstalling controls")
+  (rad-app/install-ui-controls! app sui/all-controls)
   (app/mount! app Root "app"))
 
 (defn init []

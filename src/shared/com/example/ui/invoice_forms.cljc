@@ -1,6 +1,7 @@
 (ns com.example.ui.invoice-forms
   (:require
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.example.model :as model]
@@ -35,6 +36,7 @@
 (form/defsc-form InvoiceForm [this props]
   {::form/id             invoice/id
    ;; So, a special (attr/derived-value key type style) would be useful for form logic display
+   ::form/read-only?     true
    ::form/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]
    ::form/default-values {:invoice/date (datetime/now)}
    ::form/validator      invoice-validator
@@ -59,14 +61,18 @@
 
    ::form/cancel-route   ["landing-page"]
    ::form/route-prefix   "invoice"
-   ::form/title          "Edit Invoice"})
+   ::form/title          (fn [{:invoice/keys [id]}]
+                           (if (tempid/tempid? id)
+                             (str "New Invoice")
+                             (str "Invoice " id)))})
 
 (report/defsc-report InvoiceList [this props]
   {::report/title            "All Invoices"
    ::report/source-attribute :invoice/all-invoices
    ::report/row-pk           invoice/id
-   ::report/columns          [invoice/date account/name invoice/total]
-   ::report/column-headings  {:account/name "Customer Name"}
+   ::report/columns          [invoice/id invoice/date account/name invoice/total]
+   ::report/column-headings  {:invoice/id   "Invoice Number"
+                              :account/name "Customer Name"}
    ::report/actions          [{:label  "New Invoice"
                                :action (fn [this] (form/create! this InvoiceForm))}
                               {:label  "New Account"
@@ -74,7 +80,8 @@
    ::report/row-actions      [{:label  "Delete"
                                :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
    ;; form can be a class or registry key
-   ::report/form-links       {:invoice/date  InvoiceForm
+   ::report/form-links       {:invoice/id    InvoiceForm
+                              :invoice/date  InvoiceForm
                               :invoice/total InvoiceForm
                               :account/name  AccountForm}
    ::report/run-on-mount?    true

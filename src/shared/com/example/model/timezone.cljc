@@ -639,6 +639,7 @@
    ::attr/schema            :production
    ::attr/enumerated-values (set (keys datomic-time-zones))
    ::attr/enumerated-labels datomic-time-zones
+   ::form/field-label       "Time Zone"
    ;; Enumerations with lots of values should use autocomplete instead of pushing all possible values to UI
    ::form/field-style       :autocomplete
    ::form/field-options     {:autocomplete/search-key    :autocomplete/time-zone-options
