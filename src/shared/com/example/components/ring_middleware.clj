@@ -10,7 +10,8 @@
     [com.example.components.parser :as parser]
     [taoensso.timbre :as log]
     [ring.util.response :as resp]
-    [com.example.components.blob-store :as bs]))
+    [com.example.components.blob-store :as bs]
+    [clojure.string :as str]))
 
 (defn index [csrf-token]
   (html5
@@ -26,7 +27,7 @@
       [:script (str "var fulcro_network_csrf_token = '" csrf-token "';")]]
      [:body
       [:div#app]
-      [:script {:src "js/main/main.js"}]]]))
+      [:script {:src "/js/main/main.js"}]]]))
 
 (defn wrap-api [handler uri]
   (fn [request]
@@ -44,13 +45,14 @@
 
 (defn wrap-html-routes [ring-handler]
   (fn [{:keys [uri anti-forgery-token] :as req}]
-    (cond
-      (#{"/" "/index.html"} uri)
-      (-> (resp/response (index anti-forgery-token))
-        (resp/content-type "text/html"))
+    (if (or (str/starts-with? uri "/api")
+          (str/starts-with? uri "/images")
+          (str/starts-with? uri "/files")
+          (str/starts-with? uri "/js"))
+      (ring-handler req)
 
-      :else
-      (ring-handler req))))
+      (-> (resp/response (index anti-forgery-token))
+        (resp/content-type "text/html")))))
 
 (defstate middleware
   :start

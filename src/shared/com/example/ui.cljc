@@ -12,6 +12,7 @@
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
+    [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
@@ -63,9 +64,9 @@
             (dom/a :.ui.item {:onClick (fn [] (form/create! this AccountForm))} "New Account")
             (dom/a :.ui.item {:onClick (fn [] (form/create! this InvoiceForm))} "New Invoice")
             (dom/a :.ui.item {:onClick (fn []
-                                         (dr/change-route! this (dr/path-to InvoiceList)))} "List Invoices")
+                                         (rroute/route-to! this InvoiceList {}))} "List Invoices")
             (dom/a :.ui.item {:onClick (fn []
-                                         (dr/change-route! this (dr/path-to AccountList)))} "List Accounts")))
+                                         (rroute/route-to! this AccountList {}))} "List Accounts")))
         (div :.right.menu
           (div :.item
             (div :.ui.tiny.loader {:classes [(when busy? "active")]})
@@ -77,7 +78,7 @@
               (div :.ui.item
                 (dom/button :.ui.button {:onClick (fn []
                                                     ;; TODO: check if we can change routes...
-                                                    (dr/change-route! this (dr/path-to LandingPage))
+                                                    (rroute/route-to! this LandingPage {})
                                                     (auth/logout! this :local))}
                   "Logout")))
             (div :.ui.item

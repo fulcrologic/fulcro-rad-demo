@@ -36,7 +36,7 @@
 (form/defsc-form InvoiceForm [this props]
   {::form/id             invoice/id
    ;; So, a special (attr/derived-value key type style) would be useful for form logic display
-   ::form/read-only?     true
+   ;::form/read-only?     true
    ::form/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]
    ::form/default-values {:invoice/date (datetime/now)}
    ::form/validator      invoice-validator
