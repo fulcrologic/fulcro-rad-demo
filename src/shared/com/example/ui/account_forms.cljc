@@ -35,7 +35,8 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {::form/id                  account/id
-   ;::form/read-only? true
+;   ::form/read-only?          true
+   ::form/links               {}
    ::form/attributes          [account/avatar
                                account/name
                                account/primary-address

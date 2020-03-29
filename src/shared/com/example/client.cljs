@@ -21,7 +21,7 @@
                                     (log/merge-config! {:output-fn prefix-output-fn
                                                         :appenders {:console (console-appender)}})
                                     (auth/start! app [LoginForm])
-                                    (dr/change-route app (dr/path-to ui/LandingPage)))}))
+                                    (dr/change-route! app (dr/path-to ui/LandingPage)))}))
 
 (defn refresh []
   ;; hot code reload of installed controls

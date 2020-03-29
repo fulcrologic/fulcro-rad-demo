@@ -63,9 +63,9 @@
             (dom/a :.ui.item {:onClick (fn [] (form/create! this AccountForm))} "New Account")
             (dom/a :.ui.item {:onClick (fn [] (form/create! this InvoiceForm))} "New Invoice")
             (dom/a :.ui.item {:onClick (fn []
-                                         (dr/change-route this (dr/path-to InvoiceList)))} "List Invoices")
+                                         (dr/change-route! this (dr/path-to InvoiceList)))} "List Invoices")
             (dom/a :.ui.item {:onClick (fn []
-                                         (dr/change-route this (dr/path-to AccountList)))} "List Accounts")))
+                                         (dr/change-route! this (dr/path-to AccountList)))} "List Accounts")))
         (div :.right.menu
           (div :.item
             (div :.ui.tiny.loader {:classes [(when busy? "active")]})
@@ -77,7 +77,7 @@
               (div :.ui.item
                 (dom/button :.ui.button {:onClick (fn []
                                                     ;; TODO: check if we can change routes...
-                                                    (dr/change-route this (dr/path-to LandingPage))
+                                                    (dr/change-route! this (dr/path-to LandingPage))
                                                     (auth/logout! this :local))}
                   "Logout")))
             (div :.ui.item
