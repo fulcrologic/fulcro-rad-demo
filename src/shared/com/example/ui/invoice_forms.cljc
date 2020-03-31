@@ -79,26 +79,36 @@
    ::report/route            "account-invoices"})
 
 (report/defsc-report InvoiceList [this props]
-  {::report/title            "All Invoices"
-   ::report/source-attribute :invoice/all-invoices
-   ::report/row-pk           invoice/id
-   ::report/columns          [invoice/id invoice/date account/name invoice/total]
-   ::report/column-headings  {:invoice/id   "Invoice Number"
-                              :account/name "Customer Name"}
-   ::report/actions          [{:label  "New Invoice"
-                               :action (fn [this] (form/create! this InvoiceForm))}
-                              {:label  "New Account"
-                               :action (fn [this] (form/create! this AccountForm))}]
-   ::report/row-actions      [{:label  "Delete"
-                               :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
-   ::report/link             {:invoice/id (fn [report-instance {:account/keys [id] :as row-props}]
-                                            (rroute/route-to! report-instance AccountInvoices
-                                              {:account/id id}))}
-   ;; form can be a class or registry key
-   ::report/form-links       {:invoice/total InvoiceForm
-                              :account/name  AccountForm}
-   ::report/run-on-mount?    true
-   ::report/route            "invoices"})
+  {::report/title               "All Invoices"
+   ::report/source-attribute    :invoice/all-invoices
+   ::report/row-pk              invoice/id
+   ::report/columns             [invoice/id invoice/date account/name invoice/total]
+
+   ::report/row-query-inclusion [:account/id]
+
+   ::report/column-headings     {:invoice/id   "Invoice Number"
+                                 :account/name "Customer Name"}
+   ::report/actions             [{:label  "New Invoice"
+                                  :action (fn [this] (form/create! this InvoiceForm))}
+                                 {:label  "New Account"
+                                  :action (fn [this] (form/create! this AccountForm))}]
+   ::report/row-actions         [{:label  "Account Invoices"
+                                  :action (fn [this {:account/keys [id] :as row}]
+                                            (rroute/route-to! this AccountInvoices {:account/id id}))}
+                                 {:label  "Delete"
+                                  :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
+
+   ;; TASK: How to indicate form should be read-only when viewed through a link. Could just use ::report/link lambda,
+   ;; and reserve this specifically for edit links
+   ::report/form-links          {:invoice/total InvoiceForm
+                                 :account/name  AccountForm}
+
+   ::report/link                {:invoice/date (fn [report-instance {:invoice/keys [date] :as row-props}]
+                                                 (log/spy :info row-props)
+                                                 ;; TASK: Change filter to just this date
+                                                 )}
+   ::report/run-on-mount?       true
+   ::report/route               "invoices"})
 
 (comment
   (comp/get-query InvoiceList-Row))
