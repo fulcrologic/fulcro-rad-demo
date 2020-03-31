@@ -24,6 +24,16 @@
         rows         (mapv #(hash-map :item/id (:id %)) (jdbc/query data-source query-params {:builder-fn query/row-builder}))]
     rows))
 
+(defn get-customer-invoices [env {:account/keys [id]}]
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params (if id
+                       ["SELECT id FROM invoice INNER JOIN account ON account.id = invoice.customer WHERE account.id = ?" id]
+                       nil)
+        rows         (if query-params
+                       (mapv #(hash-map :invoice/id (:id %)) (jdbc/query data-source query-params {:builder-fn query/row-builder}))
+                       [])]
+    rows))
+
 (defn get-all-invoices
   [env _]
   (let [data-source  (get-in env [::sql/connection-pools :production])
