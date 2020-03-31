@@ -35,6 +35,17 @@
       (mapv (fn [id] {:item/id id}) ids))
     (log/error "No database atom for production schema!")))
 
+(defn get-customer-invoices [env {:account/keys [id]}]
+  (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]
+    (let [ids (d/q '[:find [?uuid ...]
+                     :in $ ?cid
+                     :where
+                     [?dbid :invoice/id ?uuid]
+                     [?dbid :invoice/customer ?c]
+                     [?c :account/id ?cid]] db id)]
+      (mapv (fn [id] {:invoice/id id}) ids))
+    (log/error "No database atom for production schema!")))
+
 (defn get-all-invoices
   [env query-params]
   (if-let [db (some-> (get-in env [::datomic/databases :production]) deref)]

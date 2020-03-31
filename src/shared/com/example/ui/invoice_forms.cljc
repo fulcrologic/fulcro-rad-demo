@@ -11,6 +11,7 @@
     [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.example.ui.account-forms :refer [AccountForm]]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [taoensso.timbre :as log]
     [com.fulcrologic.rad.report :as report]))
@@ -66,6 +67,17 @@
                              (str "New Invoice")
                              (str "Invoice " id)))})
 
+(report/defsc-report AccountInvoices [this props]
+  {::report/title            "Customer Invoices"
+   ::report/source-attribute :account/invoices
+   ::report/row-pk           invoice/id
+   ::report/columns          [invoice/id invoice/date invoice/total]
+   ::report/column-headings  {:invoice/id "Invoice Number"}
+   ::report/parameters       {:account/id {:type  :uuid
+                                           :label "Account"}}
+   ::report/run-on-mount?    true
+   ::report/route            "account-invoices"})
+
 (report/defsc-report InvoiceList [this props]
   {::report/title            "All Invoices"
    ::report/source-attribute :invoice/all-invoices
@@ -79,10 +91,11 @@
                                :action (fn [this] (form/create! this AccountForm))}]
    ::report/row-actions      [{:label  "Delete"
                                :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
+   ::report/link             {:invoice/id (fn [report-instance {:account/keys [id] :as row-props}]
+                                            (rroute/route-to! report-instance AccountInvoices
+                                              {:account/id id}))}
    ;; form can be a class or registry key
-   ::report/form-links       {:invoice/id    InvoiceForm
-                              :invoice/date  InvoiceForm
-                              :invoice/total InvoiceForm
+   ::report/form-links       {:invoice/total InvoiceForm
                               :account/name  AccountForm}
    ::report/run-on-mount?    true
    ::report/route            "invoices"})

@@ -4,7 +4,7 @@
     [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.example.ui.account-forms :refer [AccountForm AccountList]]
     [com.example.ui.item-forms :refer [ItemForm]]
-    [com.example.ui.invoice-forms :refer [InvoiceForm InvoiceList]]
+    [com.example.ui.invoice-forms :refer [InvoiceForm InvoiceList AccountInvoices]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.dom.html-entities :as ent]
     [com.fulcrologic.fulcro.application :as app]
@@ -28,7 +28,7 @@
 
 ;; This will just be a normal router...but there can be many of them.
 (defrouter MainRouter [this {:keys [route-factory route-props] :as props}]
-  {:router-targets [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm]}
+  {:router-targets [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices]}
   ;; Normal Fulcro code to show a loader on slow route change (assuming Semantic UI here, should
   ;; be generalized for RAD so UI-specific code isn't necessary)
   (dom/div
@@ -60,6 +60,7 @@
         (when logged-in?
           (comp/fragment
             (dom/a :.ui.item {:onClick (fn [] (form/edit! this AccountForm (new-uuid 101)))} "My Account")
+            (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this AccountInvoices {:account/id (new-uuid 101)}))} "My Invoices")
             (dom/a :.ui.item {:onClick (fn [] (form/edit! this ItemForm (new-uuid 200)))} "Some Item")
             (dom/a :.ui.item {:onClick (fn [] (form/create! this AccountForm))} "New Account")
             (dom/a :.ui.item {:onClick (fn [] (form/create! this InvoiceForm))} "New Invoice")
@@ -89,3 +90,4 @@
         (ui-main-router router)))))
 
 (def ui-root (comp/factory Root))
+

@@ -136,6 +136,15 @@
                       #?(:clj
                          {:account/all-accounts (queries/get-all-accounts env query-params)}))})
 
+(defattr account-invoices :account/invoices :ref
+  {::attr/target    :account/id
+   ::auth/authority :local
+   ::pc/output      [{:account/invoices [:invoice/id]}]
+   ::pc/resolve     (fn [{:keys [query-params] :as env} _]
+                      #?(:clj
+                         {:account/invoices (queries/get-customer-invoices env query-params)}))})
+
+
 #?(:clj
    (defmutation login [env params]
      {::pc/params #{:username :password}}
@@ -198,7 +207,7 @@
      (remote [_] true)))
 
 (def attributes [id name primary-address role email password password-iterations password-salt active?
-                 addresses all-accounts avatar files])
+                 addresses all-accounts avatar files account-invoices])
 
 #?(:clj
    (def resolvers [login check-session set-account-active]))
