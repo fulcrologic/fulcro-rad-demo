@@ -9,9 +9,9 @@
     #?(:clj [com.example.components.database-queries :as queries])
     [taoensso.timbre :as log]))
 
-(defattr id :invoice/id :long
+(defattr id :invoice/id :uuid
   {::attr/identity? true
-   :com.fulcrologic.rad.database-adapters.datomic/native-id? true
+   ;:com.fulcrologic.rad.database-adapters.datomic/native-id? true
    ::attr/schema    :production
    ::auth/authority :local})
 
