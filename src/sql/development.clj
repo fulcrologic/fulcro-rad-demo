@@ -50,33 +50,33 @@
   (sql/query (get-jdbc-datasource) ["SELECT * FROM ACCOUNT"]))
 
 (defn new-account [id name email password salt iterations & {:as add-ons}]
-  ["account" (merge
-               {:id                  id
-                :name                name
-                :email               email
-                :active              true
-                :password_salt       salt
-                :password_iterations iterations
-                :password            (attr/encrypt password salt iterations)}
-               add-ons)])
+  [:account (merge
+              {:id                  id
+               :name                name
+               :email               email
+               :active              true
+               :password_salt       salt
+               :password_iterations iterations
+               :password            (attr/encrypt password salt iterations)}
+              add-ons)])
 
 (defn new-address [id street & {:as add-ons}]
-  ["address" (merge
-               {:id     id
-                :street street}
-               add-ons)])
+  [:address (merge
+              {:id     id
+               :street street}
+              add-ons)])
 
 (defn new-category [id label & {:as add-ons}]
-  ["category" (merge
-                {:id    id
-                 :label label}
-                add-ons)])
+  [:category (merge
+               {:id    id
+                :label label}
+               add-ons)])
 
 (defn new-item [id label price category-id]
-  ["item" {:id       id
-           :name     label
-           :price    price
-           :category category-id}])
+  [:item {:id       id
+          :name     label
+          :price    price
+          :category category-id}])
 
 (defn seed! []
   (let [db         (get-jdbc-datasource)
