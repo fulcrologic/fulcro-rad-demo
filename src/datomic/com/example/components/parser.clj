@@ -10,6 +10,7 @@
     [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
     [com.example.model.timezone :as timezone]
+    [com.example.reports.sales :as sales-reports]
     [com.fulcrologic.rad.attributes :as attr]
     [com.fulcrologic.rad.blob :as blob]
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
@@ -30,4 +31,5 @@
      (blob/resolvers all-attributes)
      account/resolvers
      invoice/resolvers
+     sales-reports/resolvers
      timezone/resolvers]))
