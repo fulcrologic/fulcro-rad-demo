@@ -1,9 +1,5 @@
 (ns com.example.client
   (:require
-    ;; needed for date-time support, but not included in default date time ns for build size optimization
-    [com.fulcrologic.rad.type-support.date-time]
-    ["js-joda-timezone/dist/js-joda-timezone-10-year-range.min.js"]
-
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.application :as app]

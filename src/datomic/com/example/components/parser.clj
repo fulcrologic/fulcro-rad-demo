@@ -10,13 +10,13 @@
     [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
     [com.example.model.timezone :as timezone]
-    [com.example.reports.sales :as sales-reports]
     [com.fulcrologic.rad.attributes :as attr]
     [com.fulcrologic.rad.blob :as blob]
     [com.fulcrologic.rad.database-adapters.datomic :as datomic]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.pathom :as pathom]
-    [mount.core :refer [defstate]]))
+    [mount.core :refer [defstate]]
+    [com.example.model.sales :as sales]))
 
 (defstate parser
   :start
@@ -31,5 +31,5 @@
      (blob/resolvers all-attributes)
      account/resolvers
      invoice/resolvers
-     sales-reports/resolvers
+     sales/resolvers
      timezone/resolvers]))

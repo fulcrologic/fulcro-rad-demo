@@ -1,7 +1,7 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro      {:mvn/version "3.2.0"}
-           com.fulcrologic/fulcro-rad  {:mvn/version "0.0.1-alpha-12"}
+ :deps    {com.fulcrologic/fulcro      {:mvn/version "3.2.1-SNAPSHOT"}
+           com.fulcrologic/fulcro-rad  {:mvn/version "0.0.1-alpha-14-SNAPSHOT"}
            com.fulcrologic/fulcro-i18n {:mvn/version "0.0.1-alpha-1"}
            com.rpl/specter             {:mvn/version "1.1.3"}
            com.wsscode/pathom          {:mvn/version "2.2.31"}
@@ -30,7 +30,7 @@
            org.clojure/clojure         {:mvn/version "1.10.1"}}
 
  :aliases {:test      {:extra-paths ["src/shared-tests"]
-                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.4"}}}
+                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.5"}}}
 
            :sql       {:extra-paths ["src/sql" "src/sql-tests"]
                        :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199" :exclusions [org.slf4j/slf4j-nop]}
@@ -38,7 +38,7 @@
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-11"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-12-SNAPSHOT"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
                        :extra-deps {lambdaisland/kaocha {:mvn/version "1.0-612"}}}
 

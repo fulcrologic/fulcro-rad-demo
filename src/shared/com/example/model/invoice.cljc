@@ -3,6 +3,7 @@
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.report :as report]
     [com.wsscode.pathom.connect :as pc]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [com.fulcrologic.rad.type-support.decimal :as math]
@@ -30,9 +31,10 @@
    ::attr/schema                                                   :production})
 
 (defattr total :invoice/total :decimal
-  {::attr/identities #{:invoice/id}
-   ::attr/schema     :production
-   ::attr/read-only? true}
+  {::attr/identities        #{:invoice/id}
+   ::attr/schema            :production
+   ::report/field-formatter (fn [report v] (math/numeric->currency-str v))
+   ::attr/read-only?        true}
   #_{::attr/computed-value (fn [{::form/keys [props]} attr]
                              (let [total (reduce
                                            (fn [t {:line-item/keys [quantity quoted-price]}]

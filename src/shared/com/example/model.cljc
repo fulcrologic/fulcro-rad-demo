@@ -8,6 +8,7 @@
     [com.example.model.address :as address]
     [com.example.model.category :as category]
     [com.example.model.file :as m.file]
+    [com.example.model.sales :as sales]
     [com.fulcrologic.rad.attributes :as attr]))
 
 (def all-attributes (vec (concat
@@ -18,6 +19,7 @@
                            invoice/attributes
                            line-item/attributes
                            m.file/attributes
+                           sales/attributes
                            timezone/attributes)))
 
 (def all-attribute-validator (attr/make-attribute-validator all-attributes))
