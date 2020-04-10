@@ -25,7 +25,7 @@
                                                                   :bad-sales (math/<= sales 100)
                                                                   true)))
 
-   ::report/actions           [{:label  "All Sales"
+   ::report/actions               [{:label  "All Sales"
                                     :action (fn [this {:account/keys [id] :as row}]
                                               (report/filter-rows! {:report-instance this} {:mode :all-sales}))}
                                    {:label  "Good Sales"
@@ -35,10 +35,22 @@
                                     :action (fn [this {:account/keys [id] :as row}]
                                               (report/filter-rows! {:report-instance this} {:mode :bad-sales}))}]
 
-   ;; If defined: sort is applied to rows after filtering (client-side)
+   ;; If defined: sort is applied to rows after filtering (client-side) (NOT YET IMPLEMENTED
    ::report/initial-sort-params   {:sort-by  :sales/date
                                    :forward? true}
-   ;;::report/compare-rows          (fn [sort-parameters row-a row-b] (sort-by :sales/date rows))
+
+   ::report/compare-rows          (fn [{:keys [sort-by forward?] :or {sort-by  :sales/date
+                                                                      forward? true}} row-a row-b]
+                                    (let [a          (get row-a sort-by)
+                                          b          (get row-b sort-by)
+                                          fwd-result (case sort-by
+                                                       (:sales/revenue :sales/cost) (cond
+                                                                                      (math/< a b) -1
+                                                                                      (math/> a b) 1
+                                                                                      (math/= a b) 0)
+                                                       (compare a b))]
+                                      (cond-> fwd-result
+                                        (not forward?) (-))))
 
    ;; Pagination can be implemented as server params, and the implementation depends on the report state machine and
    ;; the render plugin used for the report. The default is to paginate on the client.
