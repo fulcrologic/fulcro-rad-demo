@@ -96,7 +96,7 @@
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
    ::report/form-links               {account/name AccountForm}
-   ::report/field-formatters         {:account/name (fn [v] v)}
+   ::report/field-formatters         {:account/name (fn [this v] v)}
    ;::report/column-headings          {:account/name "Account Name"}
    ::report/columns                  [account/name account/active?]
    ::report/row-pk                   account/id
