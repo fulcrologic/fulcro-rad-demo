@@ -42,7 +42,7 @@
 
    ;; If defined: sort is applied to rows after filtering (client-side)
    ::report/initial-sort-params {:sort-by          :sales/date
-                                 :sortable-columns #{:sales/date :sales/revenue}
+                                 :sortable-columns #{:sales/date :sales/revenue :sales/cost}
                                  :forward?         true}
 
    ::report/compare-rows        (fn [{:keys [sort-by forward?] :or {sort-by  :sales/date
