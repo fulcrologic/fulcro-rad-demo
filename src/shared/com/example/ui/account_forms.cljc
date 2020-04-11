@@ -35,7 +35,7 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {::form/id                  account/id
-;   ::form/read-only?          true
+   ;   ::form/read-only?          true
    ::form/links               {}
    ::form/attributes          [account/avatar
                                account/name
@@ -91,36 +91,47 @@
       (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
-  {::report/title                    "All Accounts"
+  {::report/title            "All Accounts"
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   ::report/form-links               {account/name AccountForm}
-   ::report/field-formatters         {:account/name (fn [this v] v)}
+   ::report/form-links       {account/name AccountForm}
+   ::report/field-formatters {:account/name (fn [this v] v)}
    ;::report/column-headings          {:account/name "Account Name"}
-   ::report/columns                  [account/name account/active?]
-   ::report/row-pk                   account/id
-   ::report/source-attribute         :account/all-accounts
-   ::report/run-on-mount?            true
-   ::report/run-on-parameter-change? true
-   ::report/actions                  [{:label  "New Account"
-                                       :action (fn [this] (form/create! this AccountForm))}]
-   ::report/row-actions              [{:label     "Enable"
-                                       :action    (fn [report-instance {:account/keys [id]}]
-                                                    (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                                  :account/active? true})]))
-                                       ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
-                                       :disabled? (fn [_ row-props] (:account/active? row-props))}
-                                      {:label     "Disable"
-                                       :action    (fn [report-instance {:account/keys [id]}]
-                                                    (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                                  :account/active? false})]))
-                                       ;:visible?  (fn [_ row-props] (:account/active? row-props))
-                                       :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
-   ::report/parameters               {:show-inactive? {:type  :boolean
-                                                       :label "Show Inactive Accounts?"}}
-   ::report/initial-parameters       {:show-inactive? false}
-   ::report/route                    "accounts"})
+   ::report/columns          [account/name account/active?]
+   ::report/row-pk           account/id
+   ::report/source-attribute :account/all-accounts
+   ::report/run-on-mount?    true
+
+   ::report/controls         {::new-account   {:type   :button
+                                               :label  "New Account"
+                                               :action (fn [this _] (form/create! this AccountForm))}
+                              :show-inactive? {:type          :boolean
+                                               :style         :toggle
+                                               :default-value false
+                                               :onChange      (fn [this _] (report/reload! this))
+                                               :label         "Show Inactive Accounts?"}}
+
+   ::report/control-layout   {:action-buttons [::new-account]
+                              :inputs         [[:show-inactive?]]}
+
+   ::report/actions          []
+   ::report/row-actions      [{:label     "Enable"
+                               :action    (fn [report-instance {:account/keys [id]}]
+                                            #?(:cljs
+                                               (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                             :account/active? true})])))
+                               ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
+                               :disabled? (fn [_ row-props] (:account/active? row-props))}
+                              {:label     "Disable"
+                               :action    (fn [report-instance {:account/keys [id]}]
+                                            #?(:cljs
+                                               (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                             :account/active? false})])))
+                               ;:visible?  (fn [_ row-props] (:account/active? row-props))
+                               :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
+
+   ::report/route            "accounts"})
 
 (comment
 

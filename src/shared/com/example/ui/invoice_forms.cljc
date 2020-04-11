@@ -73,8 +73,11 @@
    ::report/row-pk           invoice/id
    ::report/columns          [invoice/id invoice/date invoice/total]
    ::report/column-headings  {:invoice/id "Invoice Number"}
-   ::report/parameters       {:account/id {:type  :uuid
+
+   ::report/controls         {:account/id {:type  :uuid
                                            :label "Account"}}
+   ;; No control layout...we don't actually let the user control it
+
    ::report/run-on-mount?    true
    ::report/route            "account-invoices"})
 
@@ -88,10 +91,16 @@
 
    ::report/column-headings     {:invoice/id   "Invoice Number"
                                  :account/name "Customer Name"}
-   ::report/actions             [{:label  "New Invoice"
-                                  :action (fn [this] (form/create! this InvoiceForm))}
-                                 {:label  "New Account"
-                                  :action (fn [this] (form/create! this AccountForm))}]
+
+   ::report/controls            {::new-invoice {:label  "New Invoice"
+                                                :type   :button
+                                                :action (fn [this] (form/create! this InvoiceForm))}
+                                 ::new-account {:label  "New Account"
+                                                :type   :button
+                                                :action (fn [this] (form/create! this AccountForm))}}
+
+   ::report/control-layout      {:action-buttons [::new-invoice ::new-account]}
+
    ::report/row-actions         [{:label  "Account Invoices"
                                   :action (fn [this {:account/keys [id] :as row}]
                                             (rroute/route-to! this AccountInvoices {:account/id id}))}
