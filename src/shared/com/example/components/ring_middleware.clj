@@ -6,6 +6,7 @@
     [mount.core :refer [defstate]]
     [hiccup.page :refer [html5]]
     [ring.middleware.defaults :refer [wrap-defaults]]
+    [ring.middleware.gzip :refer [wrap-gzip]]
     [com.example.components.config :as config]
     [com.example.components.parser :as parser]
     [taoensso.timbre :as log]
@@ -65,5 +66,6 @@
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
       (wrap-html-routes)
-      (wrap-defaults defaults-config))))
+      (wrap-defaults defaults-config)
+      (wrap-gzip))))
 
