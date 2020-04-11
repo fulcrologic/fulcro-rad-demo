@@ -16,7 +16,8 @@
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.pathom :as pathom]
     [mount.core :refer [defstate]]
-    [com.example.model.sales :as sales]))
+    [com.example.model.sales :as sales]
+    [com.example.model.item :as item]))
 
 (defstate parser
   :start
@@ -31,5 +32,6 @@
      (blob/resolvers all-attributes)
      account/resolvers
      invoice/resolvers
+     item/resolvers
      sales/resolvers
      timezone/resolvers]))

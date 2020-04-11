@@ -4,7 +4,9 @@
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.fulcro.components :refer [defsc]]
     [com.fulcrologic.rad.form :as form]
-    [taoensso.timbre :as log]))
+    [com.fulcrologic.rad.report :as report]
+    [taoensso.timbre :as log]
+    [com.example.model.category :as category]))
 
 (defsc CategoryQuery [_ _]
   {:query [:category/id :category/label]
@@ -28,3 +30,46 @@
    ::form/cancel-route  ["landing-page"]
    ::form/route-prefix  "item"
    ::form/title         "Edit Item"})
+
+(report/defsc-report InventoryReport [this props]
+  {::report/title               "Inventory Report"
+   ::report/source-attribute    :item/all-items
+   ::report/row-pk              item/id
+   ::report/columns             [item/item-name category/label item/price item/in-stock]
+
+   ;; denormalized reports are much more performant when there are a large number of rows, but will not show changes that
+   ;; are made via forms (can be out of date relative to other on-screen items).
+   ::report/denormalize?        true
+   ::report/row-visible?        (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
+                                                                  row-category (get row :category/label)]
+                                                              (or (nil? category) (= category row-category))))
+
+   ::report/controls            {::category {:type     :button
+                                             :onChange (fn [this _]
+                                                         (report/set-parameter! this ::category nil)
+                                                         (report/filter-rows! this))
+                                             :label    "Clear Filter"}}
+
+   ::report/control-layout      {:action-buttons [::category]}
+
+
+   ;; If defined: sort is applied to rows after filtering (client-side)
+   ::report/initial-sort-params {:sort-by          :item/name
+                                 :sortable-columns #{:item/name :category/label}
+                                 :forward?         true}
+
+   ::report/compare-rows        (fn [{:keys [sort-by forward?] :or {sort-by  :sales/date
+                                                                    forward? true}} row-a row-b]
+                                  (let [a          (get row-a sort-by)
+                                        b          (get row-b sort-by)
+                                        fwd-result (compare a b)]
+                                    (cond-> fwd-result
+                                      (not forward?) (-))))
+
+   ::report/form-links          {item/item-name ItemForm}
+
+   ::report/paginate?           true
+   ::report/page-size           10
+
+   ::report/run-on-mount?       true
+   ::report/route               "item-inventory-report"})

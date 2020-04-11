@@ -41,5 +41,15 @@
                       #?(:clj
                          {:item/all-items (queries/get-all-items env (log/spy :info query-params))}))})
 
+#?(:clj
+   (pc/defresolver item-category-resolver [{:keys [parser] :as env} {:item/keys [id]}]
+     {::pc/input  #{:item/id}
+      ::pc/output [:category/id :category/label]}
+     (let [result (parser env [{[:item/id id] [{:item/category [:category/id :category/label]}]}])]
+       (get-in (log/spy :info result) [[:item/id id] :item/category]))))
+
 (def attributes [id item-name category description price in-stock all-items])
+
+#?(:clj
+   (def resolvers [item-category-resolver]))
 
