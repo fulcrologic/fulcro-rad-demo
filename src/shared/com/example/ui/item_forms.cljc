@@ -2,7 +2,7 @@
   (:require
     [com.example.model.item :as item]
     [com.fulcrologic.rad.picker-options :as picker-options]
-    [com.fulcrologic.fulcro.components :refer [defsc]]
+    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.report :as report]
     [taoensso.timbre :as log]
@@ -45,9 +45,11 @@
                                                               (or (nil? category) (= category row-category))))
 
    ::report/controls            {::category {:type     :button
-                                             :onChange (fn [this _]
+                                             :action   (fn [this _]
                                                          (report/set-parameter! this ::category nil)
                                                          (report/filter-rows! this))
+                                             :visible? (fn [this]
+                                                         (some-> this comp/props :ui/parameters ::category))
                                              :label    "Clear Filter"}}
 
    ::report/control-layout      {:action-buttons [::category]}
@@ -67,6 +69,10 @@
                                       (not forward?) (-))))
 
    ::report/form-links          {item/item-name ItemForm}
+
+   ::report/link                {:category/label (fn [this {:category/keys [label]}]
+                                                   (report/set-parameter! this ::category label)
+                                                   (report/filter-rows! this))}
 
    ::report/paginate?           true
    ::report/page-size           10
