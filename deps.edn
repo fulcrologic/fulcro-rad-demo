@@ -1,6 +1,6 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro      {:mvn/version "3.2.1-SNAPSHOT"}
+ :deps    {com.fulcrologic/fulcro      {:mvn/version "3.2.1-RC2-SNAPSHOT"}
            com.fulcrologic/fulcro-rad  {:mvn/version "0.0.1-alpha-14-SNAPSHOT"}
            com.fulcrologic/fulcro-i18n {:mvn/version "0.0.1-alpha-1"}
            com.rpl/specter             {:mvn/version "1.1.3"}
