@@ -4,13 +4,15 @@
  :builds   {:main     {:target     :browser
                        :output-dir "resources/public/js/main"
                        :asset-path "/js/main"
-                       ;:dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}}}}
+                       :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}}}}
                        :modules    {:main {:init-fn com.example.client/init}}
-                       :js-options {:resolve {"react-dom" {:target  :npm
-                                                           :require "react-dom/cjs/react-dom.production.min.js"}
-                                              "react"     {:target  :npm
-                                                           :require "react/cjs/react.production.min.js"}}}
-                       :devtools   {;:preloads   [com.fulcrologic.fulcro.inspect.preload]
+                       ;; Preact not quite working for some reason, even though simple Fulcro demos do work
+                       #_#_:js-options
+                           {:resolve {"react"     {:target  :npm
+                                                   :require "preact/compat"}
+                                      "react-dom" {:target  :npm
+                                                   :require "preact/compat"}}}
+                       :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/refresh}}
 
             :test     {:target           :browser-test
