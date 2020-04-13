@@ -6,12 +6,16 @@
                        :asset-path "/js/main"
                        :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}}}}
                        :modules    {:main {:init-fn com.example.client/init}}
-                       ;; Preact not quite working for some reason, even though simple Fulcro demos do work
-                       #_#_:js-options
-                           {:resolve {"react"     {:target  :npm
-                                                   :require "preact/compat"}
-                                      "react-dom" {:target  :npm
-                                                   :require "preact/compat"}}}
+                       :js-options {:resolve
+                                    {
+                                     ;; playing with preact
+                                     ;; "react"     {:target  :npm :require "preact/compat"}
+                                     ;; "react-dom" {:target  :npm :require "preact/compat"}
+
+                                     ;; Make js-joda-timezone a reasonable build size
+                                     "js-joda-timezone"
+                                     {:target  :npm
+                                      :require "js-joda-timezone/dist/js-joda-timezone-10-year-range.min.js"}}}
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/refresh}}
 

@@ -12,6 +12,7 @@
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
     [taoensso.timbre :as log]
     [com.fulcrologic.rad.blob :as blob]
@@ -34,27 +35,27 @@
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
-  {::form/id                  account/id
+  {fo/id                  account/id
    ;   ::form/read-only?          true
-   ::form/attributes          [account/avatar
+   fo/attributes          [account/avatar
                                account/name
                                account/primary-address
                                ;; TODO: Fix performance of large dropdowns (time zone)
                                account/role timezone/zone-id account/email
                                account/active? account/addresses
                                account/files]
-   ::form/default-values      {:account/active?         true
+   fo/default-values      {:account/active?         true
                                :account/primary-address {}
                                :account/addresses       [{}]}
-   ::form/validator           account-validator
-   ::form/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
-   ::form/cancel-route        ["landing-page"]
-   ::form/route-prefix        "account"
-   ::form/title               "Edit Account"
+   fo/validator           account-validator
+   fo/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
+   fo/cancel-route        ["landing-page"]
+   fo/route-prefix        "account"
+   fo/title               "Edit Account"
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   ::form/subforms            {:account/primary-address {::form/ui                  AddressForm
+   fo/subforms            {:account/primary-address {::form/ui                  AddressForm
                                                          ::form/title               "Primary Address"
                                                          ::form/autocreate-on-load? true}
                                :account/files           {::form/ui                FileForm
@@ -90,47 +91,47 @@
       (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
-  {::report/title            "All Accounts"
+  {::report/title                        "All Accounts"
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   ::report/form-links       {account/name AccountForm}
-   ::report/field-formatters {:account/name (fn [this v] v)}
+   ::report/form-links                   {account/name AccountForm}
+   ::report/field-formatters             {:account/name (fn [this v] v)}
    ;::report/column-headings          {:account/name "Account Name"}
-   ::report/columns          [account/name account/active?]
-   ::report/row-pk           account/id
-   ::report/source-attribute :account/all-accounts
-   ::report/run-on-mount?    true
+   ::report/columns                      [account/name account/active?]
+   ::report/row-pk                       account/id
+   ::report/source-attribute             :account/all-accounts
+   ::report/run-on-mount?                true
 
-   ::report/controls         {::new-account   {:type   :button
-                                               :label  "New Account"
-                                               :action (fn [this _] (form/create! this AccountForm))}
-                              :show-inactive? {:type          :boolean
-                                               :style         :toggle
-                                               :default-value false
-                                               :onChange      (fn [this _] (report/reload! this))
-                                               :label         "Show Inactive Accounts?"}}
+   :com.fulcrologic.rad.control/controls {::new-account   {:type   :button
+                                                           :label  "New Account"
+                                                           :action (fn [this _] (form/create! this AccountForm))}
+                                          :show-inactive? {:type          :boolean
+                                                           :style         :toggle
+                                                           :default-value false
+                                                           :onChange      (fn [this _] (report/reload! this))
+                                                           :label         "Show Inactive Accounts?"}}
 
-   ::report/control-layout   {:action-buttons [::new-account]
-                              :inputs         [[:show-inactive?]]}
+   ::report/control-layout               {:action-buttons [::new-account]
+                                          :inputs         [[:show-inactive?]]}
 
-   ::report/actions          []
-   ::report/row-actions      [{:label     "Enable"
-                               :action    (fn [report-instance {:account/keys [id]}]
-                                            #?(:cljs
-                                               (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                             :account/active? true})])))
-                               ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
-                               :disabled? (fn [_ row-props] (:account/active? row-props))}
-                              {:label     "Disable"
-                               :action    (fn [report-instance {:account/keys [id]}]
-                                            #?(:cljs
-                                               (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                             :account/active? false})])))
-                               ;:visible?  (fn [_ row-props] (:account/active? row-props))
-                               :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
+   ::report/actions                      []
+   ::report/row-actions                  [{:label     "Enable"
+                                           :action    (fn [report-instance {:account/keys [id]}]
+                                                        #?(:cljs
+                                                           (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                                         :account/active? true})])))
+                                           ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
+                                           :disabled? (fn [_ row-props] (:account/active? row-props))}
+                                          {:label     "Disable"
+                                           :action    (fn [report-instance {:account/keys [id]}]
+                                                        #?(:cljs
+                                                           (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                                         :account/active? false})])))
+                                           ;:visible?  (fn [_ row-props] (:account/active? row-props))
+                                           :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
 
-   ::report/route            "accounts"})
+   ::report/route                        "accounts"})
 
 (comment
 
