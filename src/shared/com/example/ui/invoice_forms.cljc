@@ -15,7 +15,8 @@
     [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [taoensso.timbre :as log]
-    [com.fulcrologic.rad.report :as report]))
+    [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.rad.report-options :as ro]))
 
 (def invoice-validator (fs/make-validator (fn [form field]
                                             (let [value (get form field)]
@@ -69,28 +70,28 @@
                          (str "Invoice " id)))})
 
 (report/defsc-report AccountInvoices [this props]
-  {::report/title                        "Customer Invoices"
-   ::report/source-attribute             :account/invoices
-   ::report/row-pk                       invoice/id
-   ::report/columns                      [invoice/id invoice/date invoice/total]
-   ::report/column-headings              {:invoice/id "Invoice Number"}
+  {ro/title                              "Customer Invoices"
+   ro/source-attribute                   :account/invoices
+   ro/row-pk                             invoice/id
+   ro/columns                            [invoice/id invoice/date invoice/total]
+   ro/column-headings                    {:invoice/id "Invoice Number"}
 
    :com.fulcrologic.rad.control/controls {:account/id {:type  :uuid
                                                        :label "Account"}}
    ;; No control layout...we don't actually let the user control it
 
-   ::report/run-on-mount?                true
-   ::report/route                        "account-invoices"})
+   ro/run-on-mount?                      true
+   ro/route                              "account-invoices"})
 
 (report/defsc-report InvoiceList [this props]
-  {::report/title                        "All Invoices"
-   ::report/source-attribute             :invoice/all-invoices
-   ::report/row-pk                       invoice/id
-   ::report/columns                      [invoice/id invoice/date account/name invoice/total]
+  {ro/title                              "All Invoices"
+   ro/source-attribute                   :invoice/all-invoices
+   ro/row-pk                             invoice/id
+   ro/columns                            [invoice/id invoice/date account/name invoice/total]
 
-   ::report/row-query-inclusion          [:account/id]
+   ro/row-query-inclusion                [:account/id]
 
-   ::report/column-headings              {:invoice/id   "Invoice Number"
+   ro/column-headings                    {:invoice/id   "Invoice Number"
                                           :account/name "Customer Name"}
 
    :com.fulcrologic.rad.control/controls {::new-invoice {:label  "New Invoice"
@@ -100,9 +101,9 @@
                                                          :type   :button
                                                          :action (fn [this] (form/create! this AccountForm))}}
 
-   ::report/control-layout               {:action-buttons [::new-invoice ::new-account]}
+   ro/control-layout                     {:action-buttons [::new-invoice ::new-account]}
 
-   ::report/row-actions                  [{:label  "Account Invoices"
+   ro/row-actions                        [{:label  "Account Invoices"
                                            :action (fn [this {:account/keys [id] :as row}]
                                                      (rroute/route-to! this AccountInvoices {:account/id id}))}
                                           {:label  "Delete"
@@ -110,15 +111,15 @@
 
    ;; TASK: How to indicate form should be read-only when viewed through a link. Could just use ::report/link lambda,
    ;; and reserve this specifically for edit links
-   ::report/form-links                   {:invoice/total InvoiceForm
+   ro/form-links                         {:invoice/total InvoiceForm
                                           :account/name  AccountForm}
 
-   ::report/link                         {:invoice/date (fn [report-instance {:invoice/keys [date] :as row-props}]
+   ro/link                               {:invoice/date (fn [report-instance {:invoice/keys [date] :as row-props}]
                                                           (log/spy :info row-props)
                                                           ;; TASK: Change filter to just this date
                                                           )}
-   ::report/run-on-mount?                true
-   ::report/route                        "invoices"})
+   ro/run-on-mount?                      true
+   ro/route                              "invoices"})
 
 (comment
   (comp/get-query InvoiceList-Row))

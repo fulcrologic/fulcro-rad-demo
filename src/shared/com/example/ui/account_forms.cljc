@@ -14,6 +14,7 @@
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.rad.report-options :as ro]
     [taoensso.timbre :as log]
     [com.fulcrologic.rad.blob :as blob]
     [com.fulcrologic.rad.options-util :as opts]))
@@ -38,15 +39,15 @@
   {fo/id                  account/id
    ;   ::form/read-only?          true
    fo/attributes          [account/avatar
-                               account/name
-                               account/primary-address
-                               ;; TODO: Fix performance of large dropdowns (time zone)
-                               account/role timezone/zone-id account/email
-                               account/active? account/addresses
-                               account/files]
+                           account/name
+                           account/primary-address
+                           ;; TODO: Fix performance of large dropdowns (time zone)
+                           account/role timezone/zone-id account/email
+                           account/active? account/addresses
+                           account/files]
    fo/default-values      {:account/active?         true
-                               :account/primary-address {}
-                               :account/addresses       [{}]}
+                           :account/primary-address {}
+                           :account/addresses       [{}]}
    fo/validator           account-validator
    fo/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
    fo/cancel-route        ["landing-page"]
@@ -56,21 +57,21 @@
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
    fo/subforms            {:account/primary-address {::form/ui                  AddressForm
-                                                         ::form/title               "Primary Address"
-                                                         ::form/autocreate-on-load? true}
-                               :account/files           {::form/ui                FileForm
-                                                         ::form/title             "Files"
-                                                         ::form/can-delete?       (fn [_ _] true)
-                                                         ::form/layout-styles     {:ref-container :file}
-                                                         ::form/added-via-upload? true}
-                               :account/addresses       {::form/ui            AddressForm
-                                                         ::form/title         "Additional Addresses"
-                                                         ::form/sort-children (fn [addresses] (sort-by :address/zip addresses))
-                                                         ::form/can-delete?   (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                                         ::form/can-add?      (fn [parent]
-                                                                                (and
-                                                                                  (< (count (:account/addresses parent)) 4)
-                                                                                  :prepend))}}})
+                                                     ::form/title               "Primary Address"
+                                                     ::form/autocreate-on-load? true}
+                           :account/files           {::form/ui                FileForm
+                                                     ::form/title             "Files"
+                                                     ::form/can-delete?       (fn [_ _] true)
+                                                     ::form/layout-styles     {:ref-container :file}
+                                                     ::form/added-via-upload? true}
+                           :account/addresses       {::form/ui            AddressForm
+                                                     ::form/title         "Additional Addresses"
+                                                     ::form/sort-children (fn [addresses] (sort-by :address/zip addresses))
+                                                     ::form/can-delete?   (fn [parent item] (< 1 (count (:account/addresses parent))))
+                                                     ::form/can-add?      (fn [parent]
+                                                                            (and
+                                                                              (< (count (:account/addresses parent)) 4)
+                                                                              :prepend))}}})
 
 (defsc AccountListItem [this
                         {:account/keys [id name active?] :as props}
@@ -91,17 +92,17 @@
       (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
-  {::report/title                        "All Accounts"
+  {ro/title                              "All Accounts"
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   ::report/form-links                   {account/name AccountForm}
-   ::report/field-formatters             {:account/name (fn [this v] v)}
+   ro/form-links                         {account/name AccountForm}
+   ro/field-formatters                   {:account/name (fn [this v] v)}
    ;::report/column-headings          {:account/name "Account Name"}
-   ::report/columns                      [account/name account/active?]
-   ::report/row-pk                       account/id
-   ::report/source-attribute             :account/all-accounts
-   ::report/run-on-mount?                true
+   ro/columns                            [account/name account/active?]
+   ro/row-pk                             account/id
+   ro/source-attribute                   :account/all-accounts
+   ro/run-on-mount?                      true
 
    :com.fulcrologic.rad.control/controls {::new-account   {:type   :button
                                                            :label  "New Account"
@@ -112,7 +113,7 @@
                                                            :onChange      (fn [this _] (report/reload! this))
                                                            :label         "Show Inactive Accounts?"}}
 
-   ::report/control-layout               {:action-buttons [::new-account]
+   ro/control-layout                     {:action-buttons [::new-account]
                                           :inputs         [[:show-inactive?]]}
 
    ::report/actions                      []
@@ -131,7 +132,7 @@
                                            ;:visible?  (fn [_ row-props] (:account/active? row-props))
                                            :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
 
-   ::report/route                        "accounts"})
+   ro/route                              "accounts"})
 
 (comment
 
