@@ -6,6 +6,7 @@
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.rad.report-options :as ro]
     [taoensso.timbre :as log]
     [com.example.model.category :as category]))
 
@@ -33,50 +34,50 @@
    fo/title         "Edit Item"})
 
 (report/defsc-report InventoryReport [this props]
-  {::report/title                        "Inventory Report"
-   ::report/source-attribute             :item/all-items
-   ::report/row-pk                       item/id
-   ::report/columns                      [item/item-name category/label item/price item/in-stock]
+  {ro/title               "Inventory Report"
+   ro/source-attribute    :item/all-items
+   ro/row-pk              item/id
+   ro/columns             [item/item-name category/label item/price item/in-stock]
 
    ;; denormalized reports are much more performant when there are a large number of rows, but will not show changes that
    ;; are made via forms (can be out of date relative to other on-screen items).
-   ::report/denormalize?                 true
-   ::report/row-visible?                 (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
-                                                                           row-category (get row :category/label)]
-                                                                       (or (nil? category) (= category row-category))))
+   ro/denormalize?        true
+   ro/row-visible?        (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
+                                                            row-category (get row :category/label)]
+                                                        (or (nil? category) (= category row-category))))
 
-   :com.fulcrologic.rad.control/controls {::category {:type     :button
-                                                      :action   (fn [this _]
-                                                                  (report/set-parameter! this ::category nil)
-                                                                  (report/filter-rows! this))
-                                                      :visible? (fn [this]
-                                                                  (some-> this comp/props :ui/parameters ::category))
-                                                      :label    "Clear Filter"}}
+   ro/controls            {::category {:type     :button
+                                       :action   (fn [this _]
+                                                   (report/set-parameter! this ::category nil)
+                                                   (report/filter-rows! this))
+                                       :visible? (fn [this]
+                                                   (some-> this comp/props :ui/parameters ::category))
+                                       :label    "Clear Filter"}}
 
-   ::report/control-layout               {:action-buttons [::category]}
+   ro/control-layout      {:action-buttons [::category]}
 
 
    ;; If defined: sort is applied to rows after filtering (client-side)
-   ::report/initial-sort-params          {:sort-by          :item/name
-                                          :sortable-columns #{:item/name :category/label}
-                                          :forward?         true}
+   ro/initial-sort-params {:sort-by          :item/name
+                           :sortable-columns #{:item/name :category/label}
+                           :ascending?         true}
 
-   ::report/compare-rows                 (fn [{:keys [sort-by forward?] :or {sort-by  :sales/date
-                                                                             forward? true}} row-a row-b]
-                                           (let [a          (get row-a sort-by)
-                                                 b          (get row-b sort-by)
-                                                 fwd-result (compare a b)]
-                                             (cond-> fwd-result
-                                               (not forward?) (-))))
+   ro/compare-rows        (fn [{:keys [sort-by ascending?] :or {sort-by  :sales/date
+                                                              ascending? true}} row-a row-b]
+                            (let [a          (get row-a sort-by)
+                                  b          (get row-b sort-by)
+                                  fwd-result (compare a b)]
+                              (cond-> fwd-result
+                                (not ascending?) (-))))
 
-   ::report/form-links                   {item/item-name ItemForm}
+   ro/form-links          {item/item-name ItemForm}
 
-   ::report/link                         {:category/label (fn [this {:category/keys [label]}]
-                                                            (report/set-parameter! this ::category label)
-                                                            (report/filter-rows! this))}
+   ro/links               {:category/label (fn [this {:category/keys [label]}]
+                                             (report/set-parameter! this ::category label)
+                                             (report/filter-rows! this))}
 
-   ::report/paginate?                    true
-   ::report/page-size                    10
+   ro/paginate?           true
+   ro/page-size           10
 
-   ::report/run-on-mount?                true
-   ::report/route                        "item-inventory-report"})
+   ro/run-on-mount?       true
+   ro/route               "item-inventory-report"})

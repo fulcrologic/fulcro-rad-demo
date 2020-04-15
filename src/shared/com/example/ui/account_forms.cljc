@@ -98,7 +98,7 @@
    ;::report/BodyItem                 AccountListItem
    ro/form-links                         {account/name AccountForm}
    ro/field-formatters                   {:account/name (fn [this v] v)}
-   ;::report/column-headings          {:account/name "Account Name"}
+   ::report/column-headings          {:account/name "Account Name"}
    ro/columns                            [account/name account/active?]
    ro/row-pk                             account/id
    ro/source-attribute                   :account/all-accounts
@@ -116,8 +116,7 @@
    ro/control-layout                     {:action-buttons [::new-account]
                                           :inputs         [[:show-inactive?]]}
 
-   ::report/actions                      []
-   ::report/row-actions                  [{:label     "Enable"
+   ro/row-actions                        [{:label     "Enable"
                                            :action    (fn [report-instance {:account/keys [id]}]
                                                         #?(:cljs
                                                            (comp/transact! report-instance [(account/set-account-active {:account/id      id

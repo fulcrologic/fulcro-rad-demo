@@ -43,10 +43,10 @@
    ;; If defined: sort is applied to rows after filtering (client-side)
    ::report/initial-sort-params          {:sort-by          :sales/date
                                           :sortable-columns #{:sales/date :sales/revenue :sales/cost}
-                                          :forward?         true}
+                                          :ascending?         true}
 
-   ::report/compare-rows                 (fn [{:keys [sort-by forward?] :or {sort-by  :sales/date
-                                                                             forward? true}} row-a row-b]
+   ::report/compare-rows                 (fn [{:keys [sort-by ascending?] :or {sort-by  :sales/date
+                                                                             ascending? true}} row-a row-b]
                                            (let [a          (get row-a sort-by)
                                                  b          (get row-b sort-by)
                                                  fwd-result (case sort-by
@@ -56,7 +56,7 @@
                                                                                              (math/= a b) 0)
                                                               (compare a b))]
                                              (cond-> fwd-result
-                                               (not forward?) (-))))
+                                               (not ascending?) (-))))
 
    ::report/paginate?                    true
    ::report/page-size                    10
