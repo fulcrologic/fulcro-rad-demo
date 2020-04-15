@@ -24,10 +24,11 @@ file go.  I personally set the following in my top-level `~/.clojure/deps.edn`:
 -----
 {:aliases {:f3-dev    {:override-deps {com.fulcrologic/fulcro {:local/root "/Users/tonykay/fulcrologic/fulcro"
                                                                :exclusions [com.taoensso/sente]}}}
-           :rad-dev   {:override-deps {com.fulcrologic/fulcro-rad         {:local/root "/Users/username/fulcrologic/fulcro-rad"}
-                                       com.fulcrologic/fulcro-rad-sql     {:local/root "/Users/username/fulcrologic/fulcro-rad-sql"}
-                                       com.fulcrologic/fulcro-rad-datomic {:local/root "/Users/username/fulcrologic/fulcro-rad-datomic"
-                                                                           :exclusions [com.datomic/datomic-free]}}}}}
+           :rad-dev   {:override-deps {com.fulcrologic/fulcro-rad                 {:local/root "/Users/username/fulcrologic/fulcro-rad"}
+                                       com.fulcrologic/fulcro-rad-sql             {:local/root "/Users/username/fulcrologic/fulcro-rad-sql"}
+                                       com.fulcrologic/fulcro-rad-semantic-ui     {:local/root "/Users/username/fulcrologic/fulcro-rad-semantic-ui"}
+                                       com.fulcrologic/fulcro-rad-datomic         {:local/root "/Users/username/fulcrologic/fulcro-rad-datomic"
+                                                                                   :exclusions [com.datomic/datomic-free]}}}}}
 -----
 
 so that in IntelliJ (or at the command line) I can work from local sources for all of them.  I try to remember to push SNAPSHOTS
