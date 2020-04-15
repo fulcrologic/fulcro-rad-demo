@@ -1,6 +1,6 @@
 (ns com.example.model.file
   (:require
-    [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
+    [com.fulcrologic.rad.attributes :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.blob :as blob]))
 

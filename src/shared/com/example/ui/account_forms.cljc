@@ -38,10 +38,9 @@
 (form/defsc-form AccountForm [this props]
   {fo/id                  account/id
    ;   ::form/read-only?          true
-   fo/attributes          [account/avatar
+   fo/attributes          [;account/avatar
                            account/name
                            account/primary-address
-                           ;; TODO: Fix performance of large dropdowns (time zone)
                            account/role timezone/zone-id account/email
                            account/active? account/addresses
                            account/files]

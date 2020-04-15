@@ -74,7 +74,7 @@
   {fo/field-label "Name"
    ;::report/field-formatter (fn [v] (str "ATTR" v))
    ao/identities  #{:account/id}
-   ao/valid?      (fn [v] (str/starts-with? v "Bruce"))
+   ;ao/valid?      (fn [v] (str/starts-with? v "Bruce"))
    ;::attr/validation-message                                 (fn [v] "Your name's not Bruce then??? How 'bout we just call you Bruce?")
    ao/schema      :production
 
