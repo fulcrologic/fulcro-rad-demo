@@ -7,7 +7,6 @@
 (form/defsc-form AddressForm [this props]
   {fo/id                    address/id
    fo/attributes            [address/street address/city address/state address/zip]
-   ::form/enumeration-order {:address/state (sort-by #(get address/states %) (keys address/states))}
    fo/cancel-route          ["landing-page"]
    fo/route-prefix          "address"
    fo/title                 "Edit Address"

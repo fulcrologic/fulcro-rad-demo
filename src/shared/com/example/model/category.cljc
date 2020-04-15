@@ -2,6 +2,7 @@
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.wsscode.pathom.connect :as pc]
     #?(:clj [com.example.components.database-queries :as queries])))
@@ -11,19 +12,19 @@
    :ident :category/id})
 
 (defattr id :category/id :uuid
-  {::attr/identity? true
-   ::attr/schema    :production})
+  {ao/identity? true
+   ao/schema    :production})
 
 (defattr label :category/label :string
-  {::attr/required?                                      true
-   ::attr/identities                                     #{:category/id}
+  {ao/required?                                      true
+   ao/identities                                     #{:category/id}
    :com.fulcrologic.rad.database-adapters.sql/max-length 120
-   ::attr/schema                                         :production})
+   ao/schema                                         :production})
 
 (defattr all-categories :category/all-categories :ref
-  {::attr/target :category/id
-   ::pc/output   [{:category/all-categories [:category/id]}]
-   ::pc/resolve  (fn [{:keys [query-params] :as env} _]
+  {ao/target :category/id
+   ao/pc-output   [{:category/all-categories [:category/id]}]
+   ao/pc-resolve  (fn [{:keys [query-params] :as env} _]
                    #?(:clj
                       {:category/all-categories (queries/get-all-categories env query-params)}))})
 

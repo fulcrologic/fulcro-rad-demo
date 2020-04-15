@@ -60,10 +60,10 @@
    ;; If defined: sort is applied to rows after filtering (client-side)
    ro/initial-sort-params {:sort-by          :item/name
                            :sortable-columns #{:item/name :category/label}
-                           :ascending?         true}
+                           :ascending?       true}
 
-   ro/compare-rows        (fn [{:keys [sort-by ascending?] :or {sort-by  :sales/date
-                                                              ascending? true}} row-a row-b]
+   ro/compare-rows        (fn [{:keys [sort-by ascending?] :or {sort-by    :sales/date
+                                                                ascending? true}} row-a row-b]
                             (let [a          (get row-a sort-by)
                                   b          (get row-b sort-by)
                                   fwd-result (compare a b)]

@@ -1,21 +1,21 @@
 (ns com.example.model.address
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
+    [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.authorization :as auth]))
 
 (defattr id :address/id :uuid
-  {::attr/identity?                                          true
-   :com.fulcrologic.rad.database-adapters.sql/table          "address"
-   ::attr/schema                                             :production
-   ::auth/authority                                          :local})
+  {ao/identity?                                     true
+   :com.fulcrologic.rad.database-adapters.sql/table "address"
+   ao/schema                                        :production})
 
 (defattr street :address/street :string
-  {::attr/schema     :production
-   ::attr/identities #{:address/id} })
+  {ao/schema     :production
+   ao/identities #{:address/id}})
 
 (defattr city :address/city :string
-  {::attr/schema     :production
-   ::attr/identities #{:address/id} })
+  {ao/schema     :production
+   ao/identities #{:address/id}})
 
 (def states #:address.state {:AZ "Arizona"
                              :AL "Alabama"
@@ -32,13 +32,13 @@
                              :WA "Washington"})
 
 (defattr state :address/state :enum
-  {::attr/enumerated-values (set (keys states))
-   ::attr/identities        #{:address/id}
-   ::attr/schema            :production
-   ::attr/enumerated-labels states})
+  {ao/enumerated-values (set (keys states))
+   ao/identities        #{:address/id}
+   ao/schema            :production
+   ao/enumerated-labels states})
 
 (defattr zip :address/zip :string
-  {::attr/identities #{:address/id}
-   ::attr/schema     :production})
+  {ao/identities #{:address/id}
+   ao/schema     :production})
 
 (def attributes [id street city state zip])

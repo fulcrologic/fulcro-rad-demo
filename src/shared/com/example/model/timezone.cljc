@@ -4,8 +4,9 @@
     [clojure.string :as str]
     [taoensso.timbre :as log]
     [com.wsscode.pathom.connect :as pc]
-    [com.fulcrologic.rad.form :as form]
-    [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
+    [com.fulcrologic.rad.form-options :as fo]
+    [com.fulcrologic.rad.attributes :refer [defattr]]
+    [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.guardrails.core :refer [>defn =>]]))
 
 (def time-zones
@@ -634,17 +635,17 @@
 (def datomic-time-zones (namespaced-time-zone-ids "time-zone.zone-id"))
 
 (defattr zone-id :time-zone/zone-id :enum
-  {::attr/required?         true
-   ::attr/identities        #{:account/id}
-   ::attr/schema            :production
-   ::attr/enumerated-values (set (keys datomic-time-zones))
-   ::attr/enumerated-labels datomic-time-zones
-   ::form/field-label       "Time Zone"
+  {ao/required?         true
+   ao/identities        #{:account/id}
+   ao/schema            :production
+   ao/enumerated-values (set (keys datomic-time-zones))
+   ao/enumerated-labels datomic-time-zones
+   fo/field-label       "Time Zone"
    ;; Enumerations with lots of values should use autocomplete instead of pushing all possible values to UI
-   ::form/field-style       :autocomplete
-   ::form/field-options     {:autocomplete/search-key    :autocomplete/time-zone-options
-                             :autocomplete/debounce-ms   100
-                             :autocomplete/minimum-input 1}})
+   fo/field-style       :autocomplete
+   fo/field-options     {:autocomplete/search-key    :autocomplete/time-zone-options
+                         :autocomplete/debounce-ms   100
+                         :autocomplete/minimum-input 1}})
 
 #?(:clj
    (pc/defresolver all-time-zones [{:keys [query-params]} _]

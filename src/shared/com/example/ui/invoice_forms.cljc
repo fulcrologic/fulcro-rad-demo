@@ -84,42 +84,36 @@
    ro/route                              "account-invoices"})
 
 (report/defsc-report InvoiceList [this props]
-  {ro/title                              "All Invoices"
-   ro/source-attribute                   :invoice/all-invoices
-   ro/row-pk                             invoice/id
-   ro/columns                            [invoice/id invoice/date account/name invoice/total]
+  {ro/title               "All Invoices"
+   ro/source-attribute    :invoice/all-invoices
+   ro/row-pk              invoice/id
+   ro/columns             [invoice/id invoice/date account/name invoice/total]
 
-   ro/row-query-inclusion                [:account/id]
+   ro/row-query-inclusion [:account/id]
 
-   ro/column-headings                    {:invoice/id   "Invoice Number"
-                                          :account/name "Customer Name"}
+   ro/column-headings     {:invoice/id   "Invoice Number"
+                           :account/name "Customer Name"}
 
-   :com.fulcrologic.rad.control/controls {::new-invoice {:label  "New Invoice"
-                                                         :type   :button
-                                                         :action (fn [this] (form/create! this InvoiceForm))}
-                                          ::new-account {:label  "New Account"
-                                                         :type   :button
-                                                         :action (fn [this] (form/create! this AccountForm))}}
+   ro/controls            {::new-invoice {:label  "New Invoice"
+                                          :type   :button
+                                          :action (fn [this] (form/create! this InvoiceForm))}
+                           ::new-account {:label  "New Account"
+                                          :type   :button
+                                          :action (fn [this] (form/create! this AccountForm))}}
 
-   ro/control-layout                     {:action-buttons [::new-invoice ::new-account]}
+   ro/control-layout      {:action-buttons [::new-invoice ::new-account]}
 
-   ro/row-actions                        [{:label  "Account Invoices"
-                                           :action (fn [this {:account/keys [id] :as row}]
-                                                     (rroute/route-to! this AccountInvoices {:account/id id}))}
-                                          {:label  "Delete"
-                                           :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
+   ro/row-actions         [{:label  "Account Invoices"
+                            :action (fn [this {:account/keys [id] :as row}]
+                                      (rroute/route-to! this AccountInvoices {:account/id id}))}
+                           {:label  "Delete"
+                            :action (fn [this {:invoice/keys [id] :as row}] (form/delete! this :invoice/id id))}]
 
-   ;; TASK: How to indicate form should be read-only when viewed through a link. Could just use ::report/link lambda,
-   ;; and reserve this specifically for edit links
-   ro/form-links                         {:invoice/total InvoiceForm
-                                          :account/name  AccountForm}
+   ro/form-links          {:invoice/total InvoiceForm
+                           :account/name  AccountForm}
 
-   ro/link                               {:invoice/date (fn [report-instance {:invoice/keys [date] :as row-props}]
-                                                          (log/spy :info row-props)
-                                                          ;; TASK: Change filter to just this date
-                                                          )}
-   ro/run-on-mount?                      true
-   ro/route                              "invoices"})
+   ro/run-on-mount?       true
+   ro/route               "invoices"})
 
 (comment
   (comp/get-query InvoiceList-Row))

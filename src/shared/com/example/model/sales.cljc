@@ -4,21 +4,22 @@
   (:require
     [com.fulcrologic.rad.attributes :refer [defattr]]
     [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.guardrails.core :refer [>defn =>]]
     [com.wsscode.pathom.connect :as pc :refer [defresolver]]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.fulcrologic.rad.ids :as ids]))
 
 (defattr date :sales/date :inst
-  {::report/column-heading "Date"})
+  {ro/column-heading "Date"})
 
 (defattr revenue :sales/revenue :decimal
-  {::report/column-heading  "Revenue"
-   ::report/field-formatter (fn [report-instance v] (math/numeric->currency-str v))})
+  {ro/column-heading  "Revenue"
+   ro/field-formatter (fn [report-instance v] (math/numeric->currency-str v))})
 
 (defattr cost :sales/cost :decimal
-  {::report/column-heading  "Costs"
-   ::report/field-formatter (fn [report-instance v] (math/numeric->currency-str v))})
+  {ro/column-heading  "Costs"
+   ro/field-formatter (fn [report-instance v] (math/numeric->currency-str v))})
 
 (defattr row-index :sales/row-index :uuid
   {})

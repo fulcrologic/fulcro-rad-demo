@@ -104,7 +104,7 @@
    ro/source-attribute                   :account/all-accounts
    ro/run-on-mount?                      true
 
-   :com.fulcrologic.rad.control/controls {::new-account   {:type   :button
+   ro/controls {::new-account   {:type   :button
                                                            :label  "New Account"
                                                            :action (fn [this _] (form/create! this AccountForm))}
                                           :show-inactive? {:type          :boolean
