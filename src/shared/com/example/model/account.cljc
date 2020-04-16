@@ -34,6 +34,7 @@
    ao/required?                                                    true
    ao/schema                                                       :production
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
+   :com.fulcrologic.rad.database-adapters.datomic-cloud/attribute-schema {:db/unique :db.unique/value}
    })
 
 
@@ -86,6 +87,7 @@
    ao/identities                                                   #{:account/id}
    :com.fulcrologic.rad.database-adapters.sql/delete-referent?     true
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
+   :com.fulcrologic.rad.database-adapters.datomic-cloud/attribute-schema {:db/isComponent true}
    ao/schema                                                       :production})
 
 ;; NOTE: How to do file SHA->URL stuff...
@@ -118,7 +120,8 @@
    ao/identities                                                   #{:account/id}
    ao/schema                                                       :production
    :com.fulcrologic.rad.database-adapters.sql/delete-referent?     true
-   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}})
+   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
+   :com.fulcrologic.rad.database-adapters.datomic-cloud/attribute-schema {:db/isComponent true}})
 
 (defattr all-accounts :account/all-accounts :ref
   {ao/target     :account/id

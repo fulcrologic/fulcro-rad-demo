@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "= Fulcro Rapid Application Development Tools",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "shadow-server": "npx shadow-cljs -A:f3-dev:rad-dev server"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fulcrologic/fulcro-rad.git"

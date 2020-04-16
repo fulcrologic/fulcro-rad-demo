@@ -93,6 +93,20 @@ user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
+== Running a Datomic Cloud-based Server
+
+The example code for Datomic Cloud components is in the `src/cloud` folder, along with a custom
+`development.clj`.
+
+You can run it with the `:cloud` deps alias:
+
+[source, bash]
+-----
+$ clj -A:dev:cloud
+user=> (clojure.core/require 'development)
+user=> (development/go)
+-----
+
 == Restarting
 
 The `development/restart` will stop the server, reload source, and start the server.
