@@ -94,6 +94,11 @@ user=> (development/go)
 -----
 
 == Running a Datomic Cloud-based Server
+Before running you must do the following:
+
+- Have an installation of Datomic Cloud (Solo topology is fine).  If you haven't used Datomic Cloud before, I recommend you go through the tutorial to make sure your system is configured and working correctly before attempting to run this demo.
+- Modify `src/shared/config/default.edn` and set your configuration on the `:datomic/client` key.  This is the Datomic Client configuration and is passed directly to Datomic, so you can use any of the https://docs.datomic.com/client-api/datomic.client.api.html#var-client[documented keys].
+- Start the Datomic access gateway proxy
 
 The example code for Datomic Cloud components is in the `src/cloud` folder, along with a custom
 `development.clj`.
