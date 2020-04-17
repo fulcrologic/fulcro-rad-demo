@@ -14,7 +14,7 @@
     [com.fulcrologic.rad.resolvers :as res]
     [mount.core :as mount]
     [taoensso.timbre :as log]
-    [datomic.api :as d]
+    [datomic.client.api :as d]
     [com.fulcrologic.rad.attributes :as attr]))
 
 (set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared" "../fulcro-rad-datomic/src/main" "../fulcro-rad/src/main")
@@ -27,7 +27,8 @@
   (let [connection (:main datomic-connections)]
     (when connection
       (log/info "SEEDING data.")
-      @(d/transact connection [(seed/new-address (new-uuid 1) "111 Main St.")
+      (d/transact connection {:tx-data
+                              [(seed/new-address (new-uuid 1) "111 Main St.")
                                (seed/new-account (new-uuid 100) "Tony" "tony@example.com" "letmein"
                                  :account/addresses ["111 Main St."]
                                  :account/primary-address (seed/new-address (new-uuid 300) "222 Other")
@@ -51,7 +52,7 @@
                                (seed/new-item (new-uuid 205) "Robot" 94.99
                                  :item/category "Toys")
                                (seed/new-item (new-uuid 206) "Building Blocks" 24.99
-                                 :item/category "Toys")]))))
+                                 :item/category "Toys")]}))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})

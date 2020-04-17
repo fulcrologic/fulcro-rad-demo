@@ -42,8 +42,9 @@
                                      com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-13-SNAPSHOT"}}}
 
            :cloud     {:extra-paths ["src/cloud" "src/cloud-tests"]
-                       :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     ;com.datomic/client-cloud           {:mvn/version "0.8.81"}
+                       :extra-deps  {                       ;com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
+                                     com.datomic/client-cloud           {:mvn/version "0.8.81"}
+                                     datomic-client-memdb               {:mvn/version "1.0.2"}
                                      com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-13-SNAPSHOT"}}}
 
            :run-tests {:main-opts  ["-m" "kaocha.runner"]

@@ -7,13 +7,13 @@
     [com.example.model :refer [all-attributes]]
     [com.fulcrologic.guardrails.core :refer [>defn =>]]
     [com.example.model.authorization :as exauth]
-    [datomic.api :as d]
+    [datomic.client.api :as d]
     [fulcro-spec.core :refer [specification assertions component]]))
 
 (specification "login!"
   (let [c   (datomic/empty-db-connection all-attributes :production)
-        _   @(d/transact c [(seed/new-account (new-uuid 1) "tony" "tony@example.com" "letmein"
-                              :account/name "Tony")])
+        _   (d/transact c {:tx-data [(seed/new-account (new-uuid 1) "tony" "tony@example.com" "letmein"
+                                                       :account/name "Tony")]})
         env (datomic/mock-resolver-env :production c)]
     (component "Valid credentials"
       (let [actual (exauth/login! env {:username "tony@example.com" :password "letmein"})]
