@@ -9,11 +9,7 @@
 
  :com.fulcrologic.rad.database-adapters.datomic-cloud/databases
                                     {:main {:datomic/schema           :production
-                                            :datomic/client {:server-type :ion
-                                                             :region "us-east-2"
-                                                             :system "*****"
-                                                             :endpoint "http://entry.****.us-east-2.datomic.net:8182/"
-                                                             :proxy-port 8182}
+                                            :datomic/client           :mock
                                             :datomic/database         "rad-demo"}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases

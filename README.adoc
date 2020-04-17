@@ -94,11 +94,7 @@ user=> (development/go)
 -----
 
 == Running a Datomic Cloud-based Server
-Before running you must do the following:
-
-- Have an installation of Datomic Cloud (Solo topology is fine).  If you haven't used Datomic Cloud before, I recommend you go through the tutorial to make sure your system is configured and working correctly before attempting to run this demo.
-- Modify `src/shared/config/default.edn` and set your configuration on the `:datomic/client` key.  This is the Datomic Client configuration and is passed directly to Datomic, so you can use any of the https://docs.datomic.com/client-api/datomic.client.api.html#var-client[documented keys].
-- Start the Datomic access gateway proxy
+The demo is setup to use an in-memory mock database, so you can be up and running quickly.
 
 The example code for Datomic Cloud components is in the `src/cloud` folder, along with a custom
 `development.clj`.
@@ -111,6 +107,38 @@ $ clj -A:dev:cloud
 user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
+
+
+CAUTION: This in memory mock database uses Datomic Peer under the hood, so some Datalog features
+which are not supported on Datomic Cloud will still work using the mock db - only to break when you
+try to run against a real Datomic Cloud database!  A good example is the `:find` specification, where
+Cloud only supports a limited subset of bindings. Compare the `com.example.components.database-queries`
+namespace in the `datomic` and `cloud` source folders to see the difference in queries.
+
+=== Running on a real Datomic Cloud instance
+To run on a real version of Datomic Cloud instead of the mock database, you need to:
+
+- Have an installation of Datomic Cloud (Solo topology is fine).  If you haven't used Datomic Cloud before, I recommend you go through the tutorial to make sure your system is configured and working correctly before attempting to run this demo.
+- Modify `src/shared/config/default.edn` and change the value of `:datomic/client` from `:mock` to a map containing your
+client configuration.  This configuration is passed directly to Datomic and should follow the https://docs.datomic.com/client-api/datomic.client.api.html#var-client[documented configuration].
+- Start the Datomic access gateway proxy
+- Start the demo using the same steps as in the previous section
+
+==== Example client configuration
+[source, edn]
+-----
+:com.fulcrologic.rad.database-adapters.datomic-cloud/databases
+    {:main {:datomic/schema     :production
+            :datomic/database   "rad-demo"
+            :datomic/client
+              {:server-type :ion
+               :region "us-east-1"
+               :system "my-datomic-system"
+               :endpoint "http://entry.my-datomic-system.us-east-1.datomic.net:8182/"
+               :proxy-port 8182}}}
+
+-----
+
 
 == Restarting
 
