@@ -19,6 +19,11 @@
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/refresh}}
 
+            :sample   {:target     :node-script
+                       :output-dir "resources/public/js/sample"
+                       :asset-path "/js/sample"
+                       :modules    {:main {:init-fn com.fulcrologic.sample/start}}}
+
             :test     {:target           :browser-test
                        :test-dir         "resources/public/js/test"
                        :ns-regexp        "-spec$"

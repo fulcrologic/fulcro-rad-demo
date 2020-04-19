@@ -5,16 +5,12 @@
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.form :as form]
-    [com.example.ui.account-forms :as account-forms]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
     [taoensso.timbre :as log]
     [taoensso.tufte :as tufte :refer [profile]]
-    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [com.fulcrologic.rad.routing.html5-history :as hist5 :refer [html5-history]]
-    [com.fulcrologic.rad.routing :as rad-routing]
     [com.fulcrologic.rad.routing.history :as history]))
 
 (defonce stats-accumulator
@@ -38,13 +34,6 @@
   ;; a default tz until they log in
   (datetime/set-timezone! "America/Los_Angeles")
   (history/install-route-history! app (html5-history))
-  (history/add-route-listener! app ::rad-route-control
-    (fn [route params]
-      (if (not (dr/can-change-route? app))
-        (do
-          (log/warn "Browser routing was denied")
-          (history/undo! app route params))
-        (dr/change-route! app route params))))
   (rad-app/install-ui-controls! app sui/all-controls)
   (app/mount! app Root "app"))
 
