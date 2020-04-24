@@ -8,6 +8,8 @@
     [com.example.ui.file-forms :refer [FileForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.mutations :refer [defmutation]]
+    [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.rad.type-support.cache-a-bools :as cb]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
@@ -91,46 +93,46 @@
       (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
-  {ro/title                              "All Accounts"
+  {ro/title                 "All Accounts"
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   ro/form-links                         {account/name AccountForm}
-   ro/field-formatters                   {:account/name (fn [this v] v)}
-   ::report/column-headings          {:account/name "Account Name"}
-   ro/columns                            [account/name account/active?]
-   ro/row-pk                             account/id
-   ro/source-attribute                   :account/all-accounts
-   ro/run-on-mount?                      true
+   ro/form-links            {account/name AccountForm}
+   ro/field-formatters      {:account/name (fn [this v] v)}
+   ::report/column-headings {:account/name "Account Name"}
+   ro/columns               [account/name account/active?]
+   ro/row-pk                account/id
+   ro/source-attribute      :account/all-accounts
+   ro/run-on-mount?         true
 
-   ro/controls {::new-account   {:type   :button
-                                                           :label  "New Account"
-                                                           :action (fn [this _] (form/create! this AccountForm))}
-                                          :show-inactive? {:type          :boolean
-                                                           :style         :toggle
-                                                           :default-value false
-                                                           :onChange      (fn [this _] (report/reload! this))
-                                                           :label         "Show Inactive Accounts?"}}
+   ro/controls              {::new-account   {:type   :button
+                                              :label  "New Account"
+                                              :action (fn [this _] (form/create! this AccountForm))}
+                             :show-inactive? {:type          :boolean
+                                              :style         :toggle
+                                              :default-value false
+                                              :onChange      (fn [this _] (report/reload! this))
+                                              :label         "Show Inactive Accounts?"}}
 
-   ro/control-layout                     {:action-buttons [::new-account]
-                                          :inputs         [[:show-inactive?]]}
+   ro/control-layout        {:action-buttons [::new-account]
+                             :inputs         [[:show-inactive?]]}
 
-   ro/row-actions                        [{:label     "Enable"
-                                           :action    (fn [report-instance {:account/keys [id]}]
-                                                        #?(:cljs
-                                                           (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                                         :account/active? true})])))
-                                           ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
-                                           :disabled? (fn [_ row-props] (:account/active? row-props))}
-                                          {:label     "Disable"
-                                           :action    (fn [report-instance {:account/keys [id]}]
-                                                        #?(:cljs
-                                                           (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                                         :account/active? false})])))
-                                           ;:visible?  (fn [_ row-props] (:account/active? row-props))
-                                           :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
+   ro/row-actions           [{:label     "Enable"
+                              :action    (fn [report-instance {:account/keys [id]}]
+                                           #?(:cljs
+                                              (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                            :account/active? true})])))
+                              ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
+                              :disabled? (fn [_ row-props] (:account/active? row-props))}
+                             {:label     "Disable"
+                              :action    (fn [report-instance {:account/keys [id]}]
+                                           #?(:cljs
+                                              (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                            :account/active? false})])))
+                              ;:visible?  (fn [_ row-props] (:account/active? row-props))
+                              :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
 
-   ro/route                              "accounts"})
+   ro/route                 "accounts"})
 
 (comment
 

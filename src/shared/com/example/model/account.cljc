@@ -134,6 +134,14 @@
                    #?(:clj
                       {:account/invoices (queries/get-customer-invoices env query-params)}))})
 
+#?(:clj
+   (defmutation logout [env _]
+     {}
+     (exauth/logout! env))
+   :cljs
+   (defmutation logout [_]
+     (remote [env]
+       true)))
 
 #?(:clj
    (defmutation login [env params]
@@ -200,4 +208,4 @@
                  addresses all-accounts avatar files account-invoices])
 
 #?(:clj
-   (def resolvers [login check-session set-account-active]))
+   (def resolvers [login logout check-session set-account-active]))

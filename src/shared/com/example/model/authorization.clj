@@ -35,6 +35,11 @@
       {::auth/provider :local
        ::auth/status   :failed})))
 
+(defn logout!
+  "Implementation of logout."
+  [env]
+  (fmw/augment-response {} (fn [resp] (assoc resp :session {}))))
+
 (defn check-session! [env]
   (log/info "Checking for existing session")
   (or

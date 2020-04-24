@@ -1,8 +1,8 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.2.2-SNAPSHOT"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "0.0.1-alpha-17-SNAPSHOT"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "0.0.1-SNAPSHOT"}
+ :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.2.3-SNAPSHOT"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "0.0.2-alpha"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "0.0.2-alpha"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.1-alpha-1"}
            com.wsscode/pathom                     {:mvn/version "2.2.31"}
            edn-query-language/eql                 {:mvn/version "0.0.9"}
@@ -35,11 +35,11 @@
 
            :sql       {:extra-paths ["src/sql" "src/sql-tests"]
                        :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.1-alpha-2"}}}
+                                     com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.2-alpha"}}}
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.1-alpha-13-SNAPSHOT"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.2-alpha"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
                        :extra-deps {lambdaisland/kaocha {:mvn/version "1.0-612"}}}
 

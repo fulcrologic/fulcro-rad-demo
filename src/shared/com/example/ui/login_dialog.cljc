@@ -11,15 +11,16 @@
     [taoensso.timbre :as log]))
 
 (defsc LoginForm [this {:ui/keys [username password] :as props} {:keys [visible?]}]
-  {:query          [:ui/username
-                    :ui/password]
-   :initial-state  {:ui/username "tony@example.com"
-                    :ui/password "letmein"}
+  {:query               [:ui/username
+                         :ui/password]
+   :initial-state       {:ui/username "tony@example.com"
+                         :ui/password "letmein"}
 
-   ::auth/provider :local
+   ::auth/provider      :local
    ::auth/check-session `account/check-session
+   ::auth/logout        `account/logout
 
-   :ident          (fn [] [:component/id ::LoginForm])}
+   :ident               (fn [] [:component/id ::LoginForm])}
   #?(:cljs
      (ui-modal {:open (boolean visible?) :dimmer true}
        (ui-modal-header {} "Please Log In")
