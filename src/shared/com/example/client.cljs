@@ -6,7 +6,6 @@
     [com.fulcrologic.fulcro.mutations :as m]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
     [taoensso.timbre :as log]
@@ -14,9 +13,7 @@
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [com.fulcrologic.rad.routing.html5-history :as hist5 :refer [html5-history]]
     [com.fulcrologic.rad.routing.history :as history]
-    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
-    [com.fulcrologic.rad.routing :as routing]
-    [com.fulcrologic.rad.type-support.cache-a-bools :as cb]))
+    [com.fulcrologic.rad.routing :as routing]))
 
 (defonce stats-accumulator
   (tufte/add-accumulating-handler! {:ns-pattern "*"}))
@@ -42,35 +39,12 @@
   (rad-app/install-ui-controls! app sui/all-controls)
   (app/mount! app Root "app"))
 
-(defn can?
-  "A sample implementation of a permission scheme for this app. A real app would have a considerably more complex
-   system that might use a rules engine, multi-methods, component options, etc."
-  [app action-map]
-  (let [{::auth/keys [action subject context]} action-map
-        {::routing/keys [target params]} context]
-    (case action
-      ;; A sample rule: Routing to an account is allowed if we can determine that it is active.
-      :execute (if (and
-                     (= subject `routing/route-to!)         ; the subject of execute is typically expressed as a symbol (mutation or function)
-                     (= target :com.example.ui.account-forms/AccountForm) ; The target is usually represented as a component registry key
-                     (contains? params ::report/row-props)) ; additional parameters may come from different subsystems when they do checks.
-                 (let [{::report/keys [row-props]} params
-                       active? (:account/active? row-props)]
-                   ;; don't allow caching, since enabling an account will change this answer
-                   (if active? cb/uncachably-true cb/uncachably-false))
-                 ;; we don't have enough info, so we must assume it is OK and let the target deny access on load from server,
-                 ;; if necessary. In this app, we're just trying to disable the link in the report, so someone pasting in
-                 ;; a bookmarked URL is ok.
-                 cb/uncachably-true)
-      cb/cachably-true)))
-
 (defn init []
   (log/info "Starting App")
   ;; a default tz until they log in
   (datetime/set-timezone! "America/Los_Angeles")
   (history/install-route-history! app (html5-history))
   (rad-app/install-ui-controls! app sui/all-controls)
-  (auth/install-authorization! app can?)
   (app/mount! app Root "app"))
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))
