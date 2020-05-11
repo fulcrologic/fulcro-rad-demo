@@ -25,7 +25,7 @@
    :ident         (fn [] [:component/id ::LandingPage])
    :initial-state {}
    :route-segment ["landing-page"]}
-  (dom/div "Hello World"))
+  (dom/div "Welcome to the Demo. Please log in."))
 
 ;; This will just be a normal router...but there can be many of them.
 (defrouter MainRouter [this {:keys [route-factory route-props] :as props}]
@@ -34,7 +34,8 @@
   ;; Normal Fulcro code to show a loader on slow route change (assuming Semantic UI here, should
   ;; be generalized for RAD so UI-specific code isn't necessary)
   (dom/div
-    (dom/div :.ui.active.loader)
+    (log/spy :info props)
+    ;(dom/div :.ui.loader {:classes [(when )]})
     (when route-factory
       (route-factory route-props))))
 

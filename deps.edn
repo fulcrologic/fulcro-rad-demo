@@ -1,13 +1,13 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.2.4-SNAPSHOT"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "0.0.3-alpha-SNAPSHOT"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "0.0.2-alpha"}
+ :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.2.6-SNAPSHOT"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "0.0.4-alpha-SNAPSHOT"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "0.0.4-alpha-SNAPSHOT"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.1-alpha-1"}
            com.wsscode/pathom                     {:mvn/version "2.2.31"}
            edn-query-language/eql                 {:mvn/version "0.0.9"}
-           com.taoensso/encore                    {:mvn/version "2.115.0"}
-           com.fulcrologic/guardrails             {:mvn/version "0.0.11"}
+           com.taoensso/encore                    {:mvn/version "2.120.0"}
+           com.fulcrologic/guardrails             {:mvn/version "0.0.12"}
 
            ;; Performance checks
            com.taoensso/tufte                     {:mvn/version "2.1.0"}
@@ -16,8 +16,7 @@
            mount                                  {:mvn/version "0.1.12"}
            hiccup                                 {:mvn/version "1.0.5"}
            ring/ring-defaults                     {:mvn/version "0.3.2"}
-           ring/ring-core                         {:mvn/version "1.8.0"}
-           bk/ring-gzip                           {:mvn/version "0.3.0"}
+           ring/ring-core                         {:mvn/version "1.8.1"}
            org.immutant/web                       {:mvn/version "2.1.10"
                                                    :exclusions  [ch.qos.logback/logback-classic]}
 
@@ -28,6 +27,7 @@
            org.slf4j/jcl-over-slf4j               {:mvn/version "1.7.30"} ; auto-sends java.common.logging to slf4j
            com.fzakaria/slf4j-timbre              {:mvn/version "0.3.19"} ; hooks slf4j to timbre
 
+           org.clojure/clojurescript              {:mvn/version "1.10.758"}
            org.clojure/clojure                    {:mvn/version "1.10.1"}}
 
  :aliases {:test      {:extra-paths ["src/shared-tests"]
@@ -39,12 +39,12 @@
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.2-alpha"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.3-alpha-SNAPSHOT"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
-                       :extra-deps {lambdaisland/kaocha {:mvn/version "1.0-612"}}}
+                       :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.629"}}}
 
            :dev       {:extra-paths ["src/dev" "resources"]
-                       :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.8.94"}
+                       :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.8.110"}
                                      com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.1"}
                                      binaryage/devtools                  {:mvn/version "1.0.0"}
                                      org.clojure/tools.namespace         {:mvn/version "0.3.1"}}}}}

@@ -1,18 +1,17 @@
 (ns com.example.components.ring-middleware
   (:require
-    [com.fulcrologic.fulcro.server.api-middleware :as server]
-    [com.fulcrologic.fulcro.networking.file-upload :as file-upload]
-    [com.fulcrologic.rad.blob :as blob]
-    [mount.core :refer [defstate]]
-    [hiccup.page :refer [html5]]
-    [ring.middleware.defaults :refer [wrap-defaults]]
-    [ring.middleware.gzip :refer [wrap-gzip]]
+    [clojure.string :as str]
+    [com.example.components.blob-store :as bs]
     [com.example.components.config :as config]
     [com.example.components.parser :as parser]
-    [taoensso.timbre :as log]
+    [com.fulcrologic.fulcro.networking.file-upload :as file-upload]
+    [com.fulcrologic.fulcro.server.api-middleware :as server]
+    [com.fulcrologic.rad.blob :as blob]
+    [hiccup.page :refer [html5]]
+    [mount.core :refer [defstate]]
+    [ring.middleware.defaults :refer [wrap-defaults]]
     [ring.util.response :as resp]
-    [com.example.components.blob-store :as bs]
-    [clojure.string :as str]))
+    [taoensso.timbre :as log]))
 
 (defn index [csrf-token]
   (html5
@@ -66,6 +65,5 @@
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
       (wrap-html-routes)
-      (wrap-defaults defaults-config)
-      (wrap-gzip))))
+      (wrap-defaults defaults-config))))
 
