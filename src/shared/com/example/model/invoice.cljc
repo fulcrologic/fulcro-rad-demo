@@ -12,7 +12,8 @@
     [com.fulcrologic.rad.type-support.date-time :as dt]
     [cljc.java-time.local-date-time :as ldt]
     [taoensso.encore :as enc]
-    [cljc.java-time.local-date :as ld]))
+    [cljc.java-time.local-date :as ld]
+    [com.fulcrologic.rad.report :as report]))
 
 (defattr id :invoice/id :uuid
   {ao/identity? true
@@ -162,3 +163,10 @@
 (def attributes [id date line-items customer all-invoices total date-groups gross-sales items-sold])
 #?(:clj
    (def resolvers [customer-id invoice-statistics]))
+
+(comment
+  (report/rotate-result
+    {:invoice-statistics/date-groups ["1/1/2020" "2/1/2020" "3/1/2020" "4/1/2020"]
+     :invoice-statistics/gross-sales [323M 313M 124M 884M]
+     :invoice-statistics/items-sold  [10 11 5 42]}
+    [date-groups gross-sales items-sold]))

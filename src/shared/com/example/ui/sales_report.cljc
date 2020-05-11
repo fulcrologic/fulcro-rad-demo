@@ -1,6 +1,8 @@
 (ns com.example.ui.sales-report
   (:require
     [com.example.model.sales :as sales]
+    [com.example.model.invoice :as invoice]
+    [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [taoensso.timbre :as log]
     [com.fulcrologic.rad.report-options :as ro]
@@ -64,3 +66,60 @@
 
    ro/run-on-mount?       true
    ro/route               "sales-report"})
+
+
+(report/defsc-report RealSalesReport [this props]
+  {ro/title               "Sales Report"
+   ro/source-attribute    :invoice-statistics
+   ro/row-pk              invoice/date-groups
+   ro/columns             [invoice/date-groups invoice/gross-sales invoice/items-sold]
+   ro/grouped-on          invoice/date-groups
+
+   ro/column-headings     {:invoice-statistics/date-groups (fn [report-instance]
+                                                             (let [grouping (get-in (comp/props report-instance) [:ui/parameters :group-by])]
+                                                               (case grouping
+                                                                 :month "Month Starting"
+                                                                 :day "Date"
+                                                                 :year "Year Starting"
+                                                                 "All")))
+                           :invoice-statistics/gross-sales "Gross Sales"
+                           :invoice-statistics/items-sold  "Total Items Sold"}
+
+   ro/controls            {::refresh {:type   :button
+                                      :label  "Refresh"
+                                      :action (fn [this] (report/reload! this))}
+                           :group-by {:type          :picker
+                                      :default-value :month
+                                      :options       [{:text "Month" :value :month}
+                                                      {:text "Day" :value :day}
+                                                      {:text "Year" :value :year}
+                                                      {:text "All" :value :summary}]
+                                      :action        (fn [this] (report/reload! this))
+                                      :label         "Group By"}}
+
+   ro/control-layout      {:action-buttons [::refresh]
+                           :inputs         [[:group-by]]}
+
+
+   ro/initial-sort-params {:sort-by          :invoice-statistics/date-groups
+                           :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
+                           :ascending?       true}
+
+   ro/compare-rows        (fn [{:keys [sort-by ascending?] :or {sort-by    :invoice-statistics/date-groups
+                                                                ascending? true}} row-a row-b]
+                            (let [a          (get row-a sort-by)
+                                  b          (get row-b sort-by)
+                                  fwd-result (case sort-by
+                                               :invoice-statistics/gross-sales (cond
+                                                                                 (math/< a b) -1
+                                                                                 (math/> a b) 1
+                                                                                 (math/= a b) 0)
+                                               (compare a b))]
+                              (cond-> fwd-result
+                                (not ascending?) (-))))
+
+   ro/paginate?           false
+   ;ro/page-size           10
+
+   ro/run-on-mount?       true
+   ro/route               "invoice-report"})

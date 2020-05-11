@@ -31,7 +31,8 @@
 (defrouter MainRouter [this {:keys [current-state route-factory route-props]}]
   {:always-render-body? true
    :router-targets      [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices
-                         sales-report/SalesReport InventoryReport]}
+                         sales-report/SalesReport InventoryReport
+                         sales-report/RealSalesReport]}
   ;; Normal Fulcro code to show a loader on slow route change (assuming Semantic UI here, should
   ;; be generalized for RAD so UI-specific code isn't necessary)
   (dom/div
@@ -69,7 +70,10 @@
             (dom/a :.ui.item {:onClick (fn [] (form/create! this InvoiceForm))} "New Invoice")
             (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this InvoiceList {}))} "List Invoices")
             (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this AccountList {}))} "List Accounts")
-            (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this sales-report/SalesReport {}))} "Sales Report")))
+            (dom/a :.ui.item
+              {:onClick (fn [] (rroute/route-to! this sales-report/SalesReport {}))} "Fake Report")
+            (dom/a :.ui.item
+              {:onClick (fn [] (rroute/route-to! this sales-report/RealSalesReport {}))} "Sales Report")))
         (div :.right.menu
           (div :.item
             (div :.ui.tiny.loader {:classes [(when busy? "active")]})
