@@ -15,7 +15,8 @@
     [mount.core :as mount]
     [taoensso.timbre :as log]
     [datomic.api :as d]
-    [com.fulcrologic.rad.attributes :as attr]))
+    [com.fulcrologic.rad.attributes :as attr]
+    [com.fulcrologic.rad.type-support.date-time :as dt]))
 
 (set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared" "../fulcro-rad-datomic/src/main" "../fulcro-rad/src/main")
 
@@ -24,7 +25,13 @@
     (d/pull db '[*] [:account/id (new-uuid 100)])))
 
 (defn seed! []
-  (let [connection (:main datomic-connections)]
+  (dt/set-timezone! "America/Los_Angeles")
+  (let [connection (:main datomic-connections)
+        date-1     (dt/html-datetime-string->inst "2020-01-01T12:00")
+        date-2     (dt/html-datetime-string->inst "2020-01-05T12:00")
+        date-3     (dt/html-datetime-string->inst "2020-02-01T12:00")
+        date-4     (dt/html-datetime-string->inst "2020-03-10T12:00")
+        date-5     (dt/html-datetime-string->inst "2020-03-21T12:00")]
     (when connection
       (log/info "SEEDING data.")
       @(d/transact connection [(seed/new-address (new-uuid 1) "111 Main St.")
@@ -51,7 +58,20 @@
                                (seed/new-item (new-uuid 205) "Robot" 94.99
                                  :item/category "Toys")
                                (seed/new-item (new-uuid 206) "Building Blocks" 24.99
-                                 :item/category "Toys")]))))
+                                 :item/category "Toys")
+                               (seed/new-invoice "invoice-1" date-1 "Tony"
+                                 [(seed/new-line-item "Doll" 1 5.0M)
+                                  (seed/new-line-item "Hammer" 1 14.99M)])
+                               (seed/new-invoice "invoice-2" date-2 "Sally"
+                                 [(seed/new-line-item "Wrench" 1 12.50M)
+                                  (seed/new-line-item "Widget" 2 32.0M)])
+                               (seed/new-invoice "invoice-3" date-3 "Sam"
+                                 [(seed/new-line-item "Wrench" 2 12.50M)
+                                  (seed/new-line-item "Hammer" 2 12.50M)])
+                               (seed/new-invoice "invoice-4" date-4 "Sally"
+                                 [(seed/new-line-item "Robot" 6 89.99M)])
+                               (seed/new-invoice "invoice-5" date-5 "Barbara"
+                                 [(seed/new-line-item "Building Blocks" 10 20.0M)])]))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})

@@ -61,8 +61,6 @@
                                            ;; Use computed props to inform subform of its role.
                                            ::form/subform-style :inline}}
    fo/triggers       {:derive-fields (fn [new-form-tree] (sum-subtotals* new-form-tree))}
-
-   fo/cancel-route   ["landing-page"]
    fo/route-prefix   "invoice"
    fo/title          (fn [_ {:invoice/keys [id]}]
                        (if (tempid/tempid? id)

@@ -22,7 +22,6 @@
   {fo/id            line-item/id
    fo/attributes    [line-item/category line-item/item line-item/quantity line-item/quoted-price line-item/subtotal]
    fo/validator     model/all-attribute-validator
-   fo/cancel-route  ["landing-page"]
    fo/route-prefix  "line-item"
    fo/title         "Line Items"
    fo/layout        [[:line-item/category :line-item/item :line-item/quantity :line-item/quoted-price :line-item/subtotal]]

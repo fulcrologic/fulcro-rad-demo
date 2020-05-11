@@ -29,7 +29,6 @@
                                                                                           {:text (str label) :value [:category/id id]})
                                                                                         (sort-by :category/label options)))
                                      ::picker-options/cache-time-ms   30000}}
-   fo/cancel-route  ["landing-page"]
    fo/route-prefix  "item"
    fo/title         "Edit Item"})
 

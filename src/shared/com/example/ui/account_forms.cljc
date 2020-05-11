@@ -46,7 +46,6 @@
                            :account/addresses       [{}]}
    fo/validator           account-validator
    fo/validation-messages {:account/email (fn [_] "Must start with your lower-case first name")}
-   fo/cancel-route        :back
    fo/route-prefix        "account"
    fo/title               "Edit Account"
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
