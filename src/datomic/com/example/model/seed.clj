@@ -86,15 +86,15 @@
                {:a 1 :b 3 :c 2}
                {:a 1 :b 3 :c 2}]}
 
-  ;; pivoted table, expects *one* result, where each entry represents a row that has many columns
+  ;; stats table, expects *one* result, where each entry represents a particular detail that has many groups
   ;; top query
-  [({:invoice-statistics [:invoice-statistics/groups :invoice-statistics/gross-sales :invoice-statistics/item-count]} {:group-by   :month
-                                                                                                                       :start-date "1/1/2020"
-                                                                                                                       :end-date   "5/1/2020"})]
+  [({:invoice-statistics [:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/item-count]} {:group-by   :month
+                                                                                                                            :start-date "1/1/2020"
+                                                                                                                            :end-date   "5/1/2020"})]
   ;; result
   ;; invoice-statistics, invoice-statistic
   {:invoice-statistics
-   {:invoice-statistics/groups      ["1/1/2020" "2/1/2020" "3/1/2020" "4/1/2020"]
+   {:invoice-statistics/date-groups ["1/1/2020" "2/1/2020" "3/1/2020" "4/1/2020"]
     :invoice-statistics/gross-sales [323M 313M 124M 884M]
     :invoice-statistics/item-count  [10 11 5 42]}})
 
