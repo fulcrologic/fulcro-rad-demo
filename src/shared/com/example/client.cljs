@@ -29,8 +29,6 @@
 
 (defonce app (rad-app/fulcro-rad-app
                {:client-did-mount (fn [app]
-                                    (log/merge-config! {:output-fn prefix-output-fn
-                                                        :appenders {:console (console-appender)}})
                                     (auth/start! app [LoginForm] {:after-session-check `fix-route}))}))
 
 (defn refresh []
@@ -41,6 +39,8 @@
 
 (defn init []
   (log/info "Starting App")
+  (log/merge-config! {:output-fn prefix-output-fn
+                      :appenders {:console (console-appender)}})
   ;; a default tz until they log in
   (datetime/set-timezone! "America/Los_Angeles")
   (history/install-route-history! app (html5-history))

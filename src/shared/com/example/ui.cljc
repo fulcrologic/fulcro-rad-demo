@@ -28,14 +28,14 @@
   (dom/div "Welcome to the Demo. Please log in."))
 
 ;; This will just be a normal router...but there can be many of them.
-(defrouter MainRouter [this {:keys [route-factory route-props] :as props}]
-  {:router-targets [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices
-                    sales-report/SalesReport InventoryReport]}
+(defrouter MainRouter [this {:keys [current-state route-factory route-props]}]
+  {:always-render-body? true
+   :router-targets      [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices
+                         sales-report/SalesReport InventoryReport]}
   ;; Normal Fulcro code to show a loader on slow route change (assuming Semantic UI here, should
   ;; be generalized for RAD so UI-specific code isn't necessary)
   (dom/div
-    (log/spy :info props)
-    ;(dom/div :.ui.loader {:classes [(when )]})
+    (dom/div :.ui.loader {:classes [(when-not (= :routed current-state) "active")]})
     (when route-factory
       (route-factory route-props))))
 
