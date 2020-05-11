@@ -9,6 +9,11 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
+"@js-joda/locale_en-us@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@js-joda/locale_en-us/-/locale_en-us-2.0.1.tgz#2f56645955fabd97279954a30756fc367e44cdb5"
+  integrity sha512-7af7QST8F7sk08xpv//rWNFBHRLFaj4XbYNBXT4V8QgpmwzY3TJorZ5Ok/L2s3Djf2/qB7kBb7zIg6Ox+RNrjg==
+
 "@semantic-ui-react/event-stack@^3.1.0":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@semantic-ui-react/event-stack/-/event-stack-3.1.1.tgz#3263d17511db81a743167fe45281a24b3eb6b3c8"
