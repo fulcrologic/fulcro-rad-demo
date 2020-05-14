@@ -58,45 +58,45 @@
 ;; Using such a result requires we turn off normalization and do a raw result transform to make the rows appear
 ;; as the report logic expects.
 (report/defsc-report RealSalesReport [this props]
-  {ro/title                "Sales Report"
-   ro/source-attribute     :invoice-statistics
-   ro/row-pk               invoice/date-groups
-   ro/columns              [invoice/date-groups invoice/gross-sales invoice/items-sold]
+  {ro/title               "Sales Report"
+   ro/source-attribute    :invoice-statistics
+   ro/row-pk              invoice/date-groups
+   ro/columns             [invoice/date-groups invoice/gross-sales invoice/items-sold]
 
    ;; Make sure Fulcro leaves it denormalized, otherwise the raw result will get mangled and our rotate of the result won't work.
-   ro/denormalize?         true
-   ro/raw-result-transform report/rotate-result
+   ro/denormalize?        true
+   ro/raw-result-xform    report/rotate-result
 
-   ro/column-headings      {:invoice-statistics/date-groups (fn [report-instance]
-                                                              (let [grouping (get-in (comp/props report-instance) [:ui/parameters :group-by])]
-                                                                (case grouping
-                                                                  :month "Month Starting"
-                                                                  :day "Date"
-                                                                  :year "Year Starting"
-                                                                  "All")))
-                            :invoice-statistics/gross-sales "Gross Sales"
-                            :invoice-statistics/items-sold  "Total Items Sold"}
+   ro/column-headings     {:invoice-statistics/date-groups (fn [report-instance]
+                                                             (let [grouping (get-in (comp/props report-instance) [:ui/parameters :group-by])]
+                                                               (case grouping
+                                                                 :month "Month Starting"
+                                                                 :day "Date"
+                                                                 :year "Year Starting"
+                                                                 "All")))
+                           :invoice-statistics/gross-sales "Gross Sales"
+                           :invoice-statistics/items-sold  "Total Items Sold"}
 
-   ro/controls             {::refresh {:type   :button
-                                       :label  "Refresh"
-                                       :action (fn [this] (report/reload! this))}
-                            :group-by {:type          :picker
-                                       :default-value :month
-                                       :options       [{:text "Month" :value :month}
-                                                       {:text "Day" :value :day}
-                                                       {:text "Year" :value :year}
-                                                       {:text "All" :value :summary}]
-                                       :action        (fn [this] (report/reload! this))
-                                       :label         "Group By"}}
+   ro/controls            {::refresh {:type   :button
+                                      :label  "Refresh"
+                                      :action (fn [this] (report/reload! this))}
+                           :group-by {:type          :picker
+                                      :default-value :month
+                                      :options       [{:text "Month" :value :month}
+                                                      {:text "Day" :value :day}
+                                                      {:text "Year" :value :year}
+                                                      {:text "All" :value :summary}]
+                                      :action        (fn [this] (report/reload! this))
+                                      :label         "Group By"}}
 
-   ro/control-layout       {:action-buttons [::refresh]
-                            :inputs         [[:group-by]]}
+   ro/control-layout      {:action-buttons [::refresh]
+                           :inputs         [[:group-by]]}
 
 
-   ro/initial-sort-params  {:sort-by          :invoice-statistics/date-groups
-                            :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
-                            :ascending?       true}
+   ro/initial-sort-params {:sort-by          :invoice-statistics/date-groups
+                           :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
+                           :ascending?       true}
 
-   ro/run-on-mount?        true
-   ro/rotate?              true
-   ro/route                "invoice-report"})
+   ro/run-on-mount?       true
+   ro/rotate?             true
+   ro/route               "invoice-report"})
