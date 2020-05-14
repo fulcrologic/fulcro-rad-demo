@@ -98,5 +98,5 @@
                             :ascending?       true}
 
    ro/run-on-mount?        true
-   ro/rotate-on            invoice/date-groups
+   ro/rotate?              true
    ro/route                "invoice-report"})
