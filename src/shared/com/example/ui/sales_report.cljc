@@ -4,9 +4,11 @@
     [com.example.model.invoice :as invoice]
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.rad.type-support.decimal :as math]
+    [com.fulcrologic.rad.type-support.date-time :as dt]
     [taoensso.timbre :as log]
     [com.fulcrologic.rad.report-options :as ro]
-    [com.fulcrologic.rad.report :as report]))
+    [com.fulcrologic.rad.report :as report]
+    [cljc.java-time.local-date-time :as ldt]))
 
 (report/defsc-report SalesReport [this props]
   {ro/title               "Sales Report"
@@ -77,21 +79,28 @@
                            :invoice-statistics/gross-sales "Gross Sales"
                            :invoice-statistics/items-sold  "Total Items Sold"}
 
-   ro/controls            {::refresh {:type   :button
-                                      :label  "Refresh"
-                                      :action (fn [this] (report/reload! this))}
-                           :group-by {:type          :picker
-                                      :default-value :month
-                                      :options       [{:text "Month" :value :month}
-                                                      {:text "Day" :value :day}
-                                                      {:text "Year" :value :year}
-                                                      {:text "All" :value :summary}]
-                                      :action        (fn [this] (report/reload! this))
-                                      :label         "Group By"}}
+   ro/controls            {::refresh   {:type   :button
+                                        :label  "Refresh"
+                                        :action (fn [this] (report/reload! this))}
+                           :start-date {:type          :instant
+                                        :style         :starting-date
+                                        :default-value (fn [app] (dt/now))
+                                        :label         "From"}
+                           :end-date   {:type          :instant
+                                        :style         :ending-date
+                                        :default-value (fn [app] (dt/now))
+                                        :label         "To"}
+                           :group-by   {:type          :picker
+                                        :default-value :month
+                                        :options       [{:text "Month" :value :month}
+                                                        {:text "Day" :value :day}
+                                                        {:text "Year" :value :year}
+                                                        {:text "All" :value :summary}]
+                                        :action        (fn [this] (report/reload! this))
+                                        :label         "Group By"}}
 
    ro/control-layout      {:action-buttons [::refresh]
-                           :inputs         [[:group-by]]}
-
+                           :inputs         [[:start-date :end-date :group-by]]}
 
    ro/initial-sort-params {:sort-by          :invoice-statistics/date-groups
                            :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
