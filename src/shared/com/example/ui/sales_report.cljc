@@ -82,6 +82,9 @@
    ro/controls            {::refresh   {:type   :button
                                         :label  "Refresh"
                                         :action (fn [this] (report/reload! this))}
+                           ::rotate?   {:type          :boolean
+                                        :label         "Pivot?"
+                                        :default-value false}
                            :start-date {:type          :instant
                                         :style         :starting-date
                                         :default-value (fn [app] (dt/now))
@@ -100,12 +103,13 @@
                                         :label         "Group By"}}
 
    ro/control-layout      {:action-buttons [::refresh]
-                           :inputs         [[:start-date :end-date :group-by]]}
+                           :inputs         [[:start-date :end-date :group-by]
+                                            [::rotate?]]}
 
    ro/initial-sort-params {:sort-by          :invoice-statistics/date-groups
                            :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
                            :ascending?       true}
 
    ro/run-on-mount?       true
-   ;ro/rotate?             true
+   ro/rotate?             (fn [rpt] (boolean (some-> rpt comp/props :ui/parameters ::rotate?)))
    ro/route               "invoice-report"})

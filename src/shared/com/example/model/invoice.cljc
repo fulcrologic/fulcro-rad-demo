@@ -73,6 +73,7 @@
 
 (defattr date-groups :invoice-statistics/date-groups :instant
   {ao/cardinality :many
+   ao/style       :date
    ao/pc-input    #{:invoice-statistics/groups}
    ao/pc-output   [:invoice-statistics/date-groups]
    ao/pc-resolve  (fn [_ {:invoice-statistics/keys [groups]}]
@@ -80,6 +81,7 @@
 
 (defattr gross-sales :invoice-statistics/gross-sales :decimal
   {ao/cardinality :many
+   ao/style       :USD
    ao/pc-input    #{:invoice-statistics/groups}
    ao/pc-output   [:invoice-statistics/gross-sales]
    ao/pc-resolve  (fn [{:keys [query-params] :as env} {:invoice-statistics/keys [groups]}]
