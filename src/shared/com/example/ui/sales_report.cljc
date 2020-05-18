@@ -5,10 +5,9 @@
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.fulcrologic.rad.type-support.date-time :as dt]
-    [taoensso.timbre :as log]
+    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.report-options :as ro]
-    [com.fulcrologic.rad.report :as report]
-    [cljc.java-time.local-date-time :as ldt]))
+    [com.fulcrologic.rad.report :as report]))
 
 (report/defsc-report SalesReport [this props]
   {ro/title               "Sales Report"
@@ -32,7 +31,7 @@
 
    ro/controls            {::refresh        {:type   :button
                                              :label  "Refresh"
-                                             :action (fn [this] (report/reload! this))}
+                                             :action (fn [this] (control/run! this))}
                            ::revenue-filter {:type          :picker
                                              :default-value :all-sales
                                              :options       [{:text "All" :value :all-sales}
@@ -80,9 +79,8 @@
                            :invoice-statistics/items-sold  "Total Items Sold"}
 
    ro/controls            {::refresh   {:type   :button
-                                        :local? true
                                         :label  "Refresh"
-                                        :action (fn [this] (report/reload! this))}
+                                        :action (fn [this] (control/run! this))}
                            ::rotate?   {:type          :boolean
                                         :local?        true
                                         :label         "Pivot?"
@@ -102,7 +100,7 @@
                                                         {:text "Day" :value :day}
                                                         {:text "Year" :value :year}
                                                         {:text "All" :value :summary}]
-                                        :action        (fn [this] (report/reload! this))
+                                        :action        (fn [this] (control/run! this))
                                         :label         "Group By"}}
 
    ro/control-layout      {:action-buttons [::refresh]

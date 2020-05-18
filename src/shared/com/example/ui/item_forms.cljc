@@ -3,6 +3,7 @@
     [com.example.model.item :as item]
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
@@ -47,7 +48,7 @@
 
    ro/controls            {::category {:type     :button
                                        :action   (fn [this _]
-                                                   (report/set-parameter! this ::category nil)
+                                                   (control/set-parameter! this ::category nil)
                                                    (report/filter-rows! this))
                                        :visible? (fn [this]
                                                    (some-> this comp/props :ui/parameters ::category))
@@ -72,7 +73,7 @@
    ro/form-links          {item/item-name ItemForm}
 
    ro/links               {:category/label (fn [this {:category/keys [label]}]
-                                             (report/set-parameter! this ::category label)
+                                             (control/set-parameter! this ::category label)
                                              (report/filter-rows! this))}
 
    ro/paginate?           true

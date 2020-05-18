@@ -2,6 +2,7 @@
   (:require
     [com.fulcrologic.fulcro.components :as comp]
     [taoensso.timbre :as log]
+    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.control-options :as copt]
     [com.fulcrologic.rad.container-options :as co]
     [com.fulcrologic.rad.container :as container :refer [defsc-container]]
@@ -10,11 +11,16 @@
 (defsc-container Dashboard [this props]
   {co/children         [sales/RealSalesReport]
    co/layout           [[(comp/class->registry-key sales/RealSalesReport)]]
+   co/route            "dashboard"
+   co/title            "Dashboard"
    copt/controls       {::refresh {:type   :button
-                                   :action (fn [container])}}
-   copt/control-layout {:action-buttons []
+                                   :label  "Refresh"
+                                   :action (fn [container] (control/run! container))}}
+   copt/control-layout {:action-buttons [::refresh]
                         :inputs         [[:start-date :end-date]]}})
 
+
 (comment
+  (comp/get-query Dashboard)
   (container/shared-controls Dashboard)
   (comp/component-options Dashboard copt/controls))

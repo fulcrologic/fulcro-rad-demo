@@ -11,6 +11,7 @@
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
+    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
@@ -105,7 +106,7 @@
                              :show-inactive? {:type          :boolean
                                               :style         :toggle
                                               :default-value false
-                                              :onChange      (fn [this _] (report/reload! this))
+                                              :onChange      (fn [this _] (control/run! this))
                                               :label         "Show Inactive Accounts?"}}
 
    ro/control-layout        {:action-buttons [::new-account]

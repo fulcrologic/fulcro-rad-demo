@@ -11,6 +11,7 @@
     [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.example.ui.sales-report :as sales-report]
+    [com.example.ui.dashboard :as dashboard]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom.html-entities :as ent]
@@ -33,7 +34,8 @@
   {:always-render-body? true
    :router-targets      [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices
                          sales-report/SalesReport InventoryReport
-                         sales-report/RealSalesReport]}
+                         sales-report/RealSalesReport
+                         dashboard/Dashboard]}
   ;; Normal Fulcro code to show a loader on slow route change (assuming Semantic UI here, should
   ;; be generalized for RAD so UI-specific code isn't necessary)
   (dom/div
@@ -80,7 +82,7 @@
                    (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this AccountInvoices {:account/id (new-uuid 101)}))} "Invoices for Account 101")))
                (ui-dropdown {:className "item" :text "Reports"}
                  (ui-dropdown-menu {}
-                   (ui-dropdown-item {:onClick (fn [])} "Dashboard")
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this dashboard/Dashboard {}))} "Dashboard")
                    (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this sales-report/RealSalesReport {}))} "Sales Report"))))))
         (div :.right.menu
           (div :.item
