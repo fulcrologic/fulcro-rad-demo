@@ -80,9 +80,11 @@
                            :invoice-statistics/items-sold  "Total Items Sold"}
 
    ro/controls            {::refresh   {:type   :button
+                                        :local? true
                                         :label  "Refresh"
                                         :action (fn [this] (report/reload! this))}
                            ::rotate?   {:type          :boolean
+                                        :local?        true
                                         :label         "Pivot?"
                                         :default-value false}
                            :start-date {:type          :instant
@@ -94,6 +96,7 @@
                                         :default-value (fn [app] (dt/now))
                                         :label         "To"}
                            :group-by   {:type          :picker
+                                        :local?        true
                                         :default-value :month
                                         :options       [{:text "Month" :value :month}
                                                         {:text "Day" :value :day}

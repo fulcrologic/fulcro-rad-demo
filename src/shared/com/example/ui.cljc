@@ -1,24 +1,25 @@
 (ns com.example.ui
   (:require
-    [com.fulcrologic.rad.type-support.decimal :as math]
-    [com.example.ui.line-item-forms :refer [LineItemForm]]
-    [com.example.ui.account-forms :refer [AccountForm AccountList]]
-    [com.example.ui.item-forms :refer [ItemForm InventoryReport]]
-    [com.example.ui.sales-report :as sales-report]
-    [com.example.ui.invoice-forms :refer [InvoiceForm InvoiceList AccountInvoices]]
-    [com.example.ui.login-dialog :refer [LoginForm]]
-    [com.fulcrologic.fulcro.dom.html-entities :as ent]
-    [com.fulcrologic.fulcro.application :as app]
-    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    #?@(:cljs [[com.fulcrologic.semantic-ui.modules.dropdown.ui-dropdown :refer [ui-dropdown]]
+               [com.fulcrologic.semantic-ui.modules.dropdown.ui-dropdown-menu :refer [ui-dropdown-menu]]
+               [com.fulcrologic.semantic-ui.modules.dropdown.ui-dropdown-item :refer [ui-dropdown-item]]])
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
+    [com.example.ui.account-forms :refer [AccountForm AccountList]]
+    [com.example.ui.invoice-forms :refer [InvoiceForm InvoiceList AccountInvoices]]
+    [com.example.ui.item-forms :refer [ItemForm InventoryReport]]
+    [com.example.ui.line-item-forms :refer [LineItemForm]]
+    [com.example.ui.login-dialog :refer [LoginForm]]
+    [com.example.ui.sales-report :as sales-report]
+    [com.fulcrologic.fulcro.application :as app]
+    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.dom.html-entities :as ent]
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
-    [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
-    [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
+    [com.fulcrologic.rad.routing :as rroute]
+    [taoensso.timbre :as log]))
 
 (defsc LandingPage [this props]
   {:query         ['*]
@@ -62,18 +63,25 @@
       (div :.ui.top.menu
         (div :.ui.item "Demo")
         (when logged-in?
-          (comp/fragment
-            (dom/a :.ui.item {:onClick (fn [] (form/edit! this AccountForm (new-uuid 101)))} "My Account")
-            (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this AccountInvoices {:account/id (new-uuid 101)}))} "My Invoices")
-            (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this InventoryReport {}))} "Inventory")
-            (dom/a :.ui.item {:onClick (fn [] (form/create! this AccountForm))} "New Account")
-            (dom/a :.ui.item {:onClick (fn [] (form/create! this InvoiceForm))} "New Invoice")
-            (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this InvoiceList {}))} "List Invoices")
-            (dom/a :.ui.item {:onClick (fn [] (rroute/route-to! this AccountList {}))} "List Accounts")
-            (dom/a :.ui.item
-              {:onClick (fn [] (rroute/route-to! this sales-report/SalesReport {}))} "Fake Report")
-            (dom/a :.ui.item
-              {:onClick (fn [] (rroute/route-to! this sales-report/RealSalesReport {}))} "Sales Report")))
+          #?(:cljs
+             (comp/fragment
+               (ui-dropdown {:className "item" :text "Account"}
+                 (ui-dropdown-menu {}
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this AccountList {}))} "View All")
+                   (ui-dropdown-item {:onClick (fn [] (form/create! this AccountForm))} "New")))
+               (ui-dropdown {:className "item" :text "Inventory"}
+                 (ui-dropdown-menu {}
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this InventoryReport {}))} "View All")
+                   (ui-dropdown-item {:onClick (fn [] (form/create! this ItemForm))} "New")))
+               (ui-dropdown {:className "item" :text "Invoices"}
+                 (ui-dropdown-menu {}
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this InvoiceList {}))} "View All")
+                   (ui-dropdown-item {:onClick (fn [] (form/create! this InvoiceForm))} "New")
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this AccountInvoices {:account/id (new-uuid 101)}))} "Invoices for Account 101")))
+               (ui-dropdown {:className "item" :text "Reports"}
+                 (ui-dropdown-menu {}
+                   (ui-dropdown-item {:onClick (fn [])} "Dashboard")
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this sales-report/RealSalesReport {}))} "Sales Report"))))))
         (div :.right.menu
           (div :.item
             (div :.ui.tiny.loader {:classes [(when busy? "active")]})
