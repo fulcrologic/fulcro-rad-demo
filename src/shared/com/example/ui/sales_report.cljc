@@ -104,8 +104,8 @@
                                         :label         "Group By"}}
 
    ro/control-layout      {:action-buttons [::refresh]
-                           :inputs         [[:start-date :end-date :group-by]
-                                            [::rotate?]]}
+                           :inputs         [[:start-date :end-date]
+                                            [:group-by ::rotate?]]}
 
    ro/initial-sort-params {:sort-by          :invoice-statistics/date-groups
                            :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}

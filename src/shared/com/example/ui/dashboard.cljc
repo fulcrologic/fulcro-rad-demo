@@ -10,7 +10,7 @@
 
 (defsc-container Dashboard [this props]
   {co/children         [sales/RealSalesReport]
-   co/layout           [[(comp/class->registry-key sales/RealSalesReport)]]
+   co/layout           [[sales/RealSalesReport]]
    co/route            "dashboard"
    co/title            "Dashboard"
    copt/controls       {::refresh {:type   :button
