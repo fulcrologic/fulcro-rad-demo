@@ -112,5 +112,5 @@
                            :ascending?       true}
 
    ro/run-on-mount?       true
-   ro/rotate?             (fn [rpt] (boolean (some-> rpt comp/props :ui/parameters ::rotate?)))
+   ro/rotate?             (fn [rpt] (boolean (control/current-value rpt ::rotate?)))
    ro/route               "invoice-report"})
