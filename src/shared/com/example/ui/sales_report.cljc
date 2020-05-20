@@ -7,7 +7,8 @@
     [com.fulcrologic.rad.type-support.date-time :as dt]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.report-options :as ro]
-    [com.fulcrologic.rad.report :as report]))
+    [com.fulcrologic.rad.report :as report]
+    [taoensso.timbre :as log]))
 
 (report/defsc-report SalesReport [this props]
   {ro/title               "Sales Report"

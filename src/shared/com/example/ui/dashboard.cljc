@@ -6,11 +6,13 @@
     [com.fulcrologic.rad.control-options :as copt]
     [com.fulcrologic.rad.container-options :as co]
     [com.fulcrologic.rad.container :as container :refer [defsc-container]]
+    #?(:cljs [com.fulcrologic.fulcro.dom :as dom]
+       :clj  [com.fulcrologic.fulcro.dom-server :as dom])
     [com.example.ui.sales-report :as sales]))
 
 (defsc-container Dashboard [this props]
-  {co/children         [sales/RealSalesReport]
-   co/layout           [[sales/RealSalesReport]]
+  {co/children         [sales/RealSalesReport sales/RealSalesReport]
+   co/layout           [[0 1]]
    co/route            "dashboard"
    co/title            "Dashboard"
    copt/controls       {::refresh {:type   :button
@@ -21,6 +23,6 @@
 
 
 (comment
-  (comp/get-query Dashboard)
+  (comp/get-initial-state Dashboard)
   (container/shared-controls Dashboard)
   (comp/component-options Dashboard copt/controls))
