@@ -47,12 +47,11 @@
                                                         (or (nil? category) (= category row-category))))
 
    ro/controls            {::category {:type     :button
-                                       :local?   true
                                        :action   (fn [this _]
                                                    (control/set-parameter! this ::category nil)
                                                    (report/filter-rows! this))
                                        :visible? (fn [this]
-                                                   (some-> this comp/props :ui/parameters ::category))
+                                                   (control/current-value this ::category))
                                        :label    "Clear Filter"}}
 
    ro/control-layout      {:action-buttons [::category]}

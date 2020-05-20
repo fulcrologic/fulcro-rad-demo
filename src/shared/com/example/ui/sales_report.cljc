@@ -112,6 +112,8 @@
                            :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
                            :ascending?       true}
 
+   ro/paginate? true
+   ro/page-size 2
    ro/run-on-mount?       true
    ro/rotate?             (fn [rpt] (boolean (control/current-value rpt ::rotate?)))
    ro/route               "invoice-report"})
