@@ -24,10 +24,5 @@
                                    :label  "Refresh"
                                    :action (fn [container] (control/run! container))}}
    copt/control-layout {:action-buttons [::refresh]
+                        ;; these inputs are pulled up from nested reports (any control that is not marked local will be)
                         :inputs         [[:start-date :end-date]]}})
-
-
-(comment
-  (comp/get-initial-state Dashboard)
-  (container/shared-controls Dashboard)
-  (comp/component-options Dashboard copt/controls))
