@@ -101,9 +101,11 @@
    ro/run-on-mount?         true
 
    ro/controls              {::new-account   {:type   :button
+                                              :local? true
                                               :label  "New Account"
                                               :action (fn [this _] (form/create! this AccountForm))}
                              :show-inactive? {:type          :boolean
+                                              :local?        true
                                               :style         :toggle
                                               :default-value false
                                               :onChange      (fn [this _] (control/run! this))

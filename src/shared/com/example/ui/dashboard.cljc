@@ -8,12 +8,16 @@
     [com.fulcrologic.rad.container :as container :refer [defsc-container]]
     #?(:cljs [com.fulcrologic.fulcro.dom :as dom]
        :clj  [com.fulcrologic.fulcro.dom-server :as dom])
+    [com.example.ui.account-forms :as account-forms]
+    [com.example.ui.item-forms :as item-forms]
     [com.example.ui.sales-report :as sales]))
 
 (defsc-container Dashboard [this props]
-  {co/children         {:a sales/RealSalesReport
-                        :b sales/RealSalesReport}
-   co/layout           [[{:id :a :width 6} {:id :b :width 10}]]
+  {co/children         {:sales     sales/RealSalesReport
+                        :customers account-forms/AccountList
+                        :inventory item-forms/InventoryReport}
+   co/layout           [[{:id :sales :width 16}]
+                        [{:id :inventory :width 8} {:id :customers :width 8}]]
    co/route            "dashboard"
    co/title            "Dashboard"
    copt/controls       {::refresh {:type   :button

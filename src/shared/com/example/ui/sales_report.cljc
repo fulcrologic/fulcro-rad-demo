@@ -1,14 +1,29 @@
 (ns com.example.ui.sales-report
   (:require
+    #?(:cljs ["victory" :as victory])
     [com.example.model.sales :as sales]
     [com.example.model.invoice :as invoice]
     [com.fulcrologic.fulcro.components :as comp]
+    #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom]
+       :cljs [com.fulcrologic.fulcro.dom :as dom])
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.fulcrologic.rad.type-support.date-time :as dt]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.fulcro.algorithms.react-interop :as interop]
     [taoensso.timbre :as log]))
+
+(def ui-victory-bar #?(:cljs (interop/react-factory victory/VictoryBar)
+                       :clj  (constantly "")))
+(def ui-victory-chart #?(:cljs (interop/react-factory victory/VictoryChart)
+                         :clj  (constantly "")))
+(def ui-victory-line #?(:cljs (interop/react-factory victory/VictoryLine)
+                        :clj  (constantly "")))
+(def ui-victory-axis #?(:cljs (interop/react-factory victory/VictoryAxis)
+                        :clj  (constantly "")))
+(def ui-victory-tooltip #?(:cljs (interop/react-factory victory/VictoryTooltip)
+                           :clj  (constantly "")))
 
 (report/defsc-report SalesReport [this props]
   {ro/title               "Sales Report"
@@ -59,7 +74,7 @@
 ;; This report uses Pathom resolvers that return a grouped result (for ease of implementation on the back-end).
 ;; Using such a result requires we turn off normalization and do a raw result transform to make the rows appear
 ;; as the report logic expects.
-(report/defsc-report RealSalesReport [this props]
+(report/defsc-report RealSalesReport [this {:ui/keys [current-rows parameters] :as props}]
   {ro/title               "Sales Report"
    ro/source-attribute    :invoice-statistics
    ro/row-pk              invoice/date-groups
@@ -80,7 +95,7 @@
                            :invoice-statistics/items-sold  "Total Items Sold"}
 
    ro/controls            {::refresh   {:type   :button
-                                        :local?        true
+                                        :local? true
                                         :label  "Refresh"
                                         :action (fn [this] (control/run! this))}
                            ::rotate?   {:type          :boolean
@@ -117,4 +132,33 @@
    ;ro/page-size 2
    ro/run-on-mount?       true
    ro/rotate?             (fn [rpt] (boolean (control/current-value rpt ::rotate?)))
-   ro/route               "invoice-report"})
+   ro/route               "invoice-report"}
+  ;; Use the report data to render a couple of victory charts with the table and controls
+  (let [{:keys [group-by]} parameters
+        bar-width (case group-by
+                    :day 5
+                    :month 10
+                    20)]
+    (dom/div :.ui.container.grid
+      (dom/div :.row
+        (dom/div :.six.wide.column
+          (dom/div :.ui.grid
+            (dom/div :.row
+              (ui-victory-chart {:domainPadding {:x 50}}
+                (ui-victory-bar {:data     current-rows
+                                 :labels   (fn [v] (comp/isoget-in v ["datum" "items-sold"]))
+                                 :barWidth bar-width
+                                 :x        "date-groups"
+                                 :y        "items-sold"})))
+            (dom/div :.row
+              (ui-victory-chart {:domainPadding {:x 50}}
+                (ui-victory-bar {:data           current-rows
+                                 :barWidth       bar-width
+                                 :labels         (fn [v] (math/numeric->currency-str (comp/isoget-in v ["datum" "gross-sales"])))
+                                 :labelComponent (ui-victory-tooltip {})
+                                 :x              "date-groups"
+                                 :y              (fn [datum]
+                                                   (math/numeric->double (comp/isoget datum "gross-sales")))})))))
+        (dom/div :.ten.wide.column
+          ;; The auto-rendered table
+          (report/render-layout this))))))

@@ -15,15 +15,15 @@
   },
   "homepage": "https://github.com/fulcrologic/fulcro-rad#readme",
   "dependencies": {
+    "@js-joda/locale_en-us": "2.0.1",
     "big.js": "5.2.2",
     "js-joda": "1.11.0",
     "js-joda-timezone": "2.1.1",
-    "@js-joda/locale_en-us": "2.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "semantic-ui-react": "^0.88.2",
-    "shadow-cljs": "2.8.110"
+    "shadow-cljs": "2.8.110",
+    "victory": "^34.3.6"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
