@@ -80,6 +80,7 @@
                            :invoice-statistics/items-sold  "Total Items Sold"}
 
    ro/controls            {::refresh   {:type   :button
+                                        :local?        true
                                         :label  "Refresh"
                                         :action (fn [this] (control/run! this))}
                            ::rotate?   {:type          :boolean
@@ -112,8 +113,8 @@
                            :sortable-columns #{:invoice-statistics/date-groups :invoice-statistics/gross-sales :invoice-statistics/items-sold}
                            :ascending?       true}
 
-   ro/paginate? true
-   ro/page-size 2
+   ;ro/paginate? true
+   ;ro/page-size 2
    ro/run-on-mount?       true
    ro/rotate?             (fn [rpt] (boolean (control/current-value rpt ::rotate?)))
    ro/route               "invoice-report"})

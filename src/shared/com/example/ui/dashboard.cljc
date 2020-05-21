@@ -11,8 +11,9 @@
     [com.example.ui.sales-report :as sales]))
 
 (defsc-container Dashboard [this props]
-  {co/children         [sales/RealSalesReport sales/RealSalesReport]
-   co/layout           [[0 1]]
+  {co/children         {:a sales/RealSalesReport
+                        :b sales/RealSalesReport}
+   co/layout           [[{:id :a :width 6} {:id :b :width 10}]]
    co/route            "dashboard"
    co/title            "Dashboard"
    copt/controls       {::refresh {:type   :button
