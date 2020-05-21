@@ -68,19 +68,20 @@
                          (str "Invoice " id)))})
 
 (report/defsc-report AccountInvoices [this props]
-  {ro/title            "Customer Invoices"
-   ro/source-attribute :account/invoices
-   ro/row-pk           invoice/id
-   ro/columns          [invoice/id invoice/date invoice/total]
-   ro/column-headings  {:invoice/id "Invoice Number"}
+  {ro/title                              "Customer Invoices"
+   ro/source-attribute                   :account/invoices
+   ro/row-pk                             invoice/id
+   ro/columns                            [invoice/id invoice/date invoice/total]
+   ro/column-headings                    {:invoice/id "Invoice Number"}
 
-   ro/form-links       {:invoice/id InvoiceForm}
-   #_#_:com.fulcrologic.rad.control/controls {:account/id {:type  :uuid
-                                                           :label "Account"}}
+   ro/form-links                         {:invoice/id InvoiceForm}
+   :com.fulcrologic.rad.control/controls {:account/id {:type   :uuid
+                                                       :local? true
+                                                       :label  "Account"}}
    ;; No control layout...we don't actually let the user control it
 
-   ro/run-on-mount?    true
-   ro/route            "account-invoices"})
+   ro/run-on-mount?                      true
+   ro/route                              "account-invoices"})
 
 (report/defsc-report InvoiceList [this props]
   {ro/title               "All Invoices"

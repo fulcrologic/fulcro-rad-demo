@@ -3,6 +3,7 @@
     [com.example.model.item :as item]
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
@@ -38,45 +39,36 @@
    ro/row-pk              item/id
    ro/columns             [item/item-name category/label item/price item/in-stock]
 
-   ;; denormalized reports are much more performant when there are a large number of rows, but will not show changes that
-   ;; are made via forms (can be out of date relative to other on-screen items).
-   ro/denormalize?        true
    ro/row-visible?        (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
                                                             row-category (get row :category/label)]
-                                                        (or (nil? category) (= category row-category))))
+                                                        (or (= "" category) (= category row-category))))
 
-   ro/controls            {::category {:type     :button
-                                       :action   (fn [this _]
-                                                   (report/set-parameter! this ::category nil)
-                                                   (report/filter-rows! this))
-                                       :visible? (fn [this]
-                                                   (some-> this comp/props :ui/parameters ::category))
-                                       :label    "Clear Filter"}}
-
-   ro/control-layout      {:action-buttons [::category]}
-
+   ;; A sample server-query based picker that sets a local parameter that we use to filter rows.
+   ro/controls            {::category {:type                          :picker
+                                       :local?                        true
+                                       :label                         "Category"
+                                       :action                        (fn [this] (report/filter-rows! this))
+                                       picker-options/cache-time-ms   30000
+                                       picker-options/cache-key       :all-category-options
+                                       picker-options/query-key       :category/all-categories
+                                       picker-options/query-component category/Category
+                                       picker-options/options-xform   (fn [_ categories]
+                                                                        (into [{:text "All" :value ""}]
+                                                                          (map
+                                                                            (fn [{:category/keys [label]}]
+                                                                              {:text label :value label}))
+                                                                          categories))}}
 
    ;; If defined: sort is applied to rows after filtering (client-side)
    ro/initial-sort-params {:sort-by          :item/name
                            :sortable-columns #{:item/name :category/label}
                            :ascending?       true}
 
-   ro/compare-rows        (fn [{:keys [sort-by ascending?] :or {sort-by    :sales/date
-                                                                ascending? true}} row-a row-b]
-                            (let [a          (get row-a sort-by)
-                                  b          (get row-b sort-by)
-                                  fwd-result (compare a b)]
-                              (cond-> fwd-result
-                                (not ascending?) (-))))
-
    ro/form-links          {item/item-name ItemForm}
 
    ro/links               {:category/label (fn [this {:category/keys [label]}]
-                                             (report/set-parameter! this ::category label)
+                                             (control/set-parameter! this ::category label)
                                              (report/filter-rows! this))}
-
-   ro/paginate?           true
-   ro/page-size           10
 
    ro/run-on-mount?       true
    ro/route               "item-inventory-report"})
