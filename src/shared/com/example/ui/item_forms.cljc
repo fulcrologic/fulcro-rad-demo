@@ -39,9 +39,6 @@
    ro/row-pk              item/id
    ro/columns             [item/item-name category/label item/price item/in-stock]
 
-   ;; denormalized reports are much more performant when there are a large number of rows, but will not show changes that
-   ;; are made via forms (can be out of date relative to other on-screen items).
-   ro/denormalize?        true
    ro/row-visible?        (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
                                                             row-category (get row :category/label)]
                                                         (or (= "" category) (= category row-category))))
@@ -60,30 +57,16 @@
                                                                               {:text label :value label}))
                                                                           categories))}}
 
-   ro/control-layout      {:action-buttons [::category]}
-
-
    ;; If defined: sort is applied to rows after filtering (client-side)
    ro/initial-sort-params {:sort-by          :item/name
                            :sortable-columns #{:item/name :category/label}
                            :ascending?       true}
-
-   ro/compare-rows        (fn [{:keys [sort-by ascending?] :or {sort-by    :sales/date
-                                                                ascending? true}} row-a row-b]
-                            (let [a          (get row-a sort-by)
-                                  b          (get row-b sort-by)
-                                  fwd-result (compare a b)]
-                              (cond-> fwd-result
-                                (not ascending?) (-))))
 
    ro/form-links          {item/item-name ItemForm}
 
    ro/links               {:category/label (fn [this {:category/keys [label]}]
                                              (control/set-parameter! this ::category label)
                                              (report/filter-rows! this))}
-
-   ro/paginate?           true
-   ro/page-size           10
 
    ro/run-on-mount?       true
    ro/route               "item-inventory-report"})
