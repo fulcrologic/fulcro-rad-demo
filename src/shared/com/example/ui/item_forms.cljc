@@ -43,7 +43,9 @@
                                                             row-category (get row :category/label)]
                                                         (or (= "" category) (= category row-category))))
 
+   ;; A sample server-query based picker that sets a local parameter that we use to filter rows.
    ro/controls            {::category {:type                          :picker
+                                       :local?                        true
                                        :label                         "Category"
                                        :action                        (fn [this] (report/filter-rows! this))
                                        picker-options/cache-time-ms   30000
