@@ -44,15 +44,21 @@
    ro/denormalize?        true
    ro/row-visible?        (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
                                                             row-category (get row :category/label)]
-                                                        (or (nil? category) (= category row-category))))
+                                                        (or (= "" category) (= category row-category))))
 
-   ro/controls            {::category {:type     :button
-                                       :action   (fn [this _]
-                                                   (control/set-parameter! this ::category nil)
-                                                   (report/filter-rows! this))
-                                       :visible? (fn [this]
-                                                   (control/current-value this ::category))
-                                       :label    "Clear Filter"}}
+   ro/controls            {::category {:type                          :picker
+                                       :label                         "Category"
+                                       :action                        (fn [this] (report/filter-rows! this))
+                                       picker-options/cache-time-ms   30000
+                                       picker-options/cache-key       :all-category-options
+                                       picker-options/query-key       :category/all-categories
+                                       picker-options/query-component category/Category
+                                       picker-options/options-xform   (fn [_ categories]
+                                                                        (into [{:text "All" :value ""}]
+                                                                          (map
+                                                                            (fn [{:category/keys [label]}]
+                                                                              {:text label :value label}))
+                                                                          categories))}}
 
    ro/control-layout      {:action-buttons [::category]}
 
