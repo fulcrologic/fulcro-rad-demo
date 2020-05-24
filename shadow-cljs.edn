@@ -4,7 +4,7 @@
  :builds   {:main     {:target     :browser
                        :output-dir "resources/public/js/main"
                        :asset-path "/js/main"
-                       :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? true}}}}
+                       :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}}}}
                        :modules    {:main {:init-fn com.example.client/init}}
                        :js-options {:resolve
                                     {
