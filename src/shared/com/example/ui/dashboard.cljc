@@ -5,6 +5,7 @@
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.control-options :as copt]
     [com.fulcrologic.rad.container-options :as co]
+    [com.fulcrologic.rad.options-util :refer [child-classes]]
     [com.fulcrologic.rad.container :as container :refer [defsc-container]]
     #?(:cljs [com.fulcrologic.fulcro.dom :as dom]
        :clj  [com.fulcrologic.fulcro.dom-server :as dom])
