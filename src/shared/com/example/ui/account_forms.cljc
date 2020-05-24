@@ -88,48 +88,52 @@
       (dom/td (str active?))))
 
 (report/defsc-report AccountList [this props]
-  {ro/title                 "All Accounts"
+  {ro/title               "All Accounts"
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   ro/form-links            {account/name AccountForm}
-   ro/field-formatters      {:account/name (fn [this v] v)}
-   ::report/column-headings {:account/name "Account Name"}
-   ro/columns               [account/name account/active?]
-   ro/row-pk                account/id
-   ro/source-attribute      :account/all-accounts
-   ro/run-on-mount?         true
+   ro/form-links          {account/name AccountForm}
+   ro/field-formatters    {:account/name (fn [this v] v)}
+   ro/column-headings     {:account/name "Account Name"}
+   ro/columns             [account/name account/active?]
+   ro/row-pk              account/id
+   ro/source-attribute    :account/all-accounts
+   ro/run-on-mount?       true
 
-   ro/controls              {::new-account   {:type   :button
-                                              :local? true
-                                              :label  "New Account"
-                                              :action (fn [this _] (form/create! this AccountForm))}
-                             :show-inactive? {:type          :boolean
-                                              :local?        true
-                                              :style         :toggle
-                                              :default-value false
-                                              :onChange      (fn [this _] (control/run! this))
-                                              :label         "Show Inactive Accounts?"}}
+   ro/initial-sort-params {:sort-by          :account/name
+                           :ascending?       false
+                           :sortable-columns #{:account/name}}
 
-   ro/control-layout        {:action-buttons [::new-account]
-                             :inputs         [[:show-inactive?]]}
+   ro/controls            {::new-account   {:type   :button
+                                            :local? true
+                                            :label  "New Account"
+                                            :action (fn [this _] (form/create! this AccountForm))}
+                           :show-inactive? {:type          :boolean
+                                            :local?        true
+                                            :style         :toggle
+                                            :default-value false
+                                            :onChange      (fn [this _] (control/run! this))
+                                            :label         "Show Inactive Accounts?"}}
 
-   ro/row-actions           [{:label     "Enable"
-                              :action    (fn [report-instance {:account/keys [id]}]
-                                           #?(:cljs
-                                              (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                            :account/active? true})])))
-                              ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
-                              :disabled? (fn [_ row-props] (:account/active? row-props))}
-                             {:label     "Disable"
-                              :action    (fn [report-instance {:account/keys [id]}]
-                                           #?(:cljs
-                                              (comp/transact! report-instance [(account/set-account-active {:account/id      id
-                                                                                                            :account/active? false})])))
-                              ;:visible?  (fn [_ row-props] (:account/active? row-props))
-                              :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
+   ro/control-layout      {:action-buttons [::new-account]
+                           :inputs         [[:show-inactive?]]}
 
-   ro/route                 "accounts"})
+   ro/row-actions         [{:label     "Enable"
+                            :action    (fn [report-instance {:account/keys [id]}]
+                                         #?(:cljs
+                                            (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                          :account/active? true})])))
+                            ;:visible?  (fn [_ row-props] (not (:account/active? row-props)))
+                            :disabled? (fn [_ row-props] (:account/active? row-props))}
+                           {:label     "Disable"
+                            :action    (fn [report-instance {:account/keys [id]}]
+                                         #?(:cljs
+                                            (comp/transact! report-instance [(account/set-account-active {:account/id      id
+                                                                                                          :account/active? false})])))
+                            ;:visible?  (fn [_ row-props] (:account/active? row-props))
+                            :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
+
+   ro/route               "accounts"})
 
 (comment
 

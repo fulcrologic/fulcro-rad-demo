@@ -104,11 +104,11 @@
                                         :default-value false}
                            :start-date {:type          :instant
                                         :style         :starting-date
-                                        :default-value (fn [app] (dt/now))
+                                        :default-value (fn [app] (dt/beginning-of-year))
                                         :label         "From"}
                            :end-date   {:type          :instant
                                         :style         :ending-date
-                                        :default-value (fn [app] (dt/now))
+                                        :default-value (fn [app] (dt/end-of-year))
                                         :label         "To"}
                            :group-by   {:type          :picker
                                         :local?        true

@@ -47,6 +47,7 @@
    ro/controls            {::category {:type                          :picker
                                        :local?                        true
                                        :label                         "Category"
+                                       :default-value                 ""
                                        :action                        (fn [this] (report/filter-rows! this))
                                        picker-options/cache-time-ms   30000
                                        picker-options/cache-key       :all-category-options
