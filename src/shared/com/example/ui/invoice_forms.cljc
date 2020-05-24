@@ -54,12 +54,9 @@
                                                                                               {:text (str name ", " email) :value [:account/id id]})
                                                                                             (sort-by :account/name options)))
                                          ::picker-options/cache-time-ms   30000}}
-   fo/subforms       {:invoice/line-items {::form/ui            LineItemForm
-                                           ::form/can-delete?   (fn [parent item] true)
-                                           ::form/can-add?      (fn [parent] true)
-                                           ::form/add-row-title "Add Item"
-                                           ;; Use computed props to inform subform of its role.
-                                           ::form/subform-style :inline}}
+   fo/subforms       {:invoice/line-items {fo/ui          LineItemForm
+                                           fo/can-delete? (fn [_ _] true)
+                                           fo/can-add?    (fn [_ _] true)}}
    fo/triggers       {:derive-fields (fn [new-form-tree] (sum-subtotals* new-form-tree))}
    fo/route-prefix   "invoice"
    fo/title          (fn [_ {:invoice/keys [id]}]

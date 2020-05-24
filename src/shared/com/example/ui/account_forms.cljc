@@ -52,22 +52,22 @@
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   fo/subforms            {:account/primary-address {::form/ui                  AddressForm
-                                                     ::form/title               "Primary Address"
+   fo/subforms            {:account/primary-address {fo/ui                      AddressForm
+                                                     fo/title                   "Primary Address"
                                                      ::form/autocreate-on-load? true}
-                           :account/files           {::form/ui                FileForm
-                                                     ::form/title             "Files"
-                                                     ::form/can-delete?       (fn [_ _] true)
-                                                     ::form/layout-styles     {:ref-container :file}
+                           :account/files           {fo/ui                    FileForm
+                                                     fo/title                 "Files"
+                                                     fo/can-delete?           (fn [_ _] true)
+                                                     fo/layout-styles         {:ref-container :file}
                                                      ::form/added-via-upload? true}
-                           :account/addresses       {::form/ui            AddressForm
-                                                     ::form/title         "Additional Addresses"
-                                                     ::form/sort-children (fn [addresses] (sort-by :address/zip addresses))
-                                                     ::form/can-delete?   (fn [parent item] (< 1 (count (:account/addresses parent))))
-                                                     ::form/can-add?      (fn [parent]
-                                                                            (and
-                                                                              (< (count (:account/addresses parent)) 4)
-                                                                              :prepend))}}})
+                           :account/addresses       {fo/ui            AddressForm
+                                                     fo/title         "Additional Addresses"
+                                                     fo/sort-children (fn [addresses] (sort-by :address/zip addresses))
+                                                     fo/can-delete?   (fn [parent _] (< 1 (count (:account/addresses (comp/props parent)))))
+                                                     fo/can-add?      (fn [parent _]
+                                                                        (and
+                                                                          (< (count (:account/addresses (comp/props parent))) 4)
+                                                                          :prepend))}}})
 
 (defsc AccountListItem [this
                         {:account/keys [id name active?] :as props}
