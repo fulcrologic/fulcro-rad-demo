@@ -1,6 +1,5 @@
 (ns com.example.ui.dashboard
   (:require
-    [com.fulcrologic.fulcro.components :as comp]
     [taoensso.timbre :as log]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.control-options :as copt]
