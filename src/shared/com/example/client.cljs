@@ -36,7 +36,7 @@
   ;; hot code reload of installed controls
   (log/info "Reinstalling controls")
   (rad-app/install-ui-controls! app sui/all-controls)
-  (report/install-formatter! app :boolean (fn [report-instance value] (if value "yes" "no")))
+  (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
   (app/mount! app Root "app"))
 
 (defn init []
@@ -47,7 +47,7 @@
   (datetime/set-timezone! "America/Los_Angeles")
   (history/install-route-history! app (html5-history))
   (rad-app/install-ui-controls! app sui/all-controls)
-  (report/install-formatter! app :boolean (fn [report-instance value] (if value "yes" "no")))
+  (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
   (app/mount! app Root "app"))
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))
