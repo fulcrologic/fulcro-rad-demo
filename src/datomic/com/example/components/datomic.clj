@@ -1,6 +1,6 @@
 (ns com.example.components.datomic
   (:require
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
+    [com.fulcrologic.rad.database-adapters.datomic-cloud :as datomic]
     [mount.core :refer [defstate]]
     [com.example.model :refer [all-attributes]]
     [com.example.components.config :refer [config]]))

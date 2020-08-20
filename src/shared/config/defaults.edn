@@ -2,9 +2,10 @@
                                      :host "localhost"}
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
-                                    {:main {:datomic/schema           :production
-                                            :datomic/driver           :mem
-                                            :datomic/database         "example"
+                                    {:main {:datomic/schema :production
+                                            :datomic/database "example"
+                                            :datomic/client {:server-type :dev-local
+                                                             :system "fulcro-rad-demo"}
                                             :datomic/prevent-changes? true}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases
