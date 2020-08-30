@@ -18,7 +18,7 @@
     [com.fulcrologic.rad.attributes :as attr]
     [com.fulcrologic.rad.type-support.date-time :as dt]))
 
-(set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared" "../fulcro-rad-datomic/src/main" "../fulcro-rad/src/main")
+(set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared")
 
 (comment
   (let [db (d/db (:main datomic-connections))]
