@@ -1,4 +1,4 @@
-= Fulcro RAD Demo
+= Fulcro RAD Demo (Datomic Cloud Version)
 
 This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
 common to any project, and then separate source directories that have specific files that would be
@@ -19,7 +19,67 @@ WARNING: The API is *not* stable. While in Alpha *there will be breaking changes
 but this library is still in the design phases, so don't use it for "real stuff" unless you can tolerate that
 instability on top of the alpha status.
 
-== Running From Source
+== Building the SPA
+
+You must compile the CLJS source to run the client. If you want to be
+able to edit it, just start a shadow-cljs watch:
+
+[source, bash]
+-----
+$ yarn
+$ shadow-cljs watch main
+-----
+
+if you don't have `yarn`, use `npm install` instead.
+
+== Running a Datomic-based Server
+
+The example code for Datomic components is in the `src/datomic` folder, along with a custom
+`development.clj`. It defaults to using an in-memory datomic-free database.
+
+You can run it with the `:datomic` deps alias:
+
+[source, bash]
+-----
+$ clj -A:dev:datomic
+user=> (clojure.core/require 'development)
+user=> (development/go)
+-----
+
+== Using Datomic Cloud
+
+Please see the `datomic-cloud` branch of this repository. An alternate setup is required.
+
+== Running an SQL-based Server (ALPHA quality)
+
+The example code should work with most SQL databases (and defaults to using an in-memory H2 db). The data source
+is configured in the `defaults.edn` config file in the sql source
+directory. See the HikariCP connection pool documentation.
+
+The SQL example has a custom `development` namespace in the `src/sql` source
+folder, along with components needed to run that server.
+
+You can start the server-side version for SQL using the deps aliases that
+set up the proper classpath:
+
+[source, bash]
+-----
+$ clj -A:dev:sql
+user=> (clojure.core/require 'development)
+user=> (development/go)
+-----
+
+== Restarting
+
+The `development/restart` will stop the server, reload source, and start the server.
+
+== Contributing
+
+RAD uses several different libraries at once. It is ideal that you check out the source of all of those and set
+up your deps so you can run from the source of them all at once. You may also want to update the `set-refresh-dirs`
+in the development namespace to point at those additional source directories in CLJ so you get proper reload there.
+
+=== Running From Source
 
 The *very* active development I'm doing makes changes to 5 projects at once (Fulcro, Fulcro RAD, Fulcro RAD Datomic,
 Fulcro RAD SQL, and this demo). I do not guarantee I will keep everything in sync as far as versions in the deps
@@ -52,55 +112,6 @@ $ clj -A:dev:f3-dev:rad-dev:datomic
 In IntelliJ, you'd simply make sure to run a CLJ REPL with current classpath, and use the alias checkboxes and `+` button
 in the Clojure Deps tab to set it up.
 
-== Building the SPA
-
-You must compile the CLJS source to run the client. If you want to be
-able to edit it, just start a shadow-cljs watch:
-
-[source, bash]
------
-$ yarn
-$ shadow-cljs watch main
------
-
-if you don't have `yarn`, use `npm install` instead.
-
-== Running an SQL-based Server
-
-The example code should work with most SQL databases (and defaults to using an in-memory H2 db). The data source
-is configured in the `defaults.edn` config file in the sql source
-directory. See the HikariCP connection pool documentation.
-
-The SQL example has a custom `development` namespace in the `src/sql` source
-folder, along with components needed to run that server.
-
-You can start the server-side version for SQL using the deps aliases that
-set up the proper classpath:
-
-[source, bash]
------
-$ clj -A:dev:sql
-user=> (clojure.core/require 'development)
-user=> (development/go)
------
-
-== Running a Datomic-based Server
-
-The example code for Datomic components is in the `src/datomic` folder, along with a custom
-`development.clj`. It defaults to using an in-memory datomic-free database.
-
-You can run it with the `:datomic` deps alias:
-
-[source, bash]
------
-$ clj -A:dev:datomic
-user=> (clojure.core/require 'development)
-user=> (development/go)
------
-
-== Restarting
-
-The `development/restart` will stop the server, reload source, and start the server.
 
 == LICENSE
 
