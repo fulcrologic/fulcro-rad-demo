@@ -31,15 +31,17 @@
            org.clojure/clojure                    {:mvn/version "1.10.1"}}
 
  :aliases {:test      {:extra-paths ["src/shared-tests"]
-                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.5"}}}
+                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.5"}
+                                     dev-local-tu            {:mvn/version "0.1.0"}}}
 
            :sql       {:extra-paths ["src/sql" "src/sql-tests"]
                        :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199" :exclusions [org.slf4j/slf4j-nop]}
                                      com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.2-alpha"}}}
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
-                       :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "0.0.4-alpha"}}}
+                       :extra-deps  {com.datomic/dev-local              {:mvn/version "0.9.184"}
+                                     com.fulcrologic/fulcro-rad-datomic {:git/url "https://github.com/tylernisonoff/fulcro-rad-datomic"
+                                                                         :sha "3ec10e4d06a1980701e545843ebe20c50c97ad7b"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
                        :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.629"}}}
 

@@ -1,4 +1,4 @@
-= Fulcro RAD Demo
+= Fulcro RAD Demo (Datomic Cloud Version)
 
 This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
 common to any project, and then separate source directories that have specific files that would be
