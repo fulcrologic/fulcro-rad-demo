@@ -5,6 +5,7 @@
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.mutations :as m]
     [com.fulcrologic.rad.application :as rad-app]
+    [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
@@ -35,6 +36,7 @@
   ;; hot code reload of installed controls
   (log/info "Reinstalling controls")
   (rad-app/install-ui-controls! app sui/all-controls)
+  (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
   (app/mount! app Root "app"))
 
 (defn init []
@@ -45,6 +47,7 @@
   (datetime/set-timezone! "America/Los_Angeles")
   (history/install-route-history! app (html5-history))
   (rad-app/install-ui-controls! app sui/all-controls)
+  (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
   (app/mount! app Root "app"))
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))
