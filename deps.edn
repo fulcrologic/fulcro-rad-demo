@@ -40,8 +40,7 @@
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/dev-local              {:mvn/version "0.9.184"}
-                                     com.fulcrologic/fulcro-rad-datomic {:git/url "https://github.com/tylernisonoff/fulcro-rad-datomic"
-                                                                         :sha "3ec10e4d06a1980701e545843ebe20c50c97ad7b"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.0"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
                        :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.629"}}}
 
