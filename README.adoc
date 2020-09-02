@@ -1,23 +1,19 @@
 = Fulcro RAD Demo (Datomic Cloud Version)
 
-This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
-common to any project, and then separate source directories that have specific files that would be
-needed to work with specific back-end technologies (currently SQL and Datomic).
+This is a demo repository for Fulcro RAD running on Datomic Cloud.
+
+To run the demo on Datomic on-prem or different datastore, see the `master` branch of this repository.
 
 IMPORTANT: Login is `tony@example.com` with password `letmein`.
 
-== Status
+== Using dev-local
 
-RAD is changing rapidly, and this demo *may* be out of date. The time it takes to maintain it is more
-than I have. If a contributor would like to take on this project and keep it up to date and working
-that would be great (PM me on Slack), but please do not expect support on this repository in any form at the
-present time.
+By default, this demo assumes you are using the link:https://docs.datomic.com/cloud/dev-local.html[dev-local]
+library.  `dev-local` is not a maven resource, and must be installed individually. See the link for installation instructions.
 
-The SQL version has some known bugs. If you want to play with RAD, use the Datomic database adapter for now.
+If you are using a newer version of the library than the one specified in `deps.edn`, you'll need to update
+`deps.edn` with the appropriate version.
 
-WARNING: The API is *not* stable. While in Alpha *there will be breaking changes*. I will try to minimize these,
-but this library is still in the design phases, so don't use it for "real stuff" unless you can tolerate that
-instability on top of the alpha status.
 
 == Building the SPA
 
@@ -46,72 +42,9 @@ user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
-== Using Datomic Cloud
-
-Please see the `datomic-cloud` branch of this repository. An alternate setup is required.
-
-== Running an SQL-based Server (ALPHA quality)
-
-The example code should work with most SQL databases (and defaults to using an in-memory H2 db). The data source
-is configured in the `defaults.edn` config file in the sql source
-directory. See the HikariCP connection pool documentation.
-
-The SQL example has a custom `development` namespace in the `src/sql` source
-folder, along with components needed to run that server.
-
-You can start the server-side version for SQL using the deps aliases that
-set up the proper classpath:
-
-[source, bash]
------
-$ clj -A:dev:sql
-user=> (clojure.core/require 'development)
-user=> (development/go)
------
-
 == Restarting
 
 The `development/restart` will stop the server, reload source, and start the server.
-
-== Contributing
-
-RAD uses several different libraries at once. It is ideal that you check out the source of all of those and set
-up your deps so you can run from the source of them all at once. You may also want to update the `set-refresh-dirs`
-in the development namespace to point at those additional source directories in CLJ so you get proper reload there.
-
-=== Running From Source
-
-The *very* active development I'm doing makes changes to 5 projects at once (Fulcro, Fulcro RAD, Fulcro RAD Datomic,
-Fulcro RAD SQL, and this demo). I do not guarantee I will keep everything in sync as far as versions in the deps
-file go.  I personally set the following in my top-level `~/.clojure/deps.edn`:
-
-[source]
------
-{:aliases {:f3-dev    {:override-deps {com.fulcrologic/fulcro {:local/root "/Users/tonykay/fulcrologic/fulcro"
-                                                               :exclusions [com.taoensso/sente]}}}
-           :rad-dev   {:override-deps {com.fulcrologic/fulcro-rad                 {:local/root "/Users/username/fulcrologic/fulcro-rad"}
-                                       com.fulcrologic/fulcro-rad-sql             {:local/root "/Users/username/fulcrologic/fulcro-rad-sql"}
-                                       com.fulcrologic/fulcro-rad-semantic-ui     {:local/root "/Users/username/fulcrologic/fulcro-rad-semantic-ui"}
-                                       com.fulcrologic/fulcro-rad-datomic         {:local/root "/Users/username/fulcrologic/fulcro-rad-datomic"
-                                                                                   :exclusions [com.datomic/datomic-free]}}}}}
------
-
-so that in IntelliJ (or at the command line) I can work from local sources for all of them.  I try to remember to push SNAPSHOTS
-daily, but if I forget and you see some missing symbol error or things are broken, that is almost certainly why.
-
-Running shadow and clj would look like this from the command line:
-
-[source, bash]
------
-# in one terminal
-$ shadow-cljs -A:f3-dev:rad-dev watch main
-# in another terminal
-$ clj -A:dev:f3-dev:rad-dev:datomic
------
-
-In IntelliJ, you'd simply make sure to run a CLJ REPL with current classpath, and use the alias checkboxes and `+` button
-in the Clojure Deps tab to set it up.
-
 
 == LICENSE
 
