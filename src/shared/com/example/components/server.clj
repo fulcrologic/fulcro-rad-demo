@@ -1,6 +1,6 @@
 (ns com.example.components.server
   (:require
-    [immutant.web :as web]
+    [org.httpkit.server :refer [run-server]]
     [mount.core :refer [defstate]]
     [taoensso.timbre :as log]
     [com.example.components.config :refer [config]]
@@ -8,10 +8,11 @@
 
 (defstate http-server
   :start
-  (let [cfg            (get config :org.immutant.web/config)
-        running-server (web/run middleware cfg)]
+  (let [cfg     (get config :org.httpkit.server/config)
+        stop-fn (run-server middleware cfg)]
     (log/info "Starting webserver with config " cfg)
-    {:server running-server})
+    {:stop stop-fn})
   :stop
-  (let [{:keys [server]} http-server]
-    (web/stop server)))
+  (let [{:keys [stop]} http-server]
+    (when stop
+      (stop))))

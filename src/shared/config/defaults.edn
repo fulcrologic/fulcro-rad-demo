@@ -1,5 +1,5 @@
-{:org.immutant.web/config           {:port 3000
-                                     :host "localhost"}
+{:org.httpkit.server/config         {:port 3000
+                                     :ip   "localhost"}
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
                                     {:main {:datomic/schema           :production
