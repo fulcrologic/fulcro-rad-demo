@@ -89,11 +89,12 @@
 
 (report/defsc-report AccountList [this props]
   {ro/title               "All Accounts"
+   ;; NOTE: You can uncomment these 3 lines to see how to switch over to using hand-written row rendering, with a list style
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
    ro/form-links          {account/name AccountForm}
-   ro/field-formatters    {:account/name (fn [this v] v)}
+   ro/column-formatters   {:account/active? (fn [this v] (if v "Yes" "No"))}
    ro/column-headings     {:account/name "Account Name"}
    ro/columns             [account/name account/active?]
    ro/row-pk              account/id
