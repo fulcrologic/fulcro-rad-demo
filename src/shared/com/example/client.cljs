@@ -12,9 +12,11 @@
     [taoensso.timbre :as log]
     [taoensso.tufte :as tufte :refer [profile]]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
+    [com.fulcrologic.fulcro.algorithms.tx-processing.synchronous-tx-processing :as stx]
     [com.fulcrologic.rad.routing.html5-history :as hist5 :refer [html5-history]]
     [com.fulcrologic.rad.routing.history :as history]
-    [com.fulcrologic.rad.routing :as routing]))
+    [com.fulcrologic.rad.routing :as routing]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
 
 (defonce stats-accumulator
   (tufte/add-accumulating-handler! {:ns-pattern "*"}))
@@ -29,8 +31,16 @@
         (hist5/restore-route! app ui/LandingPage {})))))
 
 (defonce app (rad-app/fulcro-rad-app
-               {:client-did-mount (fn [app]
-                                    (auth/start! app [LoginForm] {:after-session-check `fix-route}))}))
+               {:client-will-mount (fn [app]
+                                     (log/merge-config! {:output-fn prefix-output-fn
+                                                         :appenders {:console (console-appender)}})
+                                     (dr/change-route! app ["landing-page"])
+                                     ;; a default tz until they log in
+                                     (datetime/set-timezone! "America/Los_Angeles")
+                                     (history/install-route-history! app (html5-history))
+                                     (rad-app/install-ui-controls! app sui/all-controls)
+                                     (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
+                                     (auth/start! app [LoginForm] {:after-session-check `fix-route}))}))
 
 (defn refresh []
   ;; hot code reload of installed controls
@@ -41,13 +51,6 @@
 
 (defn init []
   (log/info "Starting App")
-  (log/merge-config! {:output-fn prefix-output-fn
-                      :appenders {:console (console-appender)}})
-  ;; a default tz until they log in
-  (datetime/set-timezone! "America/Los_Angeles")
-  (history/install-route-history! app (html5-history))
-  (rad-app/install-ui-controls! app sui/all-controls)
-  (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
   (app/mount! app Root "app"))
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))

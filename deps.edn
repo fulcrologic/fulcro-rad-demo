@@ -1,8 +1,8 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.2.16"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "0.0.16-alpha"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "0.0.15-alpha"}
+ :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.2.17"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "1.0.3"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "0.0.16-alpha"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.4-alpha"}
            com.wsscode/pathom                     {:mvn/version "2.2.31"}
            edn-query-language/eql                 {:mvn/version "1.0.0"}
