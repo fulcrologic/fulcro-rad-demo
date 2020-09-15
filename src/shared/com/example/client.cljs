@@ -3,6 +3,7 @@
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.application :as app]
+    [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.mutations :as m]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.report :as report]
@@ -47,7 +48,8 @@
   (log/info "Reinstalling controls")
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
-  (app/mount! app Root "app"))
+  (app/mount! app Root "app")
+  (comp/refresh-dynamic-queries! app))
 
 (defn init []
   (log/info "Starting App")
