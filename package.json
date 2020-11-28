@@ -22,7 +22,7 @@
     "js-joda-timezone": "^2.1.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "semantic-ui-react": "^0.88.2",
+    "semantic-ui-react": "^2.0.1",
     "shadow-cljs": "2.11.8",
     "victory": "^34.3.6"
   },
