@@ -1,26 +1,26 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.3.0"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "1.0.4"}
+ :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.4.4"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "1.0.6"}
            com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.0.0"}
-           com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.4-alpha"}
-           com.wsscode/pathom                     {:mvn/version "2.3.0-alpha10"}
-           edn-query-language/eql                 {:mvn/version "1.0.0"}
-           com.taoensso/encore                    {:mvn/version "2.120.0"}
+           com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.5-alpha"}
+           com.wsscode/pathom                     {:mvn/version "2.3.0-alpha17"}
+           edn-query-language/eql                 {:mvn/version "1.0.1"}
+           com.taoensso/encore                    {:mvn/version "3.1.0"}
            com.fulcrologic/guardrails             {:mvn/version "0.0.12"}
 
            ;; Performance checks
            com.taoensso/tufte                     {:mvn/version "2.1.0"}
 
            ;; Server
-           mount                                  {:mvn/version "0.1.12"}
-           hiccup                                 {:mvn/version "1.0.5"}
+           mount/mount                                  {:mvn/version "0.1.12"}
+           hiccup/hiccup                                 {:mvn/version "1.0.5"}
            ring/ring-defaults                     {:mvn/version "0.3.2"}
            ring/ring-core                         {:mvn/version "1.8.1"}
-           http-kit                               {:mvn/version "2.4.0"}
+           http-kit/http-kit                               {:mvn/version "2.5.0"}
 
            ;; Unified logging for server
-           com.taoensso/timbre                    {:mvn/version "4.10.0"}
+           com.taoensso/timbre                    {:mvn/version "5.0.0"}
            org.slf4j/log4j-over-slf4j             {:mvn/version "1.7.30"} ; auto sends log4j to slf4j
            org.slf4j/jul-to-slf4j                 {:mvn/version "1.7.30"} ; auto sends java.util.logging to slf4j
            org.slf4j/jcl-over-slf4j               {:mvn/version "1.7.30"} ; auto-sends java.common.logging to slf4j
@@ -30,7 +30,7 @@
            org.clojure/clojure                    {:mvn/version "1.10.1"}}
 
  :aliases {:test      {:extra-paths ["src/shared-tests"]
-                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.6"}}}
+                       :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.8"}}}
 
            :sql       {:extra-paths ["src/sql" "src/sql-tests"]
                        :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199" :exclusions [org.slf4j/slf4j-nop]}
@@ -38,12 +38,12 @@
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.0"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.4"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
-                       :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.632"}}}
+                       :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.700"}}}
 
            :dev       {:extra-paths ["src/dev" "resources"]
-                       :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.11.4"}
+                       :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.11.8"}
                                      com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.1"}
                                      binaryage/devtools                  {:mvn/version "1.0.0"}
                                      org.clojure/tools.namespace         {:mvn/version "1.0.0"}}}}}
