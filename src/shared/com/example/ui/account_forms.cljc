@@ -1,6 +1,7 @@
 (ns com.example.ui.account-forms
   (:require
     [clojure.string :as str]
+    [taoensso.timbre :as log]
     [com.example.model :as model]
     [com.example.model.account :as account]
     [com.example.model.timezone :as timezone]
@@ -9,6 +10,7 @@
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.mutations :refer [defmutation]]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
+    [com.fulcrologic.rad.semantic-ui-options :as suo]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.rad.control :as control]
@@ -93,12 +95,25 @@
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
+   suo/rendering-options  {;suo/report-action-button-grouping ""
+                           #_#_suo/action-button-render (fn [this k {:keys [label]}]
+                                                          (when (= k ::new-account)
+                                                            (dom/a {:onClick (fn []
+                                                                               (form/create! this AccountForm))} label)))
+                           }
    ro/form-links          {account/name AccountForm}
    ro/column-formatters   {:account/active? (fn [this v] (if v "Yes" "No"))}
    ro/column-headings     {:account/name "Account Name"}
    ro/columns             [account/name account/active?]
    ro/row-pk              account/id
    ro/source-attribute    :account/all-accounts
+   ro/row-visible?        (fn [{::keys [filter-name]} {:account/keys [name]}]
+                            (let [nm     (some-> name (str/lower-case))
+                                  target (some-> filter-name (str/trim) (str/lower-case))]
+                              (or
+                                (nil? target)
+                                (empty? target)
+                                (and nm (str/includes? nm target)))))
    ro/run-on-mount?       true
 
    ro/initial-sort-params {:sort-by          :account/name
@@ -109,6 +124,15 @@
                                             :local? true
                                             :label  "New Account"
                                             :action (fn [this _] (form/create! this AccountForm))}
+                           ::search!       {:type   :button
+                                            :local? true
+                                            :label  "Filter"
+                                            :action (fn [this _] (report/filter-rows! this))}
+                           ::filter-name   {:type        :string
+                                            :local?      true
+                                            :label       "Search"
+                                            :placeholder "Type a partial name and press enter."
+                                            :onChange    (fn [this _] (report/filter-rows! this))}
                            :show-inactive? {:type          :boolean
                                             :local?        true
                                             :style         :toggle
@@ -117,7 +141,8 @@
                                             :label         "Show Inactive Accounts?"}}
 
    ro/control-layout      {:action-buttons [::new-account]
-                           :inputs         [[:show-inactive?]]}
+                           :inputs         [[::filter-name :_]
+                                            [:show-inactive?]]}
 
    ro/row-actions         [{:label     "Enable"
                             :action    (fn [report-instance {:account/keys [id]}]
