@@ -28,7 +28,7 @@
                                                                               (first)
                                                                               (str/lower-case))
                                                                             "")]
-                                                               (str/starts-with? (get form field) prefix))
+                                                               (str/starts-with? (get form field "") prefix))
                                               (= :valid (model/all-attribute-validator form field))))))
 
 ;; NOTE: Limitation: Each "storage location" requires a form. The ident of the component matches the identity
@@ -95,12 +95,25 @@
    ;::report/layout-style             :list
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
-   suo/rendering-options  {;suo/report-action-button-grouping ""
-                           #_#_suo/action-button-render (fn [this k {:keys [label]}]
-                                                          (when (= k ::new-account)
-                                                            (dom/a {:onClick (fn []
-                                                                               (form/create! this AccountForm))} label)))
-                           }
+
+   ;; The rendering options can also be set globally. Putting them on the component override globals.
+   suo/rendering-options  {suo/action-button-render      (fn [this {:keys [key onClick label]}]
+                                                           (when (= key ::new-account)
+                                                             (dom/button :.ui.tiny.basic.button {:onClick onClick}
+                                                               (dom/i {:className "icon user"})
+                                                               label)))
+                           suo/body-class                ""
+                           suo/controls-class            ""
+                           suo/layout-class              ""
+                           suo/report-table-class        "ui very compact celled selectable table"
+                           suo/report-table-header-class (fn [this i] (case i
+                                                                        0 ""
+                                                                        1 "center aligned"
+                                                                        "collapsing"))
+                           suo/report-table-cell-class   (fn [this i] (case i
+                                                                        0 ""
+                                                                        1 "center aligned"
+                                                                        "collapsing"))}
    ro/form-links          {account/name AccountForm}
    ro/column-formatters   {:account/active? (fn [this v] (if v "Yes" "No"))}
    ro/column-headings     {:account/name "Account Name"}
@@ -127,10 +140,10 @@
                            ::search!       {:type   :button
                                             :local? true
                                             :label  "Filter"
+                                            :class "ui basic compact mini red button"
                                             :action (fn [this _] (report/filter-rows! this))}
                            ::filter-name   {:type        :string
                                             :local?      true
-                                            :label       "Search"
                                             :placeholder "Type a partial name and press enter."
                                             :onChange    (fn [this _] (report/filter-rows! this))}
                            :show-inactive? {:type          :boolean
@@ -141,7 +154,7 @@
                                             :label         "Show Inactive Accounts?"}}
 
    ro/control-layout      {:action-buttons [::new-account]
-                           :inputs         [[::filter-name :_]
+                           :inputs         [[::filter-name ::search! :_]
                                             [:show-inactive?]]}
 
    ro/row-actions         [{:label     "Enable"

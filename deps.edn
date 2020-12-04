@@ -1,8 +1,8 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.4.4"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "1.0.6"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.0.0"}
+ :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.4.8"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "1.0.8"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.0.3"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.5-alpha"}
            com.wsscode/pathom                     {:mvn/version "2.3.0-alpha17"}
            edn-query-language/eql                 {:mvn/version "1.0.1"}
@@ -13,11 +13,11 @@
            com.taoensso/tufte                     {:mvn/version "2.1.0"}
 
            ;; Server
-           mount/mount                                  {:mvn/version "0.1.12"}
-           hiccup/hiccup                                 {:mvn/version "1.0.5"}
+           mount/mount                            {:mvn/version "0.1.12"}
+           hiccup/hiccup                          {:mvn/version "1.0.5"}
            ring/ring-defaults                     {:mvn/version "0.3.2"}
            ring/ring-core                         {:mvn/version "1.8.1"}
-           http-kit/http-kit                               {:mvn/version "2.5.0"}
+           http-kit/http-kit                      {:mvn/version "2.5.0"}
 
            ;; Unified logging for server
            com.taoensso/timbre                    {:mvn/version "5.0.0"}
