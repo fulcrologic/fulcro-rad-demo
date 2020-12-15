@@ -612,13 +612,6 @@
    :WET                              "WET"
    :Zulu                             "Zulu"})
 
-(def us-zone-ids
-  (into #{}
-    (keep (fn [[k v]]
-            (when (str/starts-with? v "US/")
-              k)))
-    time-zones))
-
 (>defn namespaced-time-zone-labels
   "Returns a time zone map with all keys prefixed properly for Datomic enumerated names. `ns` should be something like
   \"account.timezone\"."
@@ -674,11 +667,11 @@
               datomic-time-zones))
 
           :else
-          (mapv (fn [zone-id]
+          (mapv (fn [[k v]]
                   (array-map
-                    :value zone-id
-                    :text (format-time-zone (get time-zones zone-id))))
-            us-zone-ids))})))
+                    :value k
+                    :text (format-time-zone v)))
+            time-zones))})))
 
 (def attributes [zone-id])
 #?(:clj
