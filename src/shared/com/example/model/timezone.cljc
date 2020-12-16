@@ -612,8 +612,6 @@
    :WET                              "WET"
    :Zulu                             "Zulu"})
 
-(def us-zone-names (filterv #(str/starts-with? % "US/") (vals time-zones)))
-
 (>defn namespaced-time-zone-labels
   "Returns a time zone map with all keys prefixed properly for Datomic enumerated names. `ns` should be something like
   \"account.timezone\"."
@@ -647,6 +645,9 @@
                          :autocomplete/debounce-ms   100
                          :autocomplete/minimum-input 1}})
 
+(defn- format-time-zone [time-zone-name]
+  (str/replace time-zone-name "_" " "))
+
 #?(:clj
    (pc/defresolver all-time-zones [{:keys [query-params]} _]
      {::pc/output [{:autocomplete/time-zone-options [:text :value]}]}
@@ -654,19 +655,23 @@
        {:autocomplete/time-zone-options
         (cond
           (keyword? only)
-          [{:text (str/replace (name only) "_" " ") :value only}]
+          [{:text (format-time-zone (name only)) :value only}]
 
           (seq search-string)
           (let [search-string (str/lower-case search-string)]
             (into []
               (comp
-                (map (fn [[k v]] (array-map :text (str/replace v "_" " ") :value k)))
+                (map (fn [[k v]] (array-map :text (format-time-zone v) :value k)))
                 (filter (fn [{:keys [text]}] (str/includes? (str/lower-case text) search-string)))
                 (take 10))
               datomic-time-zones))
 
           :else
-          us-zone-names)})))
+          (mapv (fn [[k v]]
+                  (array-map
+                    :value k
+                    :text (format-time-zone v)))
+            time-zones))})))
 
 (def attributes [zone-id])
 #?(:clj
