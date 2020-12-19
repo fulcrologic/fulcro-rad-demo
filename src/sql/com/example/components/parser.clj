@@ -15,7 +15,16 @@
     [com.example.model.account :as account]
     [com.example.model.timezone :as timezone]
     [com.fulcrologic.rad.attributes :as rad.attr]
-    [com.example.model.invoice :as invoice]))
+    [com.example.model.invoice :as invoice]
+    [com.wsscode.pathom.connect :as pc]))
+
+(pc/defresolver index-explorer [{::pc/keys [indexes]} _]
+  {::pc/input  #{:com.wsscode.pathom.viz.index-explorer/id}
+   ::pc/output [:com.wsscode.pathom.viz.index-explorer/index]}
+  {:com.wsscode.pathom.viz.index-explorer/index
+   (p/transduce-maps
+     (remove (comp #{::pc/resolve ::pc/mutate} key))
+     indexes)})
 
 (defstate parser
   :start
@@ -30,4 +39,5 @@
      (blob/resolvers all-attributes)
      account/resolvers
      invoice/resolvers
-     timezone/resolvers]))
+     timezone/resolvers
+     index-explorer]))

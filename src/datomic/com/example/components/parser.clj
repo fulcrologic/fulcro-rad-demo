@@ -19,7 +19,16 @@
     [com.example.model.sales :as sales]
     [com.example.model.item :as item]
     [com.wsscode.pathom.core :as p]
-    [com.fulcrologic.rad.type-support.date-time :as dt]))
+    [com.fulcrologic.rad.type-support.date-time :as dt]
+    [com.wsscode.pathom.connect :as pc]))
+
+(pc/defresolver index-explorer [{::pc/keys [indexes]} _]
+                {::pc/input  #{:com.wsscode.pathom.viz.index-explorer/id}
+                 ::pc/output [:com.wsscode.pathom.viz.index-explorer/index]}
+                {:com.wsscode.pathom.viz.index-explorer/index
+                 (p/transduce-maps
+                   (remove (comp #{::pc/resolve ::pc/mutate} key))
+                   indexes)})
 
 (defstate parser
   :start
@@ -44,4 +53,5 @@
      invoice/resolvers
      item/resolvers
      sales/resolvers
-     timezone/resolvers]))
+     timezone/resolvers
+     index-explorer]))
