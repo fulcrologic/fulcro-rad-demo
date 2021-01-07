@@ -20,6 +20,7 @@
     [taoensso.timbre :as log]
     [next.jdbc :as jdbc]
     [next.jdbc.sql :as sql]
+    [next.jdbc.types :refer [as-other]]
     [com.example.components.connection-pools :as pools])
   (:import (com.zaxxer.hikari HikariDataSource)))
 
@@ -89,11 +90,11 @@
     (doseq [row [(new-address (new-uuid 300) "222 Other")
                  (new-account (new-uuid 100) "Tony" "tony@example.com" "letmein" salt iterations
                    :account/primary_address (new-uuid 300)
-                   :account/role ":account.role/superuser"
+                   :account/role (as-other ":account.role/superuser")
                    :zone_id ":time-zone.zone-id/America-Los_Angeles")
                  (new-address (new-uuid 1) "111 Main St." :account_addresses_account_id (new-uuid 100))
                  (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations
-                   :account/role ":account.role/user")
+                   :account/role (as-other ":account.role/user"))
                  (new-account (new-uuid 102) "Sally" "sally@example.com" "letmein" salt iterations)
                  (new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein" salt iterations)
                  (new-category (new-uuid 1000) "Tools")
@@ -110,8 +111,8 @@
         (let [[table entity] row]
           (sql/insert! db table entity))
         (catch Exception e
-          (log/error e row))))
-    ))
+          (log/error e row))))))
+    
 
 (comment
   (seed!))
@@ -155,5 +156,5 @@
 
   (rad.sql/column-names account/attributes [::account/id ::account/active?])
 
-  (contains? #{::account/name} (::attr/qualified-key account/name))
-  )
+  (contains? #{::account/name} (::attr/qualified-key account/name)))
+  

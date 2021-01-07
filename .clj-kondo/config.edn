@@ -1,0 +1,7 @@
+{
+ ;:lint-as {com.fulcrologic.fulcro.components/defsc clojure.core/defn}
+ :lint-as {mount.core/defstate clojure.core/def
+           com.fulcrologic.rad.attributes/defattr clojure.core/def
+           com.wsscode.pathom.connect/defmutation clojure.core/def
+           com.fulcrologic.rad.form/defsc-form clojure.core/def}
+ :config-paths ["configs/fulcro"]}
