@@ -16,6 +16,7 @@
     [com.example.model.timezone :as timezone]
     [com.fulcrologic.rad.attributes :as rad.attr]
     [com.example.model.invoice :as invoice]
+    [com.wsscode.pathom.core :as p]
     [com.wsscode.pathom.connect :as pc]))
 
 (pc/defresolver index-explorer [{::pc/keys [indexes]} _]
