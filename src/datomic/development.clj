@@ -93,3 +93,17 @@
 
 (def reset #'restart)
 
+(defn mock-resolver-env
+  "An env including the DB to pass to a resolver when calling it manually.
+  BEWARE: You must start fulcro first before you can use this.
+
+  Example:
+
+  ```
+  ((:com.wsscode.pathom.connect/resolve com.example.model.account/all-accounts)
+    (mock-resolver-env) {})
+  ; => #:account{:all-accounts [...]}
+  ```"
+  []
+  {::datomic/databases
+   {:production (atom (d/db (:main datomic-connections)))}})
