@@ -110,8 +110,8 @@
         (let [[table entity] row]
           (sql/insert! db table entity))
         (catch Exception e
-          (log/error e row))))
-    ))
+          (log/error e row))))))
+
 
 (comment
   (seed!))
@@ -138,7 +138,7 @@
 
 (defn mock-resolver-env
   "An env including the DB to pass to a resolver when calling it manually.
-  BEWARE: You must start fulcro first before you can use this.
+  BEWARE: You must call `(start)` first before you can use this.
 
   Example:
 
@@ -170,5 +170,5 @@
 
   (rad.sql/column-names account/attributes [::account/id ::account/active?])
 
-  (contains? #{::account/name} (::attr/qualified-key account/name))
-  )
+  (contains? #{::account/name} (::attr/qualified-key account/name)))
+

@@ -95,7 +95,7 @@
 
 (defn mock-resolver-env
   "An env including the DB to pass to a resolver when calling it manually.
-  BEWARE: You must start fulcro first before you can use this.
+  BEWARE: You must call `(start)` first before you can use this.
 
   Example:
 
