@@ -35,14 +35,7 @@
   (pathom/new-parser config
     [(rad.attr/pathom-plugin all-attributes)
      (form/pathom-plugin save/middleware delete/middleware)
-     (sql/pathom-plugin (fn [_] {:production (:main pools/connection-pools)})
-       {:production (if (= :postgresql (-> config (get so/databases) :main :sql/vendor))
-                      (do
-                        (log/info "Using a PostgreSQL adapter.")
-                        (vendor/->PostgreSQLAdapter))
-                      (do
-                        (log/info "Using an H2 adapter.")
-                        (vendor/->H2Adapter)))})
+     (sql/pathom-plugin (fn [_] {:production (:main pools/connection-pools)}) config)
      (blob/pathom-plugin bs/temporary-blob-store {:files         bs/file-blob-store
                                                   :avatar-images bs/image-blob-store})]
     [automatic-resolvers
