@@ -1,1 +1,1 @@
-{:taoensso.timbre/logging-config {:min-level :trace}}
+{:taoensso.timbre/logging-config {:min-level :info}}

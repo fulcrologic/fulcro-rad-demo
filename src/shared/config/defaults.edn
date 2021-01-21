@@ -10,11 +10,11 @@
  :com.fulcrologic.rad.database-adapters.sql/databases
                                     {:main {:flyway/migrate?          false
                                             :flyway/migrations        ["classpath:config/sql_migrations"]
-                                            :hikaricp/config          {"dataSourceClassName"     "org.postgresql.ds.PGSimpleDataSource"
-                                                                       "dataSource.serverName"   "localhost"
-                                                                       "dataSource.user"         "tonykay"
-                                                                       "dataSource.databaseName" "demo"}
-                                            :sql/vendor               :postgresql
+                                            :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
+                                                                       "dataSource.user"     "sa"
+                                                                       "dataSource.password" "sa"
+                                                                       "dataSource.URL"      "jdbc:h2:mem:dev-db"}
+                                            :sql/vendor               :h2
                                             :sql/auto-create-missing? true
                                             :sql/schema               :production}}
 
