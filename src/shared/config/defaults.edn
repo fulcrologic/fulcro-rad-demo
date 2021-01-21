@@ -8,6 +8,16 @@
                                             :datomic/prevent-changes? true}}
 
  :com.fulcrologic.rad.database-adapters.sql/databases
+ ;; Sample for PostgreSQL
+ #_{:main {:flyway/migrate?          false
+           :flyway/migrations        ["classpath:config/sql_migrations"]
+           :hikaricp/config          {"dataSourceClassName"     "org.postgresql.ds.PGSimpleDataSource"
+                                      "dataSource.serverName"   "localhost"
+                                      "dataSource.user"         "postgres"
+                                      "dataSource.databaseName" "demo"}
+           :sql/vendor               :postgresql
+           :sql/auto-create-missing? true
+           :sql/schema               :production}}
                                     {:main {:flyway/migrate?          false
                                             :flyway/migrations        ["classpath:config/sql_migrations"]
                                             :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
