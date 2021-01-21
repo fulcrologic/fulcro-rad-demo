@@ -35,7 +35,7 @@
 (comment
   (schema/tables-and-columns (attr/attribute-map account/attributes) account/name)
   (mig/attr->ops :production (attr/attribute-map account/attributes) account/name)
-  (doseq [stmt (mig/automatic-schema :production all-attributes)]
+  (doseq [stmt (mig/automatic-schema :production nil all-attributes)]
     (log/info stmt)
     (jdbc/execute! (get-jdbc-datasource) [stmt]))
 
@@ -84,34 +84,37 @@
         iterations 1000
         misc-id    (new-uuid 1003)
         toys-id    (new-uuid 1002)
-        tools-id   (new-uuid 1000)]
-    (log/info "Seeding development data")
-    (doseq [row [(new-address (new-uuid 300) "222 Other")
-                 (new-account (new-uuid 100) "Tony" "tony@example.com" "letmein" salt iterations
-                   :account/primary_address (new-uuid 300)
-                   :account/role ":account.role/superuser"
-                   :zone_id ":time-zone.zone-id/America-Los_Angeles")
-                 (new-address (new-uuid 1) "111 Main St." :account_addresses_account_id (new-uuid 100))
-                 (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations
-                   :account/role ":account.role/user")
-                 (new-account (new-uuid 102) "Sally" "sally@example.com" "letmein" salt iterations)
-                 (new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein" salt iterations)
-                 (new-category (new-uuid 1000) "Tools")
-                 (new-category (new-uuid 1002) "Toys")
-                 (new-category (new-uuid 1003) "Misc")
-                 (new-item (new-uuid 200) "Widget" 33.99 misc-id)
-                 (new-item (new-uuid 201) "Screwdriver" 4.99 tools-id)
-                 (new-item (new-uuid 202) "Wrench" 14.99 tools-id)
-                 (new-item (new-uuid 203) "Hammer" 14.99 tools-id)
-                 (new-item (new-uuid 204) "Doll" 4.99 toys-id)
-                 (new-item (new-uuid 205) "Robot" 94.99 toys-id)
-                 (new-item (new-uuid 206) "Building Blocks" 24.99 toys-id)]]
-      (try
-        (let [[table entity] row]
-          (sql/insert! db table entity))
-        (catch Exception e
-          (log/error e row))))
-    ))
+        tools-id   (new-uuid 1000)
+        exists?    (boolean (sql/get-by-id db :account (new-uuid 100)))]
+    (if exists?
+      (log/info "Database already seeded. Skipping")
+      (do
+        (log/info "Seeding development data")
+        (doseq [row [(new-address (new-uuid 300) "222 Other")
+                     (new-account (new-uuid 100) "Tony" "tony@example.com" "letmein" salt iterations
+                       :account/primary_address (new-uuid 300)
+                       :account/role ":account.role/superuser"
+                       :zone_id ":time-zone.zone-id/America-Los_Angeles")
+                     (new-address (new-uuid 1) "111 Main St." :account_addresses_account_id (new-uuid 100))
+                     (new-account (new-uuid 101) "Sam" "sam@example.com" "letmein" salt iterations
+                       :account/role ":account.role/user")
+                     (new-account (new-uuid 102) "Sally" "sally@example.com" "letmein" salt iterations)
+                     (new-account (new-uuid 103) "Barbara" "barb@example.com" "letmein" salt iterations)
+                     (new-category (new-uuid 1000) "Tools")
+                     (new-category (new-uuid 1002) "Toys")
+                     (new-category (new-uuid 1003) "Misc")
+                     (new-item (new-uuid 200) "Widget" 33.99 misc-id)
+                     (new-item (new-uuid 201) "Screwdriver" 4.99 tools-id)
+                     (new-item (new-uuid 202) "Wrench" 14.99 tools-id)
+                     (new-item (new-uuid 203) "Hammer" 14.99 tools-id)
+                     (new-item (new-uuid 204) "Doll" 4.99 toys-id)
+                     (new-item (new-uuid 205) "Robot" 94.99 toys-id)
+                     (new-item (new-uuid 206) "Building Blocks" 24.99 toys-id)]]
+          (try
+            (let [[table entity] row]
+              (sql/insert! db table entity))
+            (catch Exception e
+              (log/error e row))))))))
 
 (comment
   (seed!))

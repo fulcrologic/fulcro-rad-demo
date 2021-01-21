@@ -9,6 +9,8 @@
            com.taoensso/encore                    {:mvn/version "3.1.0"}
            com.fulcrologic/guardrails             {:mvn/version "0.0.12"}
 
+           org.postgresql/postgresql              {:mvn/version "42.2.8"}
+
            ;; Performance checks
            com.taoensso/tufte                     {:mvn/version "2.1.0"}
 
