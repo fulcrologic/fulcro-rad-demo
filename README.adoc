@@ -1,4 +1,4 @@
-= Fulcro RAD Demo (Datomic Cloud Version)
+= Fulcro RAD Demo 
 
 This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
 common to any project, and then separate source directories that have specific files that would be
@@ -6,18 +6,54 @@ needed to work with specific back-end technologies (currently SQL and Datomic).
 
 IMPORTANT: Login is `tony@example.com` with password `letmein`.
 
+== What is It?
+
+RAD is a set of libraries for Fulcro that have you model your data via _attributes_. An attribute is
+a description of a fact in your data model, that itself can have descritive data (ala RDF). Fulcro
+components can also be given data attributes. The combination of annotating components and the data
+model leads to some great synergies, since Fulcro itself already has the UI components participate 
+in your application's global data model. 
+
+The result is a system where a group of attributes can be leveraged to automatically create:
+
+* Database schema
+* Networking APIs
+* Documentation
+* UIs that pull exactly what they need
+* Applications that auto-normalize their client-side data
+* Form and Report generation
+* Federated data modes, where a cluster of attributes can actually 
+  live in disparate locations under different control.
+
+and much more.
+
 == Status
 
-RAD is changing rapidly, and this demo *may* be out of date. The time it takes to maintain it is more
-than I have. If a contributor would like to take on this project and keep it up to date and working
-that would be great (PM me on Slack), but please do not expect support on this repository in any form at the
-present time.
+RAD includes a number of features that I would recommend in any new production project using Fulcro. 
+This demo is a good reference for how to set up such a project; however, RAD is changing rapidly, 
+so beware that this demo *may* be somewhat out of date. This is not a template project per-se, but
+the RAD approach of designing your data model via attributes that can then be leveraged to generate 
+a lot of your boilerplate code is quite useful and powerful in all stages of development.
+
+The demo should be relatively easy for even a beginner to understand and tinker with, and I hope it
+serves to inspire you to learn more about Fulcro in general; however, if you
+do not understand Fulcro, then you will very quickly run into difficulties.
+
+*Beginners should therefore start with non-RAD projects* using the core library via examples from the
+https://book.fulcrologic.com[Developer's Guide] or even the standard https://github.com/fulcrologic/fulcro-template.
+RAD does *not* eliminate the need to understand the core library. RAD is simply some macros and patterns
+that leverage Fulcro.
 
 The SQL version has some known bugs. If you want to play with RAD, use the Datomic database adapter for now.
 
-WARNING: The API is *not* stable. While in Alpha *there will be breaking changes*. I will try to minimize these,
-but this library is still in the design phases, so don't use it for "real stuff" unless you can tolerate that
-instability on top of the alpha status.
+== Common FAQ
+
+Does RAD Require a Database (or Server)?:: No the general front-end elements of RAD could be powered by any data source. The main
+requirement is that a Fulcro "remote" exist which is able to support an EQL interface. It is trivial
+to build a remote that uses anything from an SQL database on a server to Browser LocalStorage.
+
+
+
 
 == Building the SPA
 
