@@ -7,6 +7,23 @@
                                             :datomic/database         "example"
                                             :datomic/prevent-changes? true}}
 
+ :roterski.fulcro.rad.database-adapters.crux/databases
+ {:main {
+        ;; leave empty for in-memory crux
+        ;; or uncomment a map below for postgres-based crux but first you need to manually create the fulcro-rad-demo db in postgres
+        ;; this map is passed through symbolize-crux-modules (so you can store :crux/module values as strings)
+        ;; and then passed directly into crux.api/start-node
+        ;; for all available options see https://opencrux.com/reference/21.02-1.15.0/configuration.html
+        ;;         
+        ;;  :crux.jdbc/connection-pool {:dialect #:crux{:module "crux.jdbc.psql/->dialect"}
+        ;;                              :db-spec {:dbname   "fulcro-rad-demo"
+        ;;                                        :user     "postgres"
+        ;;                                        :password "postgres"}}
+        ;;  :crux/tx-log               {:crux/module "crux.jdbc/->tx-log"
+        ;;                              :connection-pool :crux.jdbc/connection-pool}
+        ;;  :crux/document-store       {:crux/module "crux.jdbc/->document-store"
+        ;;                              :connection-pool :crux.jdbc/connection-pool}
+         }}
  :com.fulcrologic.rad.database-adapters.sql/databases
  ;; Sample for PostgreSQL
  #_{:main {:flyway/migrate?          false

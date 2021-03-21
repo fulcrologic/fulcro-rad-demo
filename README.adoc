@@ -105,6 +105,21 @@ user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
+== Running an Crux-based Server (ALPHA quality)
+
+The example code for Crux components is in the `src/crux` folder, along with a custom
+`development.clj`. Crux nodes are configured by a map under `:roterski.fulcro.rad.database-adapters.crux/databases` key
+in `defaults.edn`.
+
+You can run it with the `:crux` deps alias:
+
+[source, bash]
+-----
+$ clj -A:dev:crux
+user=> (clojure.core/require 'development)
+user=> (development/go)
+-----
+
 == Restarting
 
 The `development/restart` will stop the server, reload source, and start the server.
