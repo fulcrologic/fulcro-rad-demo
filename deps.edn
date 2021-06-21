@@ -40,7 +40,7 @@
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.8"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.9"}}}
            :crux      {:extra-paths ["src/crux" "src/crux-tests"]
                        :extra-deps {juxt/crux-core           {:mvn/version "21.02-1.15.0-beta"}
                                     juxt/crux-rocksdb        {:mvn/version "21.02-1.15.0-beta"}
