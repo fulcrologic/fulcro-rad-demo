@@ -6,3 +6,6 @@ report:
 
 release:
 	TIMBRE_LEVEL=:warn npx shadow-cljs release main
+
+server:
+	clj -A:dev:datomic -M -m com.example.components.server
