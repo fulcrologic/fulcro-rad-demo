@@ -1,7 +1,7 @@
 (ns com.example.components.server
   (:require
     [org.httpkit.server :refer [run-server]]
-    [mount.core :refer [defstate]]
+    [mount.core :as mount :refer [defstate]]
     [taoensso.timbre :as log]
     [com.example.components.config :refer [config]]
     [com.example.components.ring-middleware :refer [middleware]]))
@@ -16,3 +16,7 @@
   (let [{:keys [stop]} http-server]
     (when stop
       (stop))))
+
+;; This is a separate file for the uberjar only. We control the server in dev mode from src/dev/user.clj
+(defn -main [& args]
+  (mount/start-with-args {:config "config/prod.edn"}))
