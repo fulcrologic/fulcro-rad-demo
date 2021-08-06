@@ -94,7 +94,7 @@
   [env username]
   (enc/if-let [db (some-> (get-in env [co/databases :production]) deref)]
     (-> db
-        (crux/q '{:find [(eql/project ?account [:account/name
+        (crux/q '{:find [(pull ?account [:account/name
                                                 {:time-zone/zone-id [:db/ident]}
                                                 :password/hashed-value
                                                 :password/salt
