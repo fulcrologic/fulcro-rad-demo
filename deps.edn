@@ -8,7 +8,7 @@
            edn-query-language/eql                 {:mvn/version "1.0.1"}
            com.taoensso/encore                    {:mvn/version "3.1.0"}
            com.fulcrologic/guardrails             {:mvn/version "1.1.4"}
-
+           thheller/shadow-cljs                   {:mvn/version "2.11.26"}
            org.postgresql/postgresql              {:mvn/version "42.2.8"}
 
            ;; Performance checks
@@ -28,8 +28,9 @@
            org.slf4j/jcl-over-slf4j               {:mvn/version "1.7.30"} ; auto-sends java.common.logging to slf4j
            com.fzakaria/slf4j-timbre              {:mvn/version "0.3.19"} ; hooks slf4j to timbre
 
-           org.clojure/clojurescript              {:mvn/version "1.10.866"}
-           org.clojure/clojure                    {:mvn/version "1.10.3"}}
+           org.clojure/clojurescript              {:mvn/version "1.10.773"}
+           org.clojure/clojure                    {:mvn/version "1.10.1"}
+           com.google.javascript/closure-compiler-unshaded {:mvn/version "v20200830"}}
 
  :aliases {:test      {:extra-paths ["src/shared-tests"]
                        :extra-deps  {fulcrologic/fulcro-spec {:mvn/version "3.1.11"}}}
@@ -47,6 +48,7 @@
                                     pro.juxt.crux/crux-jdbc    {:mvn/version "1.18.0"}
                                     roterski/fulcro-rad-crux   {:mvn/version "0.0.1-alpha-3"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
+
                        :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}}}
 
            :dev       {:extra-paths ["src/dev" "resources"]
