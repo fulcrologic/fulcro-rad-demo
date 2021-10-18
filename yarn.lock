@@ -31,15 +31,20 @@
   dependencies:
     tslib "^2.0.1"
 
-"@js-joda/core@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@js-joda/core/-/core-3.2.0.tgz#3e61e21b7b2b8a6be746df1335cf91d70db2a273"
-  integrity sha512-PMqgJ0sw5B7FKb2d5bWYIoxjri+QlW/Pys7+Rw82jSH0QN3rB05jZ/VrrsUdh1w4+i2kw9JOejXGq/KhDOX7Kg==
+"@js-joda/core@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@js-joda/core/-/core-4.2.1.tgz#990a6167f12cc504440117c49afb00003e7077f0"
+  integrity sha512-/PX1W+qCLfSYjHV3HtEuH6vaGuTtjvfA8ERt3xib8MmNkE6jSieFi/BZGPzHAbWLTgPpdNDQVDi4HgV1G7VCDg==
 
-"@js-joda/locale_en-us@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@js-joda/locale_en-us/-/locale_en-us-3.2.2.tgz#e953add780a0b7ee32a81cdbeb15d80cc6c6b8cf"
-  integrity sha512-/3KCf1BD0V9N5ffFCm7Q4VpWHty8hABAdtkIoyCf2VjxAYelTebw7Vq6L1rtrMyWU2Ltb7n00S1FWb5dewNjHg==
+"@js-joda/locale_en-us@4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@js-joda/locale_en-us/-/locale_en-us-4.2.1.tgz#dde07f4b7a8ada945e7a6b86f4933560926462d8"
+  integrity sha512-DXEhp5L+q0S+xiOnmbROx+Qr+MBZnIbp1TXoKNfycxTLlKlbdDLPCH7XrAxSGUWlTYsAG1EJKG4GndNCGNJINA==
+
+"@js-joda/timezone@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@js-joda/timezone/-/timezone-2.8.0.tgz#5424265c6dded1281eb5c104167eae208edb55e1"
+  integrity sha512-ewNYIveVviDztEnVtyPvJsrhIlut5jO73HB5SVss2ErmannjENOaNMjeuVsQ5+XSc+x3PpKT2eyCF0SJSPxr3g==
 
 "@popperjs/core@^2.5.2":
   version "2.5.4"
@@ -476,11 +481,6 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-js-joda-timezone@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/js-joda-timezone/-/js-joda-timezone-2.1.1.tgz#73b55e558f59a1490ce3e52d1a686689d6bdb416"
-  integrity sha512-l7PltQExLbI2gnzkvmzh+TFZcuAFiphmI93MUd6t/Zx3enVhjwXX3StD2QmibLdNXygqcxeBh4pkqcrlnGMTrQ==
-
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -804,10 +804,10 @@ shadow-cljs-jar@1.3.2:
   resolved "https://registry.yarnpkg.com/shadow-cljs-jar/-/shadow-cljs-jar-1.3.2.tgz#97273afe1747b6a2311917c1c88d9e243c81957b"
   integrity sha512-XmeffAZHv8z7451kzeq9oKh8fh278Ak+UIOGGrapyqrFBB773xN8vMQ3O7J7TYLnb9BUwcqadKkmgaq7q6fhZg==
 
-shadow-cljs@2.14.5:
-  version "2.14.5"
-  resolved "https://registry.yarnpkg.com/shadow-cljs/-/shadow-cljs-2.14.5.tgz#f71d9bf1e292d452ecc76ec0a061fdc895af36b5"
-  integrity sha512-+tn4f8bSD2P006bsuVAmQeBRSzNM55o2oPT2SfDYDcUYVuqevxnxuDc2xza+c2UsA55bnYezP71CSkFDC56Osw==
+shadow-cljs@2.15.12:
+  version "2.15.12"
+  resolved "https://registry.yarnpkg.com/shadow-cljs/-/shadow-cljs-2.15.12.tgz#056ff707356538aefe8f5f07b7cb01e46758d10a"
+  integrity sha512-DKkQ9HIkQgV2yeWlwPUU02iw6Ucdw+Ks6r1XxESV/2I5V8ci4EJdZYcYiNS/GHYKDYaikJKSgmocxP+VtbYGJg==
   dependencies:
     node-libs-browser "^2.2.1"
     readline-sync "^1.4.7"

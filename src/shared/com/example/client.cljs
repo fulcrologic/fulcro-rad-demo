@@ -1,11 +1,13 @@
 (ns com.example.client
   (:require
+    ["@js-joda/locale_en-us" :refer [Locale]]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.mutations :as m]
     [com.fulcrologic.rad.application :as rad-app]
+    [com.fulcrologic.rad.locale :as r.locale]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
@@ -45,6 +47,7 @@
   (app/mount! app Root "app"))
 
 (defn init []
+  (r.locale/set-locale! (.-US Locale))
   (log/merge-config! {:output-fn prefix-output-fn
                       :appenders {:console (console-appender)}})
   (log/info "Starting App")

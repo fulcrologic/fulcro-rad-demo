@@ -14,13 +14,10 @@
                                      ;;"react"     {:target  :npm
                                      ;;:require "react/cjs/react.production.min.js"}
 
-                                     "js-joda"
-                                     {:target :npm
-                                      :require "@js-joda/core" }
-                                     ;; Make js-joda-timezone a reasonable build size
-                                     "js-joda-timezone"
+                                     ;; Make js-joda-timezone a more reasonable build size
+                                     "@js-joda/timezone"
                                      {:target  :npm
-                                      :require "js-joda-timezone/dist/js-joda-timezone-10-year-range.min.js"}}}
+                                      :require "@js-joda/timezone/dist/js-joda-timezone-10-year-range.min.js"}}}
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/refresh}}
 
