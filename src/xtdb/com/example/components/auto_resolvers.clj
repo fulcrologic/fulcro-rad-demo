@@ -3,7 +3,7 @@
    [com.example.model :refer [all-attributes]]
    [mount.core :refer [defstate]]
    [com.fulcrologic.rad.resolvers :as res]
-   [roterski.fulcro.rad.database-adapters.crux :as crux]
+   [roterski.fulcro.rad.database-adapters.xtdb :as xtdb]
    [taoensso.timbre :as log]))
 
 (defstate automatic-resolvers
@@ -11,4 +11,4 @@
   (vec
    (concat
     (res/generate-resolvers all-attributes)
-    (crux/generate-resolvers all-attributes :production))))
+    (xtdb/generate-resolvers all-attributes :production))))
