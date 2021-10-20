@@ -41,11 +41,11 @@
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
                                      com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.9"}}}
-           :crux      {:extra-paths ["src/crux" "src/crux-tests"]
-                       :extra-deps {pro.juxt.crux/crux-core    {:mvn/version "1.18.0"}
-                                    pro.juxt.crux/crux-rocksdb {:mvn/version "1.18.0"}
-                                    pro.juxt.crux/crux-jdbc    {:mvn/version "1.18.0"}
-                                    roterski/fulcro-rad-crux   {:mvn/version "0.0.1-alpha-3"}}}
+           :xtdb      {:extra-paths ["src/xtdb" "src/xtdb-tests"]
+                       :extra-deps {com.xtdb/xtdb-core    {:mvn/version "1.19.0"}
+                                    com.xtdb/xtdb-rocksdb {:mvn/version "1.19.0"}
+                                    com.xtdb/xtdb-jdbc    {:mvn/version "1.19.0"}
+                                    net.clojars.roterski/fulcro-rad-xtdb {:mvn/version "0.0.1-alpha-7"}}}
            :run-tests {:main-opts  ["-m" "kaocha.runner"]
                        :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}}}
 

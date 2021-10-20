@@ -3,7 +3,7 @@
    [com.example.components.auto-resolvers :refer [automatic-resolvers]]
    [com.example.components.blob-store :as bs]
    [com.example.components.config :refer [config]]
-   [com.example.components.crux :refer [crux-nodes]]
+   [com.example.components.xtdb :refer [xtdb-nodes]]
    [com.example.components.delete-middleware :as delete]
    [com.example.components.save-middleware :as save]
    [com.example.model :refer [all-attributes]]
@@ -12,7 +12,7 @@
    [com.example.model.timezone :as timezone]
    [com.fulcrologic.rad.attributes :as attr]
    [com.fulcrologic.rad.blob :as blob]
-   [roterski.fulcro.rad.database-adapters.crux :as crux]
+   [roterski.fulcro.rad.database-adapters.xtdb :as xtdb]
    [com.fulcrologic.rad.form :as form]
    [com.fulcrologic.rad.pathom :as pathom]
    [mount.core :refer [defstate]]
@@ -35,7 +35,7 @@
   (pathom/new-parser config
                      [(attr/pathom-plugin all-attributes)
                       (form/pathom-plugin save/middleware delete/middleware)
-                      (crux/pathom-plugin (fn [env] {:production (:main crux-nodes)}))
+                      (xtdb/pathom-plugin (fn [env] {:production (:main xtdb-nodes)}))
                       (blob/pathom-plugin bs/temporary-blob-store {:files         bs/file-blob-store
                                                                    :avatar-images bs/image-blob-store})
                       {::p/wrap-parser

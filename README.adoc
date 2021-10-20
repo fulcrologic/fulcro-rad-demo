@@ -105,17 +105,17 @@ user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
-== Running an Crux-based Server (ALPHA quality)
+== Running an XTDB-based Server (ALPHA quality)
 
-The example code for Crux components is in the `src/crux` folder, along with a custom
-`development.clj`. Crux nodes are configured by a map under `:roterski.fulcro.rad.database-adapters.crux/databases` key
+The example code for XTDB components is in the `src/xtdb` folder, along with a custom
+`development.clj`. XTDB nodes are configured by a map under `:roterski.fulcro.rad.database-adapters.xtdb/databases` key
 in `defaults.edn`.
 
-You can run it with the `:crux` deps alias:
+You can run it with the `:xtdb` deps alias:
 
 [source, bash]
 -----
-$ clj -A:dev:crux
+$ clj -A:dev:xtdb
 user=> (clojure.core/require 'development)
 user=> (development/go)
 -----

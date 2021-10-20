@@ -10,7 +10,7 @@
   [id name email password & {:as extras}]
   (let [salt (attr/gen-salt)]
     (merge
-     {:crux.db/id            id
+     {:xt/id            id
       :account/id            id
       :account/email         email
       :account/name          name
@@ -25,7 +25,7 @@
   "Seed helper. Uses street as db/id for tempid purposes."
   [id street & {:as extras}]
   (merge
-   {:crux.db/id     id
+   {:xt/id     id
     :address/id     id
     :address/street street
     :address/city   "Sacramento"
@@ -37,7 +37,7 @@
   "Seed helper. Uses label for tempid purposes."
   [id label & {:as extras}]
   (merge
-   {:crux.db/id     id
+   {:xt/id     id
     :category/id    id
     :category/label label}
    extras))
@@ -46,7 +46,7 @@
   "Seed helper. Uses street at db/id for tempid purposes."
   [id name price & {:as extras}]
   (merge
-   {:crux.db/id id
+   {:xt/id id
     :item/id    id
     :item/name  name
     :item/price (math/numeric price)}
@@ -54,7 +54,7 @@
 
 (defn new-line-item [id item quantity price & {:as extras}]
   (merge
-   {:crux.db/id             id
+   {:xt/id             id
     :line-item/id           id
     :line-item/item         item
     :line-item/quantity     quantity
@@ -64,10 +64,10 @@
 
 (defn new-invoice [id date customer line-items & {:as extras}]
   (merge
-   {:crux.db/id         id
+   {:xt/id         id
     :invoice/id         id
     :invoice/customer   customer
-    :invoice/line-items (mapv :crux.db/id line-items)
+    :invoice/line-items (mapv :xt/id line-items)
     :invoice/total      (reduce
                          (fn [total {:line-item/keys [subtotal]}]
                            (math/+ total subtotal))
