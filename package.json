@@ -16,8 +16,7 @@
   "homepage": "https://github.com/fulcrologic/fulcro-rad#readme",
   "dependencies": {
     "@js-joda/core": "^4.2.1",
-    "@js-joda/timezone": "2.8.0",
-    "@js-joda/locale_en-us": "4.2.1",
+    "@js-joda/timezone": "^2.8.0",
     "big.js": "5.2.2",
     "intl-messageformat": "^9.3.11",
     "react": "^17.0.1",
