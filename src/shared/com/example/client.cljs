@@ -1,6 +1,5 @@
 (ns com.example.client
   (:require
-    ["@js-joda/locale_en-us" :refer [Locale]]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.application :as app]
@@ -47,10 +46,6 @@
   (app/mount! app Root "app"))
 
 (defn init []
-  ;; NOTE: IF you require other locales from js-joda, the right way to make a new one that isn't listed as a
-  ;; static member of the Locale class is to use (Locale. "lang" "country"). E.g. (Locale. "es" "MX"). This, of
-  ;; course, requires that you've also loaded the @js-joda/locale_es (or related) package.
-  (r.locale/set-locale! (.-US Locale))
   (log/merge-config! {:output-fn prefix-output-fn
                       :appenders {:console (console-appender)}})
   (log/info "Starting App")
