@@ -30,11 +30,21 @@
    :com.fulcrologic.rad.database-adapters.sql/table "account"})
 
 (defattr email :account/email :string
-  {ao/identities                                                   #{:account/id}
-   ao/required?                                                    true
-   ao/schema                                                       :production
-   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/unique :db.unique/value}
-   })
+  {ao/identities         #{:account/id}
+   ao/required?          true
+   ao/schema             :production
+   :com.fulcrologic.rad.database-adapters.datomic/attribute-schema
+                         {:db/unique :db.unique/value}
+   fo/validation-message "Must use your lower-case first name as the email address name."
+   ao/valid?             (fn [v props _]
+                           (let [prefix (or
+                                          (some-> props
+                                            :account/name
+                                            (str/split #"\s")
+                                            (first)
+                                            (str/lower-case))
+                                          "")]
+                             (str/starts-with? (or v "") prefix)))})
 
 
 (defattr active? :account/active? :boolean
