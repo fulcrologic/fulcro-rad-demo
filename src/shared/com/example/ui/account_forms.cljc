@@ -11,8 +11,10 @@
     [com.fulcrologic.fulcro.mutations :refer [defmutation]]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.fulcrologic.rad.semantic-ui-options :as suo]
+    [com.fulcrologic.fulcro.dom.events :as evt]
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
+    [com.fulcrologic.rad.debugging :as debug]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
@@ -42,41 +44,60 @@
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
-(form/defsc-form AccountForm [this props]
-  {fo/id             account/id
+(form/defsc-form AccountForm [this {:account/keys [primary-address] :as props}]
+  {fo/id                  account/id
    ;   ::form/read-only?          true
-   fo/attributes     [;account/avatar
-                      account/name
-                      account/primary-address
-                      account/role timezone/zone-id account/email
-                      account/active? account/addresses
-                      account/files]
-   fo/default-values {:account/active?         true
-                      :account/primary-address {}
-                      :account/addresses       [{}]}
-   fo/validator      account-validator
+   fo/attributes          [;account/avatar
+                           account/name
+                           account/primary-address
+                           account/role timezone/zone-id account/email
+                           account/active? account/addresses
+                           account/files]
+   fo/default-values      {:account/active?         true
+                           :account/primary-address {}
+                           :account/addresses       [{}]}
+   fo/validator           account-validator
    fo/validation-messages {:account/email "You must use your UPPER case first name as your email address name."}
-   fo/route-prefix   "account"
-   fo/title          "Edit Account"
+   fo/route-prefix        "account"
+   fo/title               "Edit Account"
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   fo/subforms       {:account/primary-address {fo/ui                      AddressForm
-                                                fo/title                   "Primary Address"
-                                                ::form/autocreate-on-load? true}
-                      :account/files           {fo/ui                    FileForm
-                                                fo/title                 "Files"
-                                                fo/can-delete?           (fn [_ _] true)
-                                                fo/layout-styles         {:ref-container :file}
-                                                ::form/added-via-upload? true}
-                      :account/addresses       {fo/ui            AddressForm
-                                                fo/title         "Additional Addresses"
-                                                fo/sort-children (fn [addresses] (sort-by :address/zip addresses))
-                                                fo/can-delete?   (fn [parent _] (< 1 (count (:account/addresses (comp/props parent)))))
-                                                fo/can-add?      (fn [parent _]
-                                                                   (and
-                                                                     (< (count (:account/addresses (comp/props parent))) 4)
-                                                                     :prepend))}}})
+   fo/subforms            {:account/primary-address {fo/ui                      AddressForm
+                                                     fo/title                   "Primary Address"
+                                                     ::form/autocreate-on-load? true}
+                           :account/files           {fo/ui                    FileForm
+                                                     fo/title                 "Files"
+                                                     fo/can-delete?           (fn [_ _] true)
+                                                     fo/layout-styles         {:ref-container :file}
+                                                     ::form/added-via-upload? true}
+                           :account/addresses       {fo/ui            AddressForm
+                                                     fo/title         "Additional Addresses"
+                                                     fo/sort-children (fn [addresses] (sort-by :address/zip addresses))
+                                                     fo/can-delete?   (fn [parent _] (< 1 (count (:account/addresses (comp/props parent)))))
+                                                     fo/can-add?      (fn [parent _]
+                                                                        (and
+                                                                          (< (count (:account/addresses (comp/props parent))) 4)
+                                                                          :prepend))}}}
+  ;; Use one of these as the only element of the body to get form debug info on-screen with the form
+  ;;(debug/top-bottom-debugger this props)
+  ;;(debug/side-by-side-debugger this props)
+
+
+  #_(div :.ui.form
+      (let [env (form/rendering-env this props)]
+        (form/with-field-context [{:keys [value invalid? field-label validation-message]} (form/field-context env account/name)]
+          (div :.field {}
+            (dom/label field-label)
+            (dom/input {:value    value
+                        :onBlur   #(form/input-blur! env :account/name value)
+                        :onChange #(form/input-changed! env :account/name (evt/target-value %))})
+            (when invalid?
+              (div :.ui.message
+                validation-message)))
+          )
+        #_(form/render-field env account/name)))
+  #_(form/render-layout this props))
 
 (defsc AccountListItem [this
                         {:account/keys [id name active?] :as props}
@@ -96,7 +117,10 @@
       (dom/td :.right.aligned name)
       (dom/td (str active?))))
 
-(report/defsc-report AccountList [this props]
+(def ui-account-list-item (comp/factory AccountListItem))
+
+(report/defsc-report AccountList [this {:ui/keys [current-rows current-page page-count]
+                                        :as      props}]
   {ro/title               "All Accounts"
    ;; NOTE: You can uncomment these 3 lines to see how to switch over to using hand-written row rendering, with a list style
    ;::report/layout-style             :list
@@ -179,8 +203,24 @@
                             ;:visible?  (fn [_ row-props] (:account/active? row-props))
                             :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
 
-   ro/route               "accounts"})
+   ro/route               "accounts"}
+  #_(div
+      ;(report/render-controls this)
+      (report/render-control this ::new-account)
+      (dom/button :.ui.green.button {:onClick (fn [] (form/create! this AccountForm))}
+        "Boo")
+      #_(div :.ui.form
+          (div :.field
+            (dom/label "Filter")
+            (report/render-control this ::filter-name)))
+      #_(dom/div :.ui.list
+          (mapv (fn [row]
+                  (ui-account-list-item row))
+            current-rows)))
+  (report/render-layout this))
 
 (comment
+  (form/form-key->attribute AccountForm :account/name)
+
 
   (comp/get-query AccountList-Row))

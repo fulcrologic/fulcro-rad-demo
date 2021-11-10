@@ -18,7 +18,7 @@
                                      "@js-joda/timezone"
                                      {:target  :npm
                                       :require "@js-joda/timezone/dist/js-joda-timezone-10-year-range.min.js"}}}
-                       :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
+                       :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.dom-picker-preload]
                                     :after-load com.example.client/refresh}}
 
             :test     {:target           :browser-test
