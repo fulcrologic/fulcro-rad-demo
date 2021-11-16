@@ -2,7 +2,8 @@
   (:require
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
-    [com.wsscode.pathom.connect :as pc]
+    [com.wsscode.pathom3.connect.operation :as pco]
+    [com.wsscode.pathom3.interface.eql :as p.eql]
     #?(:clj [com.example.components.database-queries :as queries])
     [taoensso.timbre :as log]))
 
@@ -33,18 +34,18 @@
    ao/schema     :production})
 
 (defattr all-items :item/all-items :ref
-  {ao/target    :item/id
-   ::pc/output  [{:item/all-items [:item/id]}]
-   ::pc/resolve (fn [{:keys [query-params] :as env} _]
-                  #?(:clj
-                     {:item/all-items (queries/get-all-items env (log/spy :info query-params))}))})
+  {ao/target     :item/id
+   ao/pc-output  [{:item/all-items [:item/id]}]
+   ao/pc-resolve (fn [{:keys [query-params] :as env} _]
+                   #?(:clj
+                      {:item/all-items (queries/get-all-items env query-params)}))})
 
 #?(:clj
-   (pc/defresolver item-category-resolver [{:keys [parser] :as env} {:item/keys [id]}]
-     {::pc/input  #{:item/id}
-      ::pc/output [:category/id :category/label]}
-     (let [result (parser env [{[:item/id id] [{:item/category [:category/id :category/label]}]}])]
-       (get-in (log/spy :info result) [[:item/id id] :item/category]))))
+   (pco/defresolver item-category-resolver [env {:item/keys [id]}]
+     {::pco/input  [:item/id]
+      ::pco/output [:category/id :category/label]}
+     (let [result (p.eql/process env [{[:item/id id] [{:item/category [:category/id :category/label]}]}])]
+       (get-in result [[:item/id id] :item/category]))))
 
 (def attributes [id item-name category description price in-stock all-items])
 

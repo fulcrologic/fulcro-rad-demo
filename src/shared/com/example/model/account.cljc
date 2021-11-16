@@ -2,17 +2,14 @@
   (:refer-clojure :exclude [name])
   (:require
     #?@(:clj
-        [[com.wsscode.pathom.connect :as pc :refer [defmutation]]
-         [com.example.model.authorization :as exauth]
+        [[com.example.model.authorization :as exauth]
          [com.example.components.database-queries :as queries]]
         :cljs
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [clojure.string :as str]
-    [com.example.model.timezone :as timezone]
-    [com.wsscode.pathom.connect :as pc]
+    [com.wsscode.pathom3.connect.operation :as pco]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
-    [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.attributes :as attr :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.authorization :as auth]
@@ -101,11 +98,6 @@
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
    ao/schema                                                       :production})
 
-;; NOTE: How to do file SHA->URL stuff...
-#_(pc/defresolver image-resolver [env input]
-    {::pc/input  #{:file/sha ::blob/store}
-     ::pc/output [:file/url]})
-
 ;; NOTE: Not quite done yet...
 (defattr avatar :account/avatar :string
   {
@@ -148,7 +140,7 @@
                       {:account/invoices (queries/get-customer-invoices env query-params)}))})
 
 #?(:clj
-   (defmutation logout [env _]
+   (pco/defmutation logout [env _]
      {}
      (exauth/logout! env))
    :cljs
@@ -157,8 +149,8 @@
        true)))
 
 #?(:clj
-   (defmutation login [env params]
-     {::pc/params #{:username :password}}
+   (pco/defmutation login [env {:keys [username password] :as params}]
+     {}
      (exauth/login! env params))
    :cljs
    (defmutation login [params]
@@ -179,7 +171,7 @@
        (m/returning env auth/Session))))
 
 #?(:clj
-   (defmutation check-session [env _]
+   (pco/defmutation check-session [env _]
      {}
      (exauth/check-session! env))
    :cljs
@@ -205,9 +197,8 @@
 (declare disable-account)
 
 #?(:clj
-   (defmutation set-account-active [env {:account/keys [id active?]}]
-     {::pc/params #{:account/id}
-      ::pc/output [:account/id]}
+   (pco/defmutation set-account-active [env {:account/keys [id active?]}]
+     {::pco/output [:account/id]}
      (form/save-form* env {::form/id        id
                            ::form/master-pk :account/id
                            ::form/delta     {[:account/id id] {:account/active? {:before (not active?) :after (boolean active?)}}}}))

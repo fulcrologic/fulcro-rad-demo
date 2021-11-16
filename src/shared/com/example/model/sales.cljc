@@ -7,9 +7,9 @@
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.guardrails.core :refer [>defn =>]]
-    [com.wsscode.pathom.connect :as pc :refer [defresolver]]
     [com.fulcrologic.rad.type-support.decimal :as math]
-    [com.fulcrologic.rad.ids :as ids]))
+    [com.fulcrologic.rad.ids :as ids]
+    [com.wsscode.pathom3.connect.operation :as pco]))
 
 (defattr date :sales/date :instant
   {ro/column-heading "Date"
@@ -38,8 +38,8 @@
                     #inst "2020-01-09T12:00Z"])
 
 #?(:clj
-   (defresolver sales-report-resolver [env {:invoice/keys [id]}]
-     {::pc/output [{:sales-report/rows [:sales/date
+   (pco/defresolver sales-report-resolver [env {:invoice/keys [id]}]
+     {::pco/output [{:sales-report/rows [:sales/date
                                         :sales/revenue
                                         :sales/cost]}]}
      {:sales-report/rows

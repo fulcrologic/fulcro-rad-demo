@@ -4,7 +4,7 @@
     [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.report-options :as ro]
-    [com.wsscode.pathom.connect :as pc]
+    [com.wsscode.pathom3.connect.operation :as pco]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [com.fulcrologic.rad.type-support.decimal :as math]
     #?(:clj [com.example.components.database-queries :as queries])
@@ -49,9 +49,8 @@
 
 ;; Fold account details into the invoice details, if desired
 #?(:clj
-   (pc/defresolver customer-id [env {:invoice/keys [id]}]
-     {::pc/input  #{:invoice/id}
-      ::pc/output [:account/id]}
+   (pco/defresolver customer-id [env {:invoice/keys [id]}]
+     {::pco/output [:account/id]}
      {:account/id (queries/get-invoice-customer-id env id)}))
 
 (defattr all-invoices :invoice/all-invoices :ref
@@ -118,9 +117,10 @@
 ;; calculated here.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #?(:clj
-   (pc/defresolver invoice-statistics [{:keys [parser query-params] :as env} _]
-     {::pc/output [{:invoice-statistics [{:invoice-statistics/groups [:key :values]}]}]
-      ::pc/doc    "Pull and group the invoices and line items based on query-params. This then flows to other resolvers as input."}
+   (pco/defresolver invoice-statistics
+     "Pull and group the invoices and line items based on query-params. This then flows to other resolvers as input."
+     [{:keys [parser query-params] :as env} _]
+     {::pco/output [{:invoice-statistics [{:invoice-statistics/groups [:key :values]}]}]}
      ;; NOTE: you'd normally need to pass in tz as a param, or use it from session to localize the groupings.
      (let [{:keys    [start-date end-date]
             grouping :group-by} query-params
