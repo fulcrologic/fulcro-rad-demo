@@ -11,7 +11,8 @@
     [mount.core :refer [defstate]]
     [ring.middleware.defaults :refer [wrap-defaults]]
     [ring.util.response :as resp]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [com.fulcrologic.rad.type-support.date-time :as dt]))
 
 (defn index [csrf-token]
   (html5
@@ -34,8 +35,10 @@
     (if (= uri (:uri request))
       (server/handle-api-request (:transit-params request)
         (fn [query]
-          (parser/parser {:ring/request request}
-            query)))
+          ;; TODO: Set the timezone according to the user, session, etc.
+          (dt/with-timezone "America/Los_Angeles"
+            (parser/parser {:ring/request request}
+             query))))
       (handler request))))
 
 (def not-found-handler

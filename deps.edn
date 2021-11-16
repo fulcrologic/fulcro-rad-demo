@@ -1,10 +1,12 @@
 {:paths   ["src/shared"]
 
  :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.5.6"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "1.1.0-RC6"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.2.2"}
+           com.fulcrologic/fulcro-rad #_{:mvn/version "1.0.31"}
+                                                  {:git/url "https://github.com/fulcrologic/fulcro-rad.git"
+                                                   :sha     "cbcb9420b37fbaf2b691faafdc159ed4fc17bf34"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.2.1"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.5-alpha"}
-           com.wsscode/pathom                     {:mvn/version "2.3.1"}
+           com.wsscode/pathom3                    {:mvn/version "2021.10.20-alpha"}
            edn-query-language/eql                 {:mvn/version "1.0.1"}
            com.taoensso/encore                    {:mvn/version "3.1.0"}
            com.fulcrologic/guardrails             {:mvn/version "1.1.5"}
@@ -36,11 +38,13 @@
 
            :sql       {:extra-paths ["src/sql" "src/sql-tests"]
                        :extra-deps  {com.h2database/h2              {:mvn/version "1.4.199" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.4-alpha"}}}
+                                     com.fulcrologic/fulcro-rad-sql {:git/url "https://github.com/fulcrologic/fulcro-rad-sql"
+                                                                     :sha     "7a16171b9b96076b56aa19ec9abee2b6bd124a65"}}}
 
            :datomic   {:extra-paths ["src/datomic" "src/datomic-tests"]
                        :extra-deps  {com.datomic/datomic-free           {:mvn/version "0.9.5697" :exclusions [org.slf4j/slf4j-nop]}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.0.9"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:git/url "https://github.com/fulcrologic/fulcro-rad-datomic"
+                                                                         :sha     "c524921eb607fc7e1df97fda6245087dd797109f"}}}
            :xtdb      {:extra-paths ["src/xtdb" "src/xtdb-tests"]
                        :extra-deps  {com.xtdb/xtdb-core                   {:mvn/version "1.19.0"}
                                      com.xtdb/xtdb-rocksdb                {:mvn/version "1.19.0"}

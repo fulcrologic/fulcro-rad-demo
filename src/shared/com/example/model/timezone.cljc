@@ -7,7 +7,8 @@
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.attributes :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
-    [com.fulcrologic.guardrails.core :refer [>defn =>]]))
+    [com.fulcrologic.guardrails.core :refer [>defn =>]]
+    [com.wsscode.pathom3.connect.operation :as pco]))
 
 (def time-zones
   "A map of time zone keys to their ZoneID string, for easy use in creating time zone enumeration in the database and
@@ -649,8 +650,8 @@
   (str/replace time-zone-name "_" " "))
 
 #?(:clj
-   (pc/defresolver all-time-zones [{:keys [query-params]} _]
-     {::pc/output [{:autocomplete/time-zone-options [:text :value]}]}
+   (pco/defresolver all-time-zones [{:keys [query-params]} _]
+     {::pco/output [{:autocomplete/time-zone-options [:text :value]}]}
      (let [{:keys [only search-string]} query-params]
        {:autocomplete/time-zone-options
         (cond
