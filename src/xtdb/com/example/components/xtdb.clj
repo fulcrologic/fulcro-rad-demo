@@ -8,5 +8,5 @@
   :start
   (xtdb/start-databases (xtdb/symbolize-xtdb-modules config))
   :stop
-  (for [node xtdb-nodes]
+  (doseq [[_ node] xtdb-nodes]
     (.close node)))
