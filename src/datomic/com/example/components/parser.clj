@@ -36,3 +36,8 @@
        item/resolvers
        sales/resolvers
        timezone/resolvers])))
+
+(comment
+
+  (parser {} '[(com.example.model.account/login)])
+  (parser {} [{:account/all-accounts [:account/id :account/role {:account/primary-address [:address/street]}]}]))
