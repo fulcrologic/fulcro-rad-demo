@@ -31,7 +31,7 @@
    ao/required?          true
    ao/schema             :production
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema
-                         {:db/unique :db.unique/value}
+   {:db/unique :db.unique/value}
    fo/validation-message "Must use your lower-case first name as the email address name."
    ao/valid?             (fn [v props _]
                            (let [prefix (or
@@ -150,7 +150,7 @@
 
 #?(:clj
    (pco/defmutation login [env {:keys [username password] :as params}]
-     {}
+     {::pco/output [::auth/provider ::auth/status :time-zone/zone-id :account/name]}
      (exauth/login! env params))
    :cljs
    (defmutation login [params]
@@ -172,7 +172,8 @@
 
 #?(:clj
    (pco/defmutation check-session [env _]
-     {}
+     {::pco/output [::auth/provider
+                    ::auth/status]}
      (exauth/check-session! env))
    :cljs
    (defmutation check-session [_]
