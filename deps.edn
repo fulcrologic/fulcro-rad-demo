@@ -6,7 +6,7 @@
                                                    :sha     "cbcb9420b37fbaf2b691faafdc159ed4fc17bf34"}
            com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.2.1"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.5-alpha"}
-           com.wsscode/pathom3                    {:mvn/version "2021.10.20-alpha"}
+           com.wsscode/pathom3                    {:mvn/version "2021.11.16-alpha"}
            edn-query-language/eql                 {:mvn/version "1.0.1"}
            com.taoensso/encore                    {:mvn/version "3.1.0"}
            com.fulcrologic/guardrails             {:mvn/version "1.1.5"}
