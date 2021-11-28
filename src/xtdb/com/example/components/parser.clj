@@ -17,31 +17,15 @@
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.pathom3 :as pathom3]
     [mount.core :refer [defstate]]
-    [roterski.fulcro.rad.database-adapters.xtdb :as xtdb]
-    [roterski.fulcro.rad.database-adapters.xtdb-options :as xo]
-    [taoensso.encore :as enc]
-    [xtdb.api :as xt]))
-
-;; TASK: This should move to the library
-(defn xtdb-wrap-env
-  ([database-adapter]
-   (xtdb-wrap-env nil database-adapter))
-  ([base-wrapper database-mapper]
-   (fn [env]
-     (let [database-node-map (database-mapper env)
-           databases         (enc/map-vals (fn [v] (atom (xt/db v))) database-node-map)]
-       (cond-> (assoc env
-                 xo/nodes database-node-map
-                 xo/databases databases)
-         base-wrapper (base-wrapper))))))
+    [roterski.fulcro.rad.database-adapters.xtdb :as xtdb]))
 
 (defstate parser
   :start
   (let [env-middleware (-> (attr/wrap-env all-attributes)
-                         (form/wrap-env save/middleware delete/middleware)
-                         (xtdb-wrap-env (fn [_] {:production (:main xtdb-nodes)}))
-                         (blob/wrap-env bs/temporary-blob-store {:files         bs/file-blob-store
-                                                                 :avatar-images bs/image-blob-store}))]
+                           (form/wrap-env save/middleware delete/middleware)
+                           (xtdb/wrap-env (fn [_] {:production (:main xtdb-nodes)}))
+                           (blob/wrap-env bs/temporary-blob-store {:files         bs/file-blob-store
+                                                                   :avatar-images bs/image-blob-store}))]
     (pathom3/new-processor config env-middleware []
       [automatic-resolvers
        form/resolvers
