@@ -6,6 +6,10 @@ needed to work with specific back-end technologies (currently SQL and Datomic).
 
 IMPORTANT: Login is `tony@example.com` with password `letmein`.
 
+NOTE: Pathom 3 is supported. See the `pathom3` branch for a version
+that uses that version instead. That branch will be merged as soon
+as P3 is considered production-ready.
+
 == What is It?
 
 RAD is a set of libraries for Fulcro that have you model your data via _attributes_. An attribute is

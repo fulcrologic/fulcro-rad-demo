@@ -1,10 +1,8 @@
 {:paths   ["src/shared"]
 
  :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.5.6"}
-           com.fulcrologic/fulcro-rad #_{:mvn/version "1.0.31"}
-                                                  {:git/url "https://github.com/fulcrologic/fulcro-rad.git"
-                                                   :sha     "22c6e417eded18e13f772d855cae4de4d2c149b3"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.1.8"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "1.1.0-RC6"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.2.2"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.5-alpha"}
            com.wsscode/pathom                     {:mvn/version "2.3.1"}
            edn-query-language/eql                 {:mvn/version "1.0.1"}
