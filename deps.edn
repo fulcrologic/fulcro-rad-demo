@@ -1,7 +1,7 @@
 {:paths   ["src/shared"]
 
  :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.5.6"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "1.1.0-RC5"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "1.1.0-RC8-SNAPSHOT"}
            com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.2.2"}
            com.fulcrologic/fulcro-i18n            {:mvn/version "0.0.5-alpha"}
            com.wsscode/pathom3                    {:mvn/version "2021.11.16-alpha"}
