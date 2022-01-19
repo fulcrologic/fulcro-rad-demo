@@ -1,4 +1,8 @@
-= Fulcro RAD Demo 
+= Fulcro RAD Warehouse
+
+This is a fork of the https://github.com/fulcrologic/fulcro-rad[Fulcro RAD Demo] with a view to converting it to a warehouse/inventory app
+
+Changes build on the Pathom 3 branch using the XTDB Database Adapter
 
 This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
 common to any project, and then separate source directories that have specific files that would be
