@@ -21,6 +21,8 @@
                      item/category
                      item/description
                      item/in-stock
+                     item/min-level
+                     item/location
                      item/price]
    fo/field-styles  {:item/category :pick-one}
    fo/field-options {:item/category {::picker-options/query-key       :category/all-categories
@@ -33,11 +35,14 @@
    fo/route-prefix  "item"
    fo/title         "Edit Item"})
 
+(comment
+  (macroexpand '(form/defsc-form ItemizedForm  [this props] {fo/id item/id}))
+  )
 (report/defsc-report InventoryReport [this props]
   {ro/title               "Inventory Report"
    ro/source-attribute    :item/all-items
    ro/row-pk              item/id
-   ro/columns             [item/item-name category/label item/price item/in-stock]
+   ro/columns             [item/item-name category/label item/price item/in-stock item/min-level item/location]
 
    ro/row-visible?        (fn [filter-parameters row] (let [{::keys [category]} filter-parameters
                                                             row-category (get row :category/label)]

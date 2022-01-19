@@ -1,4 +1,5 @@
 {:taoensso.timbre/logging-config    {:min-level :info}
+ :pathom.viz true
  :com.fulcrologic.rad.pathom/config {:sensitive-keys #{:account/password}
                                      :log-requests?  true
                                      :log-responses? true}}

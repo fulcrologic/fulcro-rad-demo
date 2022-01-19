@@ -21,3 +21,6 @@ target
 .cpcache
 .shadow-cljs
 .clj-kondo/.cache
+.lsp
+/*.code-workspace
+/.calva

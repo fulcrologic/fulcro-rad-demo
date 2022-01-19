@@ -33,6 +33,15 @@
   {ao/identities #{:item/id}
    ao/schema     :production})
 
+(defattr min-level :item/min-level :int
+  {ao/identities #{:item/id}
+   ao/schema     :production})
+
+(defattr location :item/location :string
+  {ao/identities #{:item/id}
+   ao/style :viewable-password
+   ao/schema     :production})
+
 (defattr all-items :item/all-items :ref
   {ao/target     :item/id
    ao/pc-output  [{:item/all-items [:item/id]}]
@@ -47,7 +56,7 @@
      (let [result (p.eql/process env [{[:item/id id] [{:item/category [:category/id :category/label]}]}])]
        (get-in result [[:item/id id] :item/category]))))
 
-(def attributes [id item-name category description price in-stock all-items])
+(def attributes [id item-name category description price in-stock min-level location all-items])
 
 #?(:clj
    (def resolvers [item-category-resolver]))

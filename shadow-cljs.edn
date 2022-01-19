@@ -1,4 +1,4 @@
-{:deps     {:aliases [:dev :test]}
+{:deps     {:aliases [:dev :test :xtdb :nrepl :workspaces]}
  :nrepl    {:port 9000}
  :jvm-opts ["-Xmx2G"]
  :builds   {:main     {:target     :browser
@@ -33,6 +33,17 @@
                        :devtools         {:http-port          8081
                                           :http-resource-root "public"
                                           :http-root          "resources/public/js/test"}}
+            
+            :workspaces {:target     nubank.workspaces.shadow-cljs.target
+                         :ns-regexp  "-(test|ws)$"
+                         :output-dir "resources/public/js/workspaces"
+                         :asset-path "/js/workspaces"
+                         :devtools   {:http-root          "resources/public"
+                                      :preloads           [com.fulcrologic.fulcro.inspect.preload
+                                                           com.fulcrologic.fulcro.inspect.dom-picker-preload]
+                                      :http-resource-root "public"
+                                      :push-state/index   "workspaces.html"
+                                      :http-port          8023}}
 
             :ci-tests {:target           :karma
                        :js-options       {:js-provider :shadow}

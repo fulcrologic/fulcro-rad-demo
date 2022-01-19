@@ -1,0 +1,2 @@
+{:config-paths ["com.fulcrologic/fulcro" "com.wsscode/pathom3" "mount/mount"]
+ :linters {:unresolved-var {:exclude [com.example.components.ring-middleware/middleware]}}}

@@ -1,0 +1,2 @@
+{:linters {:mount/defstate {:level :warning}}
+ :hooks {:analyze-call {mount.core/defstate hooks.defstate/defstate}}}
