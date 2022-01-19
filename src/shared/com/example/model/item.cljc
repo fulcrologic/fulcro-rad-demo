@@ -39,7 +39,7 @@
 
 (defattr location :item/location :string
   {ao/identities #{:item/id}
-   ao/style :viewable-password
+   ao/style :tag
    ao/schema     :production})
 
 (defattr all-items :item/all-items :ref

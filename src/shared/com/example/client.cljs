@@ -18,6 +18,7 @@
    [com.fulcrologic.rad.routing.html5-history :as hist5 :refer [html5-history]]
    [com.fulcrologic.rad.type-support.date-time :as datetime]
    [goog.functions :refer [debounce]]
+   [com.example.ui.location-field :as l.field]
    [taoensso.timbre :as log]
    [taoensso.tufte :as tufte :refer [profile]]
    [com.example.ui.util.toast :as toast]))
@@ -35,7 +36,9 @@
               (hist5/restore-route! app ui/LandingPage {})))))
 
 (defn setup-RAD [app]
-  (rad-app/install-ui-controls! app sui/all-controls)
+  (rad-app/install-ui-controls! app (-> sui/all-controls
+                                        (assoc-in [:com.fulcrologic.rad.form/type->style->control :string :vector] l.field/vector-render-field)
+                                        (assoc-in [:com.fulcrologic.rad.form/type->style->control :string :tag] l.field/tag-render-field)))
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no"))))
 
 (defn wrap-error-reporting []

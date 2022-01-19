@@ -4,6 +4,7 @@
             [nubank.workspaces.card-types.fulcro3 :as ct.fulcro]
             [com.fulcrologic.fulcro.mutations :as fm]
             ["react-tag-input" :rename {WithContext ReactTags}]
+            [com.example.ui.location-field :as l.field]
             [com.fulcrologic.fulcro.algorithms.react-interop :as interop]
             [com.fulcrologic.fulcro.dom :as dom]))
 
@@ -28,14 +29,14 @@
              :query [:tags :suggestions]}
             (let [handle-delete #(fm/set-value!! this :tags (keep-indexed (fn [i v] (when-not (= % i) v)) tags))
                   handle-addition #(fm/set-value!! this :tags (conj tags %))
-                  handle-drag #(fm/set-value!! this :tags (transduce 
-                                                          (map-indexed (fn [i v] [i v])) 
-                                                          (completing (fn [a [i v]] 
-                                                                        (cond
-                                                                          (= i %3) (conj a %1 v)
-                                                                          (= i %2) a
-                                                                          :else (conj a v))))
-                                                          [] tags))]
+                  handle-drag #(fm/set-value!! this :tags (transduce
+                                                           (map-indexed (fn [i v] [i v]))
+                                                           (completing (fn [a [i v]]
+                                                                         (cond
+                                                                           (= i %3) (conj a %1 v)
+                                                                           (= i %2) a
+                                                                           :else (conj a v))))
+                                                           [] tags))]
               (react-tags {:delimiters keycode-delims
                           :tags tags
                           :suggestions suggestions
@@ -54,7 +55,7 @@
               ::ct.fulcro/wrap-root? true}))
 
 
-
+(ws/defcard tagged-input-card2)
 
 
 
