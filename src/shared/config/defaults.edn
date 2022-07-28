@@ -1,5 +1,7 @@
 {:org.httpkit.server/config         {:port 3000 }
 
+ :cz.holyjak.rad.database-adapters.asami/databases {:main {:asami/driver :mem #_:local, :asami/database "fulcro-rad-demo"}}
+
  :com.fulcrologic.rad.database-adapters.datomic/databases
                                     {:main {:datomic/schema           :production
                                             :datomic/driver           :mem
