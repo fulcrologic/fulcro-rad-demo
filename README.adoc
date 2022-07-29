@@ -124,6 +124,21 @@ user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
+== Running an Asami-based Server (ALPHA quality)
+
+The example code for Asami components is in the `src/asami` folder, along with a custom
+`development.clj`. Asami is configured by a map under `::cz.holyjak.rad.database-adapters.asami/databases` key
+in `defaults.edn`.
+
+You can run it with the `:asami` deps alias:
+
+[source, bash]
+-----
+$ clj -A:dev:asami
+user=> (clojure.core/require 'development)
+user=> (development/go)
+-----
+
 == Restarting
 
 The `development/restart` will stop the server, reload source, and start the server.
