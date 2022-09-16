@@ -1,8 +1,12 @@
 (ns com.example.ui.item-forms
   (:require
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
+    [com.fulcrologic.rad.routing.history :as history]
+
     [com.example.model.item :as item]
     [com.fulcrologic.rad.picker-options :as picker-options]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
@@ -44,21 +48,29 @@
                                                         (or (= "" category) (= category row-category))))
 
    ;; A sample server-query based picker that sets a local parameter that we use to filter rows.
-   ro/controls            {::category {:type                          :picker
-                                       :local?                        true
-                                       :label                         "Category"
-                                       :default-value                 ""
-                                       :action                        (fn [this] (report/filter-rows! this))
-                                       picker-options/cache-time-ms   30000
-                                       picker-options/cache-key       :all-category-options
-                                       picker-options/query-key       :category/all-categories
-                                       picker-options/query-component category/Category
-                                       picker-options/options-xform   (fn [_ categories]
-                                                                        (into [{:text "All" :value ""}]
-                                                                          (map
-                                                                            (fn [{:category/keys [label]}]
-                                                                              {:text label :value label}))
-                                                                          categories))}}
+   ro/controls {::category {:type :picker
+                            :local? true
+                            :label "Category"
+                            :default-value ""
+                            :action (fn [this]
+                                      ;; HACK: Duplicate top history entry (as set-param is simply overriding it)
+                                      ;;       This is the value before the new set-parameter has changed it so we have:
+                                      ;; history = [old] -this-> [old,old] -set-param-finished-> [old,new]
+                                      (let [{:keys [route params]} (history/current-route this)]
+                                        (println "JHDBG: Pushing OLD route" route params) ; FIXME rm
+                                        (history/push-route! this route params))
+
+                                      (report/filter-rows! this))
+                            picker-options/cache-time-ms 30000
+                            picker-options/cache-key :all-category-options
+                            picker-options/query-key :category/all-categories
+                            picker-options/query-component category/Category
+                            picker-options/options-xform (fn [_ categories]
+                                                           (into [{:text "All" :value ""}]
+                                                                 (map
+                                                                   (fn [{:category/keys [label]}]
+                                                                     {:text label :value label}))
+                                                                 categories))}}
 
    ;; If defined: sort is applied to rows after filtering (client-side)
    ro/initial-sort-params {:sort-by          :item/name

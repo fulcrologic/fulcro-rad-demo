@@ -18,7 +18,8 @@
     [com.fulcrologic.rad.routing.html5-history :as hist5 :refer [html5-history]]
     [com.fulcrologic.rad.routing.history :as history]
     [com.fulcrologic.rad.routing :as routing]
-    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
+    [clojure.set :as set]))
 
 (defonce stats-accumulator
   (tufte/add-accumulating-handler! {:ns-pattern "*"}))
@@ -45,6 +46,18 @@
   (comp/refresh-dynamic-queries! app)
   (app/mount! app Root "app"))
 
+(defn has-params-for-visible-reports? [params] ; BEWARE: Add require for `[clojure.set :as set]`
+  (let [visible-report-ids
+        (->> (comp/get-indexes app)
+             :ident->components
+             keys
+             (keep (fn [[type report-id]] (when (= type :com.fulcrologic.rad.report/id) report-id)))
+             set)
+
+        report-ids-with-params
+        (->> params keys set)]
+    (seq (set/intersection visible-report-ids report-ids-with-params))))
+
 (defn init []
   (log/merge-config! {:output-fn prefix-output-fn
                       :appenders {:console (console-appender)}})
@@ -57,6 +70,15 @@
   (setup-RAD app)
   (dr/change-route! app ["landing-page"])
   (history/install-route-history! app (html5-history))
+  (history/add-route-listener! app ::init
+                               (fn [route params]
+                                 (if (and (= route (dr/current-route app)) has-params-for-visible-reports?)
+                                   ;; Find a way to check the current params for differences against the new ones???
+                                   ;; No route change would happen for same `route` (despite `params` being different) so let's force it:
+                                   (dr/change-route! app route (assoc params ::dr/force? true))
+                                   (println "LISTENER: No ignored report-relevant route/param change => doing nothing"))
+
+                                 ))
   (auth/start! app [LoginForm] {:after-session-check `fix-route})
   (app/mount! app Root "app" {:initialize-state? false}))
 
