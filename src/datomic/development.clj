@@ -1,22 +1,15 @@
 (ns development
   (:require
-    [clojure.pprint :refer [pprint]]
-    [clojure.repl :refer [doc source]]
-    [clojure.tools.namespace.repl :as tools-ns :refer [disable-reload! refresh clear set-refresh-dirs]]
+    [clojure.tools.namespace.repl :as tools-ns :refer [set-refresh-dirs]]
     [com.example.components.datomic :refer [datomic-connections]]
     [com.example.components.ring-middleware]
     [com.example.components.server]
     [com.example.model.seed :as seed]
-    [com.example.model.account :as account]
-    [com.example.model.address :as address]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
-    [com.fulcrologic.rad.database-adapters.datomic :as datomic]
-    [com.fulcrologic.rad.resolvers :as res]
+    [com.fulcrologic.rad.type-support.date-time :as dt]
+    [datomic.client.api :as d]
     [mount.core :as mount]
-    [taoensso.timbre :as log]
-    [datomic.api :as d]
-    [com.fulcrologic.rad.attributes :as attr]
-    [com.fulcrologic.rad.type-support.date-time :as dt]))
+    [taoensso.timbre :as log]))
 
 (set-refresh-dirs "src/main" "src/datomic" "src/dev" "src/shared")
 
@@ -34,7 +27,8 @@
         date-5     (dt/html-datetime-string->inst "2020-03-21T12:00")]
     (when connection
       (log/info "SEEDING data.")
-      @(d/transact connection [(seed/new-address (new-uuid 1) "111 Main St.")
+      (d/transact connection {:tx-data
+                              [(seed/new-address (new-uuid 1) "111 Main St.")
                                (seed/new-account (new-uuid 100) "Tony" "tony@example.com" "letmein"
                                  :account/addresses ["111 Main St."]
                                  :account/primary-address (seed/new-address (new-uuid 300) "222 Other")
@@ -71,7 +65,7 @@
                                (seed/new-invoice "invoice-4" date-4 "Sally"
                                  [(seed/new-line-item "Robot" 6 89.99M)])
                                (seed/new-invoice "invoice-5" date-5 "Barbara"
-                                 [(seed/new-line-item "Building Blocks" 10 20.0M)])]))))
+                                 [(seed/new-line-item "Building Blocks" 10 20.0M)])]}))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})

@@ -1,7 +1,6 @@
 (ns com.example.model.seed
   (:require
     [com.fulcrologic.rad.type-support.decimal :as math]
-    [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.attributes :as attr]))
 

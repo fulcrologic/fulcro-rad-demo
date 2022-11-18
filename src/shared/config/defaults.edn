@@ -1,29 +1,30 @@
-{:org.httpkit.server/config         {:port 3000 }
+{:org.httpkit.server/config                        {:port 3000}
 
  :cz.holyjak.rad.database-adapters.asami/databases {:main {:asami/driver :mem #_:local, :asami/database "fulcro-rad-demo"}}
 
  :com.fulcrologic.rad.database-adapters.datomic/databases
-                                    {:main {:datomic/schema           :production
-                                            :datomic/driver           :mem
-                                            :datomic/database         "example"
-                                            :datomic/prevent-changes? true}}
+ {:main {:datomic/schema   :production
+         :datomic/client   {:server-type :dev-local
+                            :storage-dir :mem
+                            :system      "dev"}
+         :datomic/database "example"}}
 
  :roterski.fulcro.rad.database-adapters.xtdb/databases
  {:main {
-        ;; leave empty for in-memory xtdb
-        ;; or uncomment a map below for postgres-based xtdb but first you need to manually create the fulcro-rad-demo db in postgres
-        ;; this map is passed through symbolize-xtdb-modules (so you can store :xtdb/module values as strings)
-        ;; and then passed directly into xtdb.api/start-node
-        ;; for all available options see https://xtdb.com/reference/configuration.html
-        ;;         
-        ;;  :xtdb.jdbc/connection-pool {:dialect #:xtdb{:module "xtdb.jdbc.psql/->dialect"}
-        ;;                              :db-spec {:dbname   "fulcro-rad-demo"
-        ;;                                        :user     "postgres"
-        ;;                                        :password "postgres"}}
-        ;;  :xtdb/tx-log               {:xtdb/module "xtdb.jdbc/->tx-log"
-        ;;                              :connection-pool :xtdb.jdbc/connection-pool}
-        ;;  :xtdb/document-store       {:xtdb/module "xtdb.jdbc/->document-store"
-        ;;                              :connection-pool :xtdb.jdbc/connection-pool}
+         ;; leave empty for in-memory xtdb
+         ;; or uncomment a map below for postgres-based xtdb but first you need to manually create the fulcro-rad-demo db in postgres
+         ;; this map is passed through symbolize-xtdb-modules (so you can store :xtdb/module values as strings)
+         ;; and then passed directly into xtdb.api/start-node
+         ;; for all available options see https://xtdb.com/reference/configuration.html
+         ;;
+         ;;  :xtdb.jdbc/connection-pool {:dialect #:xtdb{:module "xtdb.jdbc.psql/->dialect"}
+         ;;                              :db-spec {:dbname   "fulcro-rad-demo"
+         ;;                                        :user     "postgres"
+         ;;                                        :password "postgres"}}
+         ;;  :xtdb/tx-log               {:xtdb/module "xtdb.jdbc/->tx-log"
+         ;;                              :connection-pool :xtdb.jdbc/connection-pool}
+         ;;  :xtdb/document-store       {:xtdb/module "xtdb.jdbc/->document-store"
+         ;;                              :connection-pool :xtdb.jdbc/connection-pool}
          }}
  :com.fulcrologic.rad.database-adapters.sql/databases
  ;; Sample for PostgreSQL
@@ -36,38 +37,38 @@
            :sql/vendor               :postgresql
            :sql/auto-create-missing? true
            :sql/schema               :production}}
-                                    {:main {:flyway/migrate?          false
-                                            :flyway/migrations        ["classpath:config/sql_migrations"]
-                                            :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
-                                                                       "dataSource.user"     "sa"
-                                                                       "dataSource.password" "sa"
-                                                                       "dataSource.URL"      "jdbc:h2:mem:dev-db"}
-                                            :sql/vendor               :h2
-                                            :sql/auto-create-missing? true
-                                            :sql/schema               :production}}
+ {:main {:flyway/migrate?          false
+         :flyway/migrations        ["classpath:config/sql_migrations"]
+         :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
+                                    "dataSource.user"     "sa"
+                                    "dataSource.password" "sa"
+                                    "dataSource.URL"      "jdbc:h2:mem:dev-db"}
+         :sql/vendor               :h2
+         :sql/auto-create-missing? true
+         :sql/schema               :production}}
 
- :ring.middleware/defaults-config   {:params    {:keywordize true
-                                                 :multipart  true
-                                                 :nested     true
-                                                 :urlencoded true}
-                                     :cookies   true
-                                     :responses {:absolute-redirects     true
-                                                 :content-types          true
-                                                 :default-charset        "utf-8"
-                                                 :not-modified-responses true}
-                                     :session   true
-                                     :static    {:resources "public"}
-                                     :security  {:anti-forgery   false
-                                                 :hsts           true
-                                                 :ssl-redirect   false
-                                                 :frame-options  :sameorigin
-                                                 :xss-protection {:enable? true
-                                                                  :mode    :block}}}
+ :ring.middleware/defaults-config                  {:params    {:keywordize true
+                                                                :multipart  true
+                                                                :nested     true
+                                                                :urlencoded true}
+                                                    :cookies   true
+                                                    :responses {:absolute-redirects     true
+                                                                :content-types          true
+                                                                :default-charset        "utf-8"
+                                                                :not-modified-responses true}
+                                                    :session   true
+                                                    :static    {:resources "public"}
+                                                    :security  {:anti-forgery   false
+                                                                :hsts           true
+                                                                :ssl-redirect   false
+                                                                :frame-options  :sameorigin
+                                                                :xss-protection {:enable? true
+                                                                                 :mode    :block}}}
 
- :com.fulcrologic.rad.pathom/config {:trace?         false
-                                     ;; TODO: Elide params and such in logging
-                                     :sensitive-keys #{:password :com.example.model.account/password}
-                                     :log-requests?  true
-                                     :log-responses? true}
+ :com.fulcrologic.rad.pathom/config                {:trace?         false
+                                                    ;; TODO: Elide params and such in logging
+                                                    :sensitive-keys #{:password :com.example.model.account/password}
+                                                    :log-requests?  true
+                                                    :log-responses? true}
 
- :taoensso.timbre/logging-config    {:min-level :info}}
+ :taoensso.timbre/logging-config                   {:min-level :info}}

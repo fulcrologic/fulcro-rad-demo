@@ -1,4 +1,4 @@
-= Fulcro RAD Demo 
+= Fulcro RAD Demo
 
 This is a demo repository for Fulcro RAD. It includes a shared source directory of files that would be
 common to any project, and then separate source directories that have specific files that would be
@@ -15,8 +15,8 @@ as P3 is considered production-ready.
 RAD is a set of libraries for Fulcro that have you model your data via _attributes_. An attribute is
 a description of a fact in your data model, that itself can have descritive data (ala RDF). Fulcro
 components can also be given data attributes. The combination of annotating components and the data
-model leads to some great synergies, since Fulcro itself already has the UI components participate 
-in your application's global data model. 
+model leads to some great synergies, since Fulcro itself already has the UI components participate
+in your application's global data model.
 
 The result is a system where a group of attributes can be leveraged to automatically create:
 
@@ -26,24 +26,24 @@ The result is a system where a group of attributes can be leveraged to automatic
 * UIs that pull exactly what they need
 * Applications that auto-normalize their client-side data
 * Form and Report generation
-* Federated data modes, where a cluster of attributes can actually 
+* Federated data modes, where a cluster of attributes can actually
   live in disparate locations under different control.
 
 and much more.
 
 == Status
 
-RAD includes a number of features that I would recommend in any new production project using Fulcro. 
-This demo is a good reference for how to set up such a project; however, RAD is changing rapidly, 
+RAD includes a number of features that I would recommend in any new production project using Fulcro.
+This demo is a good reference for how to set up such a project; however, RAD is changing rapidly,
 so beware that this demo *may* be somewhat out of date. This is not a template project per-se, but
-the RAD approach of designing your data model via attributes that can then be leveraged to generate 
+the RAD approach of designing your data model via attributes that can then be leveraged to generate
 a lot of your boilerplate code is quite useful and powerful in all stages of development.
 
 The demo should be relatively easy for even a beginner to understand and tinker with, and I hope it
 serves to inspire you to learn more about Fulcro in general; however, if you
 do not understand Fulcro, then you will very quickly run into difficulties.
 
-*Beginners should therefore start with non-RAD projects* using the core library via examples from the
+*Beginners should therefore start by learning core Fulcro* via examples from the
 https://book.fulcrologic.com[Developer's Guide] or even the standard https://github.com/fulcrologic/fulcro-template.
 RAD does *not* eliminate the need to understand the core library. RAD is simply some macros and patterns
 that leverage Fulcro.
@@ -55,9 +55,6 @@ The SQL version has some known bugs. If you want to play with RAD, use the Datom
 Does RAD Require a Database (or Server)?:: No the general front-end elements of RAD could be powered by any data source. The main
 requirement is that a Fulcro "remote" exist which is able to support an EQL interface. It is trivial
 to build a remote that uses anything from an SQL database on a server to Browser LocalStorage.
-
-
-
 
 == Building the SPA
 
@@ -72,12 +69,17 @@ $ shadow-cljs watch main
 
 if you don't have `yarn`, use `npm install` instead.
 
-== Running a Datomic-based Server
+== Using Datomic Cloud
 
-The example code for Datomic components is in the `src/datomic` folder, along with a custom
-`development.clj`. It defaults to using an in-memory datomic-free database.
+The Datomic database used in the demo is Datomic Cloud. On-prem is also supported (using a different namespace. See
+the `on-prem` tag which uses older versions the datomic RAD plugin and Datomic free), but
+the datomic-free version does not have enough features to support RAD. Datomic Cloud has a dev-local driver that can
+be used to create in-memory database, which makes writing an easy-to-run demo more simple.
 
-You can run it with the `:datomic` deps alias:
+You will need to obtain the current version of dev-local from https://cognitect.com/dev-tools[Cognitect] in order to
+run this demo (and update the `deps.edn` to reflect the version you got).
+
+Once you have the dependencies you should be able to start the webapp in Datomic mode using:
 
 [source, bash]
 -----
@@ -86,9 +88,8 @@ user=> (clojure.core/require 'development)
 user=> (development/go)
 -----
 
-== Using Datomic Cloud
-
-Please see the `datomic-cloud` branch of this repository. An alternate setup is required.
+This will seed the database and start the web server. The `development` namespace includes helpers for stopping/starting
+and restarting (with code reload) the server-side code.
 
 == Running an SQL-based Server (ALPHA quality)
 

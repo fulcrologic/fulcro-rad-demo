@@ -11,8 +11,7 @@
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.report :as report]
-    [com.fulcrologic.fulcro.algorithms.react-interop :as interop]
-    [taoensso.timbre :as log]))
+    [com.fulcrologic.fulcro.algorithms.react-interop :as interop]))
 
 (def ui-victory-bar #?(:cljs (interop/react-factory victory/VictoryBar)
                        :clj  (constantly "")))
@@ -104,7 +103,7 @@
                                         :default-value false}
                            :start-date {:type          :instant
                                         :style         :starting-date
-                                        :default-value (fn [app] (dt/beginning-of-year))
+                                        :default-value (fn [app] #inst "2020-01-01T12:00")
                                         :label         "From"}
                            :end-date   {:type          :instant
                                         :style         :ending-date

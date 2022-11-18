@@ -1,12 +1,12 @@
 (ns com.example.model.authorization
   (:require
-    [com.fulcrologic.fulcro.server.api-middleware :as fmw]
-    [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.attributes :as attr]
     [com.example.components.database-queries :as queries]
+    [com.example.model.timezone :as timezone]
+    [com.fulcrologic.fulcro.server.api-middleware :as fmw]
+    [com.fulcrologic.rad.attributes :as attr]
+    [com.fulcrologic.rad.authorization :as auth]
     [taoensso.encore :as enc]
-    [taoensso.timbre :as log]
-    [com.example.model.timezone :as timezone]))
+    [taoensso.timbre :as log]))
 
 (defn login!
   "Implementation of login. This is database-specific and is not further generalized for the demo."
@@ -14,7 +14,7 @@
   (log/info "Attempt login for" username)
   (enc/if-let [{:account/keys   [name]
                 :time-zone/keys [zone-id]
-                :password/keys  [hashed-value salt iterations]} (queries/get-login-info env username)
+                :password/keys  [hashed-value salt iterations]} (log/spy :info (queries/get-login-info env username))
                current-hashed-value (attr/encrypt password salt iterations)]
     (if (= hashed-value current-hashed-value)
       (do
