@@ -14,6 +14,12 @@
   {ao/identities #{:note/id}
    ao/schema     :production})
 
+(defattr author :note/author :ref
+  {ao/identities  #{:note/id}
+   ao/cardinality :one
+   ao/targets     #{:company/id :person/id}
+   ao/schema      :production})
+
 (defattr parties :note/parties :ref
   {ao/identities       #{:note/id}
    ao/cardinality      :many
@@ -29,4 +35,4 @@
                    #?(:clj
                       {:note/all-notes (queries/get-all-notes env query-params)}))})
 
-(def attributes [id all-notes content parties])
+(def attributes [id author all-notes content parties])

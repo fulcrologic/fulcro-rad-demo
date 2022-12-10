@@ -13,6 +13,7 @@
 
 (defattr classification :company/classification :enum
   {ao/identities        #{:company/id}
+   ao/required?          true
    ao/schema            :production
    ao/enumerated-values #{:company.classification/llc :company.classification/c-corp :company.classification/s-corp :company.classification/non-profit}
    ao/enumerated-labels {:company.classification/llc        "LLC"

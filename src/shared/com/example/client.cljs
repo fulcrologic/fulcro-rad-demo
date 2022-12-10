@@ -15,6 +15,8 @@
     [com.fulcrologic.rad.routing.history :as history]
     [com.fulcrologic.rad.routing.html5-history :as hist5 :refer [new-html5-history]]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
+    [com.fulcrologic.fulcro-i18n.i18n :as i18n]
+    [intl-messageformat :refer [IntlMessageFormat]]
     [taoensso.timbre :as log]
     [taoensso.tufte :as tufte :refer [profile]]))
 
@@ -34,7 +36,15 @@
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no"))))
 
-(defonce app (rad-app/fulcro-rad-app {}))
+;; If you're using i18n, then `trf` will not format messages correctly unless you supply a message formatter. FormatJS
+;; has a decent one.
+(defn message-formatter [{::i18n/keys [localized-format-string locale format-options]}]
+  (let [locale-str (name locale)
+        formatter  (IntlMessageFormat. localized-format-string locale-str)]
+    (.format formatter (clj->js format-options))))
+
+(defonce app (rad-app/fulcro-rad-app {:shared    {::i18n/message-formatter message-formatter}
+                                      :shared-fn ::i18n/current-locale}))
 
 (defn refresh []
   ;; hot code reload of installed controls
@@ -58,10 +68,6 @@
                                                           :default-route {:route ["landing-page"]}}))
   (auth/start! app [LoginForm] {:after-session-check `fix-route})
   (app/mount! app Root "app" {:initialize-state? false}))
-
-(comment
-
-  )
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))
 

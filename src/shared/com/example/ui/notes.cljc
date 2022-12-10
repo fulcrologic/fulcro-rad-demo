@@ -1,33 +1,27 @@
 (ns com.example.ui.notes
   (:require
-    [clojure.string :as str]
-    [taoensso.timbre :as log]
+    #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom]
+       :cljs [com.fulcrologic.fulcro.dom :as dom])
     [com.example.model :as model]
     [com.example.model.company :as company]
     [com.example.model.entity :as entity]
     [com.example.model.person :as person]
     [com.example.model.note :as note]
-    [com.example.model.timezone :as timezone]
-    [com.example.ui.address-forms :refer [AddressForm]]
-    [com.example.ui.file-forms :refer [FileForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [com.fulcrologic.fulcro.mutations :refer [defmutation]]
-    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
-    [com.fulcrologic.rad.semantic-ui-options :as suo]
-    #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
-       :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
-    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
-    [com.fulcrologic.rad.report-options :as ro]
-    [com.fulcrologic.rad.attributes :as attr]))
+    [com.fulcrologic.rad.report-options :as ro]))
 
 (form/defsc-form PersonForm [this props]
   {fo/id           person/id
    fo/attributes   [person/first-name
                     person/last-name
                     entity/email]
+   fo/add-label    (fn [_ add!] (dom/button :.ui.basic.icon.button {:onClick add!}
+                                  (dom/i :.plus.icon)
+                                  "Add Person"))
    fo/route-prefix "person"
    fo/title        "Person"})
 
@@ -38,6 +32,9 @@
    fo/attributes   [company/classification
                     entity/email
                     entity/name]
+   fo/add-label    (fn [_ add!] (dom/button :.ui.basic.icon.button {:onClick add!}
+                                  (dom/i :.plus.icon)
+                                  "Add Company"))
    fo/route-prefix "company"
    fo/title        "Company"})
 
@@ -56,15 +53,21 @@
 
 (form/defsc-form NoteForm [this props]
   {fo/id             note/id
-   fo/attributes     [note/content
+   fo/validator      model/all-attribute-validator
+   fo/attributes     [note/author
+                      note/content
                       note/parties]
    fo/default-values {:account/active?         true
                       :account/primary-address {}
                       :account/addresses       [{}]}
    fo/route-prefix   "note"
    fo/title          "Edit Note"
-   fo/subforms       {:note/parties {fo/ui          PartyUnion
+   fo/subforms       {:note/author  {fo/ui    PartyUnion
+                                     fo/title "Author"}
+                      :note/parties {fo/ui          PartyUnion
                                      fo/can-delete? true
+                                     fo/default-values [(fn [id] {:person/id id})
+                                                        (fn [id] {:company/id id})]
                                      fo/title       "Interested Parties"}}})
 
 (comment
@@ -77,12 +80,15 @@
    ro/source-attribute :note/all-notes
    ro/run-on-mount?    true
    ro/form-links       {:note/content NoteForm}
-   #_#_ro/controls {::new-note {:type   :button
-                                :local? true
-                                :label  "New Note"
-                                :action (fn [this _] (form/create! this AccountForm))}}
+   ro/controls         {:refresh   {:local? true
+                                    :label  "Reload"
+                                    :action (fn [this] (control/run! this))}
+                        ::new-note {:type   :button
+                                    :local? true
+                                    :label  "New Note"
+                                    :action (fn [this _] (form/create! this NoteForm))}}
 
-   ro/control-layout   {:action-buttons [::new-note]}
+   ro/control-layout   {:action-buttons [::new-note :refresh]}
    ro/route            "notes"})
 
 (comment

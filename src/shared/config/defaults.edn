@@ -1,4 +1,4 @@
-{:org.httpkit.server/config                        {:port 3000}
+{:org.httpkit.server/config                        {:port 3001}
 
  :cz.holyjak.rad.database-adapters.asami/databases {:main {:asami/driver :mem #_:local, :asami/database "fulcro-rad-demo"}}
 

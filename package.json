@@ -18,7 +18,7 @@
     "@js-joda/core": "^4.2.1",
     "@js-joda/timezone": "^2.8.0",
     "big.js": "5.2.2",
-    "intl-messageformat": "^9.3.11",
+    "intl-messageformat": "^10.2.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "semantic-ui-react": "^2.0.1",
