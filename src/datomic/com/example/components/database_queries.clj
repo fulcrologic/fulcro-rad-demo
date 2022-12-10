@@ -80,6 +80,15 @@
       (mapv (fn [[id]] {:category/id id}) ids))
     (log/error "No database atom for production schema!")))
 
+(defn get-all-notes
+  [env query-params]
+  (if-let [db (env->db env)]
+    (let [ids (d/q '[:find ?id
+                     :where
+                     [?e :note/id ?id]] db)]
+      (mapv (fn [[id]] {:note/id id}) ids))
+    (log/error "No database atom for production schema!")))
+
 (defn get-line-item-category [env line-item-id]
   (if-let [db (env->db env)]
     (let [id (ffirst

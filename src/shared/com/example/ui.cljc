@@ -13,6 +13,7 @@
     [com.example.ui.sales-report :as sales-report]
     [com.example.ui.dashboard :as dashboard]
     [com.example.ui.master-detail :as mdetail]
+    [com.example.ui.notes :as ui.notes]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom.html-entities :as ent]
@@ -34,6 +35,10 @@
 (defrouter MainRouter [this {:keys [current-state route-factory route-props]}]
   {:always-render-body? true
    :router-targets      [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices
+                         ui.notes/NoteList
+                         ui.notes/NoteForm
+                         ui.notes/CompanyForm
+                         ui.notes/PersonForm
                          sales-report/SalesReport InventoryReport
                          sales-report/RealSalesReport
                          dashboard/Dashboard
@@ -86,7 +91,10 @@
                  (ui-dropdown-menu {}
                    (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this dashboard/Dashboard {}))} "Dashboard")
                    (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this sales-report/RealSalesReport {}))} "Sales Report")
-                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this mdetail/AccountList {}))} "Master Detail"))))))
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this mdetail/AccountList {}))} "Master Detail")))
+               (ui-dropdown {:className "item" :text "Notes"}
+                 (ui-dropdown-menu {}
+                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this ui.notes/NoteList {}))} "All Notes"))))))
 
         (div :.right.menu
           (div :.item

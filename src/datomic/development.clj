@@ -65,7 +65,15 @@
                                (seed/new-invoice "invoice-4" date-4 "Sally"
                                  [(seed/new-line-item "Robot" 6 89.99M)])
                                (seed/new-invoice "invoice-5" date-5 "Barbara"
-                                 [(seed/new-line-item "Building Blocks" 10 20.0M)])]}))))
+                                 [(seed/new-line-item "Building Blocks" 10 20.0M)])
+
+                               (seed/new-person "Sally" "Smith" "sally@example.com")
+                               (seed/new-person "Yorinth" "Yago" "yago@example.com")
+
+                               (seed/new-company "Acme" "acme@example.com" :company.classification/llc)
+                               (seed/new-company "Big Box" "acme@example.com" :company.classification/c-corp)
+
+                               (seed/new-note "Hello world" ["Acme" "Sally" "Yorinth"])]}))))
 
 (defn start []
   (mount/start-with-args {:config "config/dev.edn"})

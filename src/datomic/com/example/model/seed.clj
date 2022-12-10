@@ -76,6 +76,32 @@
      :invoice/date       date}
     extras))
 
+(defn new-company [nm email classification & {:as addl}]
+  (merge
+    {:db/id                  nm
+     :company/id             (new-uuid)
+     :company/classification classification
+     :entity/name            nm
+     :entity/email           email}
+    addl))
+
+(defn new-person [fn ln email & {:as addl}]
+  (merge
+    {:db/id             fn
+     :person/id         (new-uuid)
+     :person/first-name fn
+     :person/last-name  ln
+     :entity/email      email}
+    addl))
+
+(defn new-note [content parties & {:as addl}]
+  (merge
+    (cond-> {:db/id        content
+             :note/id      (new-uuid)
+             :note/content content}
+      (seq parties) (assoc :note/parties parties))
+    addl))
+
 
 (comment
   ;; normal table
