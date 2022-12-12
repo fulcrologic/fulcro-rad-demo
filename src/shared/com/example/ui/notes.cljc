@@ -7,7 +7,7 @@
     [com.example.model.entity :as entity]
     [com.example.model.person :as person]
     [com.example.model.note :as note]
-    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form-options :as fo]
@@ -40,16 +40,7 @@
 
 (def ui-company-form (comp/computed-factory CompanyForm {:keyfn :company/id}))
 
-(defsc PartyUnion [this props cprops]
-  {:ident (fn []
-            (cond
-              (:person/id props) [:person/id (:person/id props)]
-              (:company/id props) [:company/id (:company/id props)]))
-   :query (fn [] {:person/id  (comp/get-query PersonForm)
-                  :company/id (comp/get-query CompanyForm)})}
-  (cond
-    (:person/id props) (ui-person-form props cprops)
-    (:company/id props) (ui-company-form props cprops)))
+(form/defunion PartyUnion PersonForm CompanyForm)
 
 (form/defsc-form NoteForm [this props]
   {fo/id             note/id
@@ -64,11 +55,11 @@
    fo/title          "Edit Note"
    fo/subforms       {:note/author  {fo/ui    PartyUnion
                                      fo/title "Author"}
-                      :note/parties {fo/ui          PartyUnion
-                                     fo/can-delete? true
+                      :note/parties {fo/ui             PartyUnion
+                                     fo/can-delete?    true
                                      fo/default-values [(fn [id] {:person/id id})
                                                         (fn [id] {:company/id id})]
-                                     fo/title       "Interested Parties"}}})
+                                     fo/title          "Interested Parties"}}})
 
 (comment
   (comp/get-ident CompanyForm {:company/id 2}))
