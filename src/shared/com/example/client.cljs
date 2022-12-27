@@ -3,10 +3,13 @@
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
+    [com.fulcrologic.fulcro.algorithms.tx-processing.synchronous-tx-processing :as sync]
+    [com.fulcrologic.fulcro.algorithms.tx-processing.batched-processing :as btxn]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.mutations :as m]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
+    [com.fulcrologic.fulcro.react.version18 :refer [with-react18]]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
@@ -34,14 +37,17 @@
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no"))))
 
-(defonce app (rad-app/fulcro-rad-app {}))
+(defonce app (-> (rad-app/fulcro-rad-app {})
+               (with-react18)
+               (btxn/with-batched-reads)
+               #_(sync/with-synchronous-transactions #{:remote})))
 
 (defn refresh []
   ;; hot code reload of installed controls
   (log/info "Reinstalling controls")
   (setup-RAD app)
   (comp/refresh-dynamic-queries! app)
-  (app/mount! app Root "app"))
+  (app/force-root-render! app))
 
 (defn init []
   (log/merge-config! {:output-fn prefix-output-fn
@@ -58,10 +64,6 @@
                                                           :default-route {:route ["landing-page"]}}))
   (auth/start! app [LoginForm] {:after-session-check `fix-route})
   (app/mount! app Root "app" {:initialize-state? false}))
-
-(comment
-
-  )
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))
 

@@ -1,15 +1,16 @@
 (ns com.example.ui.invoice-forms
   (:require
+    [clojure.string :as str]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.rad.picker-options :as picker-options]
+    [com.fulcrologic.rad.picker-options :as po]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.example.model :as model]
     [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
-    [com.example.ui.account-forms :refer [AccountForm]]
+    [com.example.ui.account-forms :refer [BriefAccountForm AccountForm]]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.routing :as rroute]
@@ -30,11 +31,11 @@
 
 (defn sum-subtotals* [{:invoice/keys [line-items] :as invoice}]
   (assoc invoice :invoice/total
-                 (reduce
-                   (fn [t {:line-item/keys [subtotal]}]
-                     (math/+ t subtotal))
-                   (math/zero)
-                   line-items)))
+    (reduce
+      (fn [t {:line-item/keys [subtotal]}]
+        (math/+ t subtotal))
+      (math/zero)
+      line-items)))
 
 (form/defsc-form InvoiceForm [this props]
   {fo/id             invoice/id
@@ -47,13 +48,25 @@
                       [:invoice/line-items]
                       [:invoice/total]]
    fo/field-styles   {:invoice/customer :pick-one}
-   fo/field-options  {:invoice/customer {::picker-options/query-key       :account/all-accounts
-                                         ::picker-options/query-component AccountQuery
-                                         ::picker-options/options-xform   (fn [_ options] (mapv
-                                                                                            (fn [{:account/keys [id name email]}]
-                                                                                              {:text (str name ", " email) :value [:account/id id]})
-                                                                                            (sort-by :account/name options)))
-                                         ::picker-options/cache-time-ms   30000}}
+   fo/field-options  {:invoice/customer {po/form            BriefAccountForm
+                                         fo/title           (fn [i {:account/keys [id]}]
+                                                              (if (tempid/tempid? id)
+                                                                "New Account"
+                                                                "Edit Account"))
+                                         po/quick-create    (fn [v] {:account/id        (tempid/tempid)
+                                                                     :account/email     (str/lower-case (str v "@example.com"))
+                                                                     :time-zone/zone-id :time-zone.zone-id/America-Los_Angeles
+                                                                     :account/active?   true
+                                                                     :account/name      v})
+                                         po/allow-create?   true
+                                         po/allow-edit?     true
+                                         po/query-key       :account/all-accounts
+                                         po/query-component AccountQuery
+                                         po/options-xform   (fn [_ options] (mapv
+                                                                              (fn [{:account/keys [id name email]}]
+                                                                                {:text (str name ", " email) :value [:account/id id]})
+                                                                              (sort-by :account/name options)))
+                                         po/cache-time-ms   30000}}
    fo/subforms       {:invoice/line-items {fo/ui          LineItemForm
                                            fo/can-delete? (fn [_ _] true)
                                            fo/can-add?    (fn [_ _] true)}}
@@ -111,6 +124,3 @@
 
    ro/run-on-mount?       true
    ro/route               "invoices"})
-
-(comment
-  (comp/get-query InvoiceList-Row))

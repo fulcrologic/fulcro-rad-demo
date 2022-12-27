@@ -5,30 +5,62 @@
                [com.fulcrologic.semantic-ui.modules.dropdown.ui-dropdown-item :refer [ui-dropdown-item]]])
     #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
-    [com.example.ui.account-forms :refer [AccountForm AccountList]]
+    [com.example.ui.account-forms :refer [AccountForm BriefAccountForm AccountList]]
+    [com.example.ui.dashboard :as dashboard]
     [com.example.ui.invoice-forms :refer [InvoiceForm InvoiceList AccountInvoices]]
     [com.example.ui.item-forms :refer [ItemForm InventoryReport]]
-    [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.example.ui.login-dialog :refer [LoginForm]]
-    [com.example.ui.sales-report :as sales-report]
-    [com.example.ui.dashboard :as dashboard]
     [com.example.ui.master-detail :as mdetail]
+    [com.example.ui.sales-report :as sales-report]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom.html-entities :as ent]
+    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
     [com.fulcrologic.rad.routing :as rroute]
-    [taoensso.timbre :as log]))
+    ;[com.fulcrologic.rad.rad-hooks :as r.hooks]
+    [taoensso.timbre :as log]
+    #_[com.fulcrologic.rad.rendering.semantic-ui.modals :refer [ui-form-modal]]))
 
-(defsc LandingPage [this props]
-  {:query         ['*]
+(comment
+  (defmutation saved [{:keys [ident]}]
+    (action [{:keys [state]}]
+      (swap! state update-in [:component/id ::LandingPage] assoc
+        :ui/selected-account ident
+        :ui/open? false
+        :ui/edit-id nil)))
+
+  (defmutation cancel [_]
+    (action [{:keys [state]}]
+      (swap! state update-in [:component/id ::LandingPage] assoc
+        :ui/open? false))))
+
+(defsc LandingPage [this {:ui/keys [open? selected-account edit-id] :as props}]
+  {:query         [:ui/open? :ui/selected-account :ui/edit-id]
    :ident         (fn [] [:component/id ::LandingPage])
    :initial-state {}
-   :route-segment ["landing-page"]}
-  (dom/div "Welcome to the Demo. Please log in."))
+   :route-segment ["landing-page"]
+   :use-hooks? true}
+  #_(let [{:keys [report-props report-factory]} (r.hooks/use-report this AccountList)]
+    (div
+      (report-factory report-props)))
+  (dom/div "Welcome")
+  #_(comp/fragment {}
+      (when open? (ui-form-modal {:Form            AccountForm
+                                  :save-mutation   saved
+                                  :cancel-mutation cancel
+                                  :id              edit-id}))
+      (dom/div (str selected-account))
+      (dom/button {:disabled (not selected-account)
+                   :onClick  (fn []
+                               (comp/transact! this [(m/set-props {:ui/edit-id (second selected-account)
+                                                                   :ui/open?   true})]))} "Edit")
+      (dom/button {:onClick (fn []
+                              (comp/transact! this [(m/set-props {:ui/edit-id nil
+                                                                  :ui/open?   true})]))} "Open")))
 
 ;; This will just be a normal router...but there can be many of them.
 (defrouter MainRouter [this {:keys [current-state route-factory route-props]}]
