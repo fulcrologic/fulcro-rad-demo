@@ -1,5 +1,6 @@
 (ns com.example.client
   (:require
+    ["react-dom/client" :as dom-client]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
@@ -34,14 +35,19 @@
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no"))))
 
-(defonce app (rad-app/fulcro-rad-app {}))
+(defonce reactRoot (volatile! nil))
+
+(defonce app (rad-app/fulcro-rad-app {:render-root! (fn [ui-root mount-node]
+                                                      (when-not @reactRoot
+                                                        (vreset! reactRoot (dom-client/createRoot mount-node)))
+                                                      (.render @reactRoot ui-root))}))
 
 (defn refresh []
   ;; hot code reload of installed controls
   (log/info "Reinstalling controls")
   (setup-RAD app)
   (comp/refresh-dynamic-queries! app)
-  (app/mount! app Root "app"))
+  (app/force-root-render! app))
 
 (defn init []
   (log/merge-config! {:output-fn prefix-output-fn
@@ -58,10 +64,6 @@
                                                           :default-route {:route ["landing-page"]}}))
   (auth/start! app [LoginForm] {:after-session-check `fix-route})
   (app/mount! app Root "app" {:initialize-state? false}))
-
-(comment
-
-  )
 
 (defonce performance-stats (tufte/add-accumulating-handler! {}))
 
