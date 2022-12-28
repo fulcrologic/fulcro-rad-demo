@@ -1,6 +1,6 @@
 (ns com.example.client
   (:require
-    ["react-dom/client" :as dom-client]
+;    ["react-dom/client" :as dom-client]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
@@ -37,7 +37,7 @@
 
 (defonce reactRoot (volatile! nil))
 
-(defonce app (rad-app/fulcro-rad-app {:render-root! (fn [ui-root mount-node]
+(defonce app (rad-app/fulcro-rad-app {#_#_:render-root! (fn [ui-root mount-node]
                                                       (when-not @reactRoot
                                                         (vreset! reactRoot (dom-client/createRoot mount-node)))
                                                       (.render @reactRoot ui-root))}))

@@ -9,7 +9,7 @@
     [com.example.model.invoice :as invoice]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
-    [com.example.ui.account-forms :refer [AccountForm]]
+    [com.example.ui.account-forms :refer [BriefAccountForm AccountForm]]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.routing :as rroute]
@@ -47,7 +47,13 @@
                       [:invoice/line-items]
                       [:invoice/total]]
    fo/field-styles   {:invoice/customer :pick-one}
-   fo/field-options  {:invoice/customer {po/creation-form   AccountForm
+   fo/field-options  {:invoice/customer {po/form            BriefAccountForm
+                                         fo/title           (fn [i {:account/keys [id]}]
+                                                              (if (tempid/tempid? id)
+                                                                "New Account"
+                                                                "Edit Account"))
+                                         po/allow-create?   true
+                                         po/allow-edit?     true
                                          po/query-key       :account/all-accounts
                                          po/query-component AccountQuery
                                          po/options-xform   (fn [_ options] (mapv
