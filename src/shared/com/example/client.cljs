@@ -1,6 +1,5 @@
 (ns com.example.client
   (:require
-;    ["react-dom/client" :as dom-client]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
@@ -8,6 +7,7 @@
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.mutations :as m]
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
+    [com.fulcrologic.fulcro.react.version18 :refer [with-react18]]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
@@ -35,12 +35,7 @@
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no"))))
 
-(defonce reactRoot (volatile! nil))
-
-(defonce app (rad-app/fulcro-rad-app {#_#_:render-root! (fn [ui-root mount-node]
-                                                      (when-not @reactRoot
-                                                        (vreset! reactRoot (dom-client/createRoot mount-node)))
-                                                      (.render @reactRoot ui-root))}))
+(defonce app (with-react18 (rad-app/fulcro-rad-app {})))
 
 (defn refresh []
   ;; hot code reload of installed controls
