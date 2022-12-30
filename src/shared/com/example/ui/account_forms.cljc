@@ -20,7 +20,7 @@
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.attributes :as attr]))
 
-(def account-validator
+#_(def account-validator
   "Here's how to make a validator, possibly to override a validation defined on the attributes.
    Usually `ao/valid?` with an `attr/make-attribute-validator` is sufficient. "
   (fs/make-validator (fn [form field]
@@ -55,8 +55,8 @@
    fo/default-values      {:account/active?         true
                            :account/primary-address {}
                            :account/addresses       [{}]}
-   fo/validator           account-validator
-   fo/validation-messages {:account/email "You must use your UPPER case first name as your email address name."}
+   ;fo/validator           account-validator
+   ;fo/validation-messages {:account/email "You must use your UPPER case first name as your email address name."}
    fo/route-prefix        "account"
    fo/title               "Edit Account"
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here

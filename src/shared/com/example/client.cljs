@@ -3,6 +3,8 @@
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
+    [com.fulcrologic.fulcro.algorithms.tx-processing.synchronous-tx-processing :as sync]
+    [com.fulcrologic.fulcro.algorithms.tx-processing.batched-processing :as btxn]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.mutations :as m]
@@ -35,7 +37,10 @@
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no"))))
 
-(defonce app (with-react18 (rad-app/fulcro-rad-app {})))
+(defonce app (-> (rad-app/fulcro-rad-app {})
+               (with-react18)
+               (btxn/with-batched-reads)
+               #_(sync/with-synchronous-transactions #{:remote})))
 
 (defn refresh []
   ;; hot code reload of installed controls
