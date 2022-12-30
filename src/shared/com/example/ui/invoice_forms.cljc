@@ -52,6 +52,9 @@
                                                               (if (tempid/tempid? id)
                                                                 "New Account"
                                                                 "Edit Account"))
+                                         po/quick-create    (fn [v] {:account/id (tempid/tempid)
+                                                                     :account/active? true
+                                                                     :account/name v})
                                          po/allow-create?   true
                                          po/allow-edit?     true
                                          po/query-key       :account/all-accounts
