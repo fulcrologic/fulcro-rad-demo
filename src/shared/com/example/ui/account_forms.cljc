@@ -44,7 +44,7 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 (form/defsc-form AccountForm [this props]
   {fo/id                  account/id
-   fo/debug? true
+   ; fo/debug? true
    ;   ::form/read-only?          true
    fo/attributes          [;account/avatar
                            account/name

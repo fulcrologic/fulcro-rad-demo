@@ -25,6 +25,6 @@
     "victory": "^34.3.6"
   },
   "devDependencies": {
-    "shadow-cljs": "2.15.12"
+    "shadow-cljs": "2.20.16"
   }
 }
