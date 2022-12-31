@@ -12,21 +12,16 @@
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.example.ui.master-detail :as mdetail]
     [com.example.ui.sales-report :as sales-report]
-    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom.html-entities :as ent]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
-    [com.fulcrologic.fulcro.react.hooks :as hooks]
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.ids :refer [new-uuid]]
-    [com.fulcrologic.rad.rad-hooks :as rad-hooks]
     [com.fulcrologic.rad.routing :as rroute]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal :refer [ui-modal]]
-    [com.fulcrologic.semantic-ui.modules.modal.ui-modal-content :refer [ui-modal-content]]
-    [taoensso.timbre :as log]))
+    [com.fulcrologic.rad.rendering.semantic-ui.modals :refer [ui-form-modal]]))
 
 (comment
   (defmutation saved [{:keys [ident]}]
@@ -39,21 +34,7 @@
   (defmutation cancel [_]
     (action [{:keys [state]}]
       (swap! state update-in [:component/id ::LandingPage] assoc
-        :ui/open? false)))
-
-  (defsc FormModal [this {:keys [open? id]}]
-    {:use-hooks? true}
-    (ui-modal {:open open?}
-      (ui-modal-content {}
-        (let [[generated-id] (hooks/use-state (or id (tempid/tempid)))
-              {:keys [form-factory
-                      form-props
-                      form-state]} (rad-hooks/use-form this AccountForm generated-id saved cancel)]
-          (dom/div
-            (div (str form-state))
-            (form-factory form-props))))))
-
-  (def ui-form-modal (comp/factory FormModal)))
+        :ui/open? false))))
 
 (defsc LandingPage [this {:ui/keys [open? selected-account edit-id] :as props}]
   {:query         [:ui/open? :ui/selected-account :ui/edit-id]
@@ -62,16 +43,18 @@
    :route-segment ["landing-page"]}
   (dom/div "Welcome")
   #_(comp/fragment {}
-    (when open? (ui-form-modal {:open? open?
-                                :id    edit-id}))
-    (dom/div (str selected-account))
-    (dom/button {:disabled (not selected-account)
-                 :onClick  (fn []
-                             (comp/transact! this [(m/set-props {:ui/edit-id (second selected-account)
-                                                                 :ui/open?   true})]))} "Edit")
-    (dom/button {:onClick (fn []
-                            (comp/transact! this [(m/set-props {:ui/edit-id nil
-                                                                :ui/open?   true})]))} "Open")))
+      (when open? (ui-form-modal {:Form            AccountForm
+                                  :save-mutation   saved
+                                  :cancel-mutation cancel
+                                  :id              edit-id}))
+      (dom/div (str selected-account))
+      (dom/button {:disabled (not selected-account)
+                   :onClick  (fn []
+                               (comp/transact! this [(m/set-props {:ui/edit-id (second selected-account)
+                                                                   :ui/open?   true})]))} "Edit")
+      (dom/button {:onClick (fn []
+                              (comp/transact! this [(m/set-props {:ui/edit-id nil
+                                                                  :ui/open?   true})]))} "Open")))
 
 ;; This will just be a normal router...but there can be many of them.
 (defrouter MainRouter [this {:keys [current-state route-factory route-props]}]
