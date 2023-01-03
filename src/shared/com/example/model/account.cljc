@@ -9,7 +9,7 @@
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [clojure.string :as str]
     [com.example.model.timezone :as timezone]
-    [com.wsscode.pathom.connect :as pc]
+    [com.wsscode.pathom.connect :as pc] ; make reader happy about ::pc/ keywords
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
@@ -125,6 +125,17 @@
    ao/identities  #{:account/id}
    ao/schema      :production})
 
+(defattr tags :account/tags :ref
+  {ao/target      :tag/id
+   ao/cardinality :many
+   ao/identities  #{:account/id}
+   ao/schema      :production})
+(defattr tag-id :tag/id :uuid, {ao/identity?   true, ao/schema      :production})
+(defattr tag-label :tag/label :string, {ao/identities  #{:tag/id}, ao/schema      :production})
+#?(:clj (pc/defresolver all-tags [env query-params]
+          {::pc/output [{:all-tags [:tag/id :tag/label]}]}
+          {:all-tags (queries/get-all-tags env query-params)}))
+
 (defattr addresses :account/addresses :ref
   {ao/target                                                       :address/id
    ao/cardinality                                                  :many
@@ -218,7 +229,8 @@
      (remote [_] true)))
 
 (def attributes [id name primary-address role email password password-iterations password-salt active?
-                 addresses all-accounts avatar files account-invoices])
+                 addresses all-accounts avatar files account-invoices
+                 tags tag-id tag-label])
 
 #?(:clj
-   (def resolvers [login logout check-session set-account-active]))
+   (def resolvers [login logout check-session set-account-active all-tags]))
