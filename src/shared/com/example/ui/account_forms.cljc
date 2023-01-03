@@ -1,6 +1,8 @@
 (ns com.example.ui.account-forms
   (:require
     [clojure.string :as str]
+    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
+    [com.fulcrologic.rad.picker-options :as po]
     [taoensso.timbre :as log]
     [com.example.model :as model]
     [com.example.model.account :as account]
@@ -8,6 +10,7 @@
     [com.example.ui.address-forms :refer [AddressForm]]
     [com.example.ui.file-forms :refer [FileForm]]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.raw.components :as rc]
     [com.fulcrologic.fulcro.mutations :refer [defmutation]]
     [com.fulcrologic.fulcro.algorithms.form-state :as fs]
     [com.fulcrologic.rad.semantic-ui-options :as suo]
@@ -42,42 +45,61 @@
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
 ;; another form entity to stand in for it so that its ident is represented.  This allows us to use proper normalized
 ;; data in forms when "mixing" server side "entities/tables/documents".
+
+(form/defsc-form TagForm [this props]
+  {fo/id account/tag-id
+   fo/attributes [account/tag-label]})
+
 (form/defsc-form AccountForm [this props]
   {fo/id                  account/id
    ; fo/debug? true
    ;   ::form/read-only?          true
-   fo/attributes          [;account/avatar
-                           account/name
-                           account/primary-address
-                           account/role timezone/zone-id account/email
-                           account/active? account/addresses
-                           account/files]
-   fo/default-values      {:account/active?         true
-                           :account/primary-address {}
-                           :account/addresses       [{}]}
+   fo/attributes     [;account/avatar
+                      account/name
+                      account/primary-address
+                      account/role timezone/zone-id account/email
+                      account/active? account/addresses
+                      account/files
+                      account/tags]
+   fo/default-values {:account/active?         true
+                      :account/primary-address {}
+                      :account/addresses       [{}]}
    ;fo/validator           account-validator
    ;fo/validation-messages {:account/email "You must use your UPPER case first name as your email address name."}
-   fo/route-prefix        "account"
-   fo/title               "Edit Account"
+   fo/route-prefix   "account"
+   fo/title          "Edit Account"
    ;; NOTE: any form can be used as a subform, but when you do so you must add addl config here
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
-   fo/subforms            {:account/primary-address {fo/ui                      AddressForm
-                                                     fo/title                   "Primary Address"
-                                                     ::form/autocreate-on-load? true}
-                           :account/files           {fo/ui                    FileForm
-                                                     fo/title                 "Files"
-                                                     fo/can-delete?           (fn [_ _] true)
-                                                     fo/layout-styles         {:ref-container :file}
-                                                     ::form/added-via-upload? true}
-                           :account/addresses       {fo/ui            AddressForm
-                                                     fo/title         "Additional Addresses"
-                                                     fo/sort-children (fn [addresses] (sort-by :address/zip addresses))
-                                                     fo/can-delete?   (fn [parent _] (< 1 (count (:account/addresses (comp/props parent)))))
-                                                     fo/can-add?      (fn [parent _]
-                                                                        (and
-                                                                          (< (count (:account/addresses (comp/props parent))) 4)
-                                                                          :prepend))}}})
+   fo/field-styles   {:account/tags :pick-many}
+   fo/field-options  {:account/tags {:style :dropdown
+                                     fo/title           "Add tag"
+                                     po/form            TagForm
+                                     po/quick-create    (fn [v] {:tag/id    (tempid/tempid)
+                                                                 :tag/label v})
+                                     po/query-key       :all-tags
+                                     po/query-component (rc/nc [:tag/id :tag/label])
+                                     po/options-xform   (fn [_ options] (mapv
+                                                                          (fn [{:tag/keys [id label]}]
+                                                                            {:text label :value [:tag/id id]})
+                                                                          (sort-by :tag/label options)))
+                                     po/cache-time-ms   30000}}
+   fo/subforms       {:account/primary-address {fo/ui                      AddressForm
+                                                fo/title                   "Primary Address"
+                                                ::form/autocreate-on-load? true}
+                      :account/files           {fo/ui                    FileForm
+                                                fo/title                 "Files"
+                                                fo/can-delete?           (fn [_ _] true)
+                                                fo/layout-styles         {:ref-container :file}
+                                                ::form/added-via-upload? true}
+                      :account/addresses       {fo/ui            AddressForm
+                                                fo/title         "Additional Addresses"
+                                                fo/sort-children (fn [addresses] (sort-by :address/zip addresses))
+                                                fo/can-delete?   (fn [parent _] (< 1 (count (:account/addresses (comp/props parent)))))
+                                                fo/can-add?      (fn [parent _]
+                                                                   (and
+                                                                     (< (count (:account/addresses (comp/props parent))) 4)
+                                                                     :prepend))}}})
 
 (form/defsc-form BriefAccountForm [this props]
   {fo/id             account/id
