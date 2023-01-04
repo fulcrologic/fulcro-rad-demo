@@ -29,7 +29,9 @@
 (defn delete-db!
   "Delete the DB. BEWARE: This invalidates `com.example.components.asami/asami-connections` and thus requires a restart."
   []
-  (d/delete-database (asami.conn/config->url (-> com.example.components.config/config ::asami/databases :main))))
+  (d/delete-database (asami.conn/config->url (-> com.example.components.config/config ::asami/databases :main)))
+  ;; As of Asami 2.3.2 the connections atom is not cleared when a DB is closed/deleted => do it manually
+  (reset! d/connections nil))
 
 (defn- add-asami-id [entity]
   (let [[id-prop & more] (->> (keys entity) (filter #(and (= "id" (name %)) (namespace %))))

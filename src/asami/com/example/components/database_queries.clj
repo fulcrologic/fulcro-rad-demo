@@ -19,6 +19,12 @@
       (mapv (fn [id] {:account/id id}) ids))
     (log/error "No database atom for production schema!")))
 
+(defn get-all-tags
+  [env _]
+  (let [db (doto (some-> (get-in env [::asami/databases :production]) deref) assert)
+        ids (d/q '[:find ?uuid :where [?dbid :tag/id ?uuid]] db)]
+       (mapv (fn [[id]] {:tag/id id}) ids)))
+
 (defn get-all-items
   [env {:category/keys [id]}]
   (if-let [db (some-> (get-in env [::asami/databases :production]) deref)]

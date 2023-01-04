@@ -40,6 +40,10 @@
     (jdbc/execute! (get-jdbc-datasource) [stmt]))
 
   (sql/query (get-jdbc-datasource) ["show tables"])
+  (sql/query (get-jdbc-datasource) ["show columns from item"])
+  (sql/query (get-jdbc-datasource) ["select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS"])
+  (sql/query (get-jdbc-datasource) ["select i.*, ic.COLUMN_NAME from INFORMATION_SCHEMA.INDEXES i JOIN INFORMATION_SCHEMA.INDEX_COLUMNS ic on i.INDEX_NAME=ic.INDEX_NAME where i.table_name='item'"])
+  (jdbc/execute! (get-jdbc-datasource) ["CREATE SEQUENCE account_id_seq;"])
   (jdbc/execute! (get-jdbc-datasource) ["CREATE SEQUENCE account_id_seq;"])
   (jdbc/execute! (get-jdbc-datasource) ["SELECT NEXTVAL('account_id_seq') AS id"])
   (sql/query (get-jdbc-datasource) ["show columns from address"])

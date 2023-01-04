@@ -18,6 +18,13 @@
          (mapv (fn [[id]] {:account/id id})))
     (log/error "No database atom for production schema!")))
 
+(defn get-all-tags
+      [env _]
+      (let [db (doto @(get-in env [xo/databases :production]) assert)
+            ids (xt/q db '{:find [?uuid]
+                           :where [[_ :tag/id ?uuid]]})]
+           (mapv (fn [[id]] {:tag/id id}) ids)))
+
 (defn get-all-items
   [env {:category/keys [id]}]
   (if-let [db (some-> (get-in env [xo/databases :production]) deref)]
