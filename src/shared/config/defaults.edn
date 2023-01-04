@@ -42,7 +42,7 @@
          :hikaricp/config          {"dataSourceClassName" "org.h2.jdbcx.JdbcDataSource"
                                     "dataSource.user"     "sa"
                                     "dataSource.password" "sa"
-                                    "dataSource.URL"      "jdbc:h2:mem:dev-db"}
+                                    "dataSource.URL"      "jdbc:h2:mem:dev-db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"}
          :sql/vendor               :h2
          :sql/auto-create-missing? true
          :sql/schema               :production}}

@@ -15,6 +15,13 @@
         rows           (mapv #(hash-map :account/id (:id %)) (jdbc/query data-source [sql] {:builder-fn query/row-builder}))]
     rows))
 
+(defn get-all-tags
+  [env _]
+  (let [data-source  (get-in env [::sql/connection-pools :production])
+        query-params ["SELECT id FROM tag"]
+        rows         (mapv #(hash-map :tag/id (:id %)) (jdbc/query data-source query-params {:builder-fn query/row-builder}))]
+       rows))
+
 (defn get-all-items
   [env {:category/keys [id]}]
   (let [data-source  (get-in env [::sql/connection-pools :production])
