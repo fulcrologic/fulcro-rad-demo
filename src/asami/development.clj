@@ -110,6 +110,8 @@
   []
   (mount/stop))
 
+(defn cli-start "Start & seed the app from the CLI using `clojure -X ..`" [_] (start))
+
 (def go start)
 
 (defn restart

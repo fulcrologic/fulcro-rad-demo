@@ -1,0 +1,4 @@
+{:paths ["." "smoke-test.bb"]
+ :tasks {compile-cljs (shell "npx shadow-cljs compile main")
+         smoke-test {:doc "Start the app, run smoke test"
+                     :task (load-file "./smoke-test.bb")}}}

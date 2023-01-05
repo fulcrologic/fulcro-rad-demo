@@ -1,0 +1,55 @@
+name: smoke-test
+
+on:
+   - pull_request
+   #- push # for testing only
+
+permissions: read-all
+
+jobs:
+   smoke-test:
+     name: App smoke test
+     runs-on: ubuntu-latest
+     strategy:
+       matrix:
+        # NOTE: if sql is removed then update the `if` condition of 'Verify ClojureScript compiles'
+        db_deps_alias: [sql, asami, xtdb] # datomic TODO add after we solve access to dev-local datomic .jar
+     steps:
+
+      - name: Cache All The Things
+        uses: actions/cache@v2
+        with:
+          # TODO /opt/hostedtoolcache or ${{ RUNNER_TOOL_CACHE }} ? bb is downloaded here <> reset cache on version change
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure
+            ~/.cpcache
+            /opt/hostedtoolcache
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/deps.edn','**/yarn.lock') }}
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 11
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@10.1
+        with:
+          cli: '1.11.1.1208'
+      # TODO Find out how to cache bb; see https://github.com/turtlequeue/setup-babashka/issues/15
+      - name: Setup Babashka
+        uses: turtlequeue/setup-babashka@v1.5.0
+        with:
+           babashka-version: 1.0.169
+
+      - uses: actions/checkout@v2
+      - uses: bahmutov/npm-install@v1
+      - name: Babashka version
+        run: bb --version
+      - name: Verify ClojureScript compiles
+        if: matrix.db_deps_alias == 'sql' # so that we only run this once
+        run: bb compile-cljs
+      - name: Run the actual smoke test
+        env:
+          DB_DEPS_ALIAS: ${{ matrix.db_deps_alias }}
+        run: bb run --prn smoke-test
