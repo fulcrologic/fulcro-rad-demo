@@ -29,6 +29,12 @@
   (doto (System/getenv "DB_DEPS_ALIAS")
     (assert "Missing env var DB_DEPS_ALIAS")))
 
+;; I cannot get in extra config via the user deps.edn file in GH for reasons I
+;; do not understand so let's set it inline
+(def extra-clj-args
+  (when (= db-deps-alias "datomic")
+    "-Sdeps '{:mvn/repos {\"cognitect-dev-tools\" {:url \"https://dev-tools.cognitect.com/maven/releases/\"}}}'"))
+
 (println "Starting the server for" db-deps-alias "...")
 (def server-process (p/process {:shutdown p/destroy-tree
                                 ;; TODO It seems the exit-fn is never called?!
@@ -40,7 +46,7 @@
                                                (println "Server failed with code" exit
                                                         (slurp out) "\n" (slurp err))
                                                (System/exit exit))))} 
-                               (format "clojure -X:%s:dev development/cli-start" db-deps-alias)))
+                               (format "clojure %s -X:%s:dev development/cli-start" extra-clj-args db-deps-alias)))
 
 (def success? (atom false))
 

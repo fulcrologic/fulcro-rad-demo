@@ -12,14 +12,14 @@ jobs:
      runs-on: ubuntu-latest
      strategy:
        matrix:
-        # NOTE: if sql is removed then update the `if` condition of 'Verify ClojureScript compiles'
-        db_deps_alias: [sql, asami, xtdb] # datomic TODO add after we solve access to dev-local datomic .jar
+        db_deps_alias: [asami, datomic, sql, xtdb]
      steps:
 
       - name: Cache All The Things
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           # TODO /opt/hostedtoolcache or ${{ RUNNER_TOOL_CACHE }} ? bb is downloaded here <> reset cache on version change
+          # And find out how to cache bb better; see https://github.com/turtlequeue/setup-babashka/issues/15
           path: |
             ~/.m2/repository
             ~/.gitlibs
@@ -36,12 +36,22 @@ jobs:
         uses: DeLaGuardo/setup-clojure@10.1
         with:
           cli: '1.11.1.1208'
-      # TODO Find out how to cache bb; see https://github.com/turtlequeue/setup-babashka/issues/15
       - name: Setup Babashka
         uses: turtlequeue/setup-babashka@v1.5.0
         with:
            babashka-version: 1.0.169
 
+      - name: "Create clojure config files"
+        if: matrix.db_deps_alias == 'datomic' # only needed for datomic dev-local dep
+        run: |
+          echo "XDG_CONFIG_HOME=$XDG_CONFIG_HOME, CLJ_CONFIG=$CLJ_CONFIG"
+          test -d ~/.m2 || mkdir ~/.m2
+          echo ${{ secrets.SECRET_BASE64_SETTINGS_XML }} | base64 --decode > ~/.m2/settings.xml          
+          #NOTE: Adding the repo to user deps.edn should suffice but somehow doesn't work in GA action :'(
+          #export USER_DEPS=$(bb -e '(-> (shell/sh "clojure" "-Sdescribe") :out edn/read-string :config-user)')
+          #export USER_DEPS_DIR=$(dirname $USER_DEPS)
+          #test -d "$USER_DEPS_DIR" || mkdir -p "$USER_DEPS_DIR"
+          #echo '{:mvn/repos {"cognitect-dev-tools" {:url "https://dev-tools.cognitect.com/maven/releases/"}}}' > $USER_DEPS
       - uses: actions/checkout@v2
       - uses: bahmutov/npm-install@v1
       - name: Babashka version
