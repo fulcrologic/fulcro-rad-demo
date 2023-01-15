@@ -46,7 +46,8 @@
                                                (println "Server failed with code" exit
                                                         (slurp out) "\n" (slurp err))
                                                (System/exit exit))))} 
-                               (format "clojure %s -X:%s:dev development/cli-start" extra-clj-args db-deps-alias)))
+                               (doto (format "env JAVA_OPTS='-Dclojure.main.report=stderr' clojure %s -X:%s:dev development/cli-start" (or extra-clj-args "") db-deps-alias)
+                                 println)))
 
 (def success? (atom false))
 
