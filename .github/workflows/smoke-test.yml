@@ -1,0 +1,65 @@
+name: smoke-test
+
+on:
+   - pull_request
+   #- push # for testing only
+
+permissions: read-all
+
+jobs:
+   smoke-test:
+     name: App smoke test
+     runs-on: ubuntu-latest
+     strategy:
+       matrix:
+        db_deps_alias: [asami, datomic, sql, xtdb]
+     steps:
+
+      - name: Cache All The Things
+        uses: actions/cache@v3
+        with:
+          # TODO /opt/hostedtoolcache or ${{ RUNNER_TOOL_CACHE }} ? bb is downloaded here <> reset cache on version change
+          # And find out how to cache bb better; see https://github.com/turtlequeue/setup-babashka/issues/15
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure
+            ~/.cpcache
+            /opt/hostedtoolcache
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/deps.edn','**/yarn.lock') }}
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 11
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@10.1
+        with:
+          cli: '1.11.1.1208'
+      - name: Setup Babashka
+        uses: turtlequeue/setup-babashka@v1.5.0
+        with:
+           babashka-version: 1.0.169
+
+      - name: "Create clojure config files"
+        if: matrix.db_deps_alias == 'datomic' # only needed for datomic dev-local dep
+        run: |
+          echo "XDG_CONFIG_HOME=$XDG_CONFIG_HOME, CLJ_CONFIG=$CLJ_CONFIG"
+          test -d ~/.m2 || mkdir ~/.m2
+          echo ${{ secrets.SECRET_BASE64_SETTINGS_XML }} | base64 --decode > ~/.m2/settings.xml          
+          #NOTE: Adding the repo to user deps.edn should suffice but somehow doesn't work in GA action :'(
+          #export USER_DEPS=$(bb -e '(-> (shell/sh "clojure" "-Sdescribe") :out edn/read-string :config-user)')
+          #export USER_DEPS_DIR=$(dirname $USER_DEPS)
+          #test -d "$USER_DEPS_DIR" || mkdir -p "$USER_DEPS_DIR"
+          #echo '{:mvn/repos {"cognitect-dev-tools" {:url "https://dev-tools.cognitect.com/maven/releases/"}}}' > $USER_DEPS
+      - uses: actions/checkout@v2
+      - uses: bahmutov/npm-install@v1
+      - name: Babashka version
+        run: bb --version
+      - name: Verify ClojureScript compiles
+        if: matrix.db_deps_alias == 'sql' # so that we only run this once
+        run: bb compile-cljs
+      - name: Run the actual smoke test
+        env:
+          DB_DEPS_ALIAS: ${{ matrix.db_deps_alias }}
+        run: bb run --prn smoke-test

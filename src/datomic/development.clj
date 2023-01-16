@@ -72,6 +72,8 @@
   (seed!)
   :ok)
 
+(defn cli-start "Start & seed the app from the CLI using `clojure -X ..`" [_] (start))
+
 (defn stop
   "Stop the server."
   []
