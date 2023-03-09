@@ -3,7 +3,6 @@
     [clojure.spec.alpha :as s]
     [clojure.string :as str]
     [taoensso.timbre :as log]
-    [com.wsscode.pathom.connect :as pc]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.attributes :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
