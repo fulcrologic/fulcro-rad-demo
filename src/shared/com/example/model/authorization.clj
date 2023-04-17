@@ -25,7 +25,7 @@
                  :account/name      name}]
           (fmw/augment-response s (fn [resp]
                                     (let [current-session (-> env :ring/request :session)]
-                                      (assoc resp :session (merge current-session s)))))))
+                                      (assoc resp :session (vary-meta (merge current-session s) assoc :recreate true)))))))
       (do
         (log/error "Login failure for" username)
         {::auth/provider :local
@@ -36,9 +36,9 @@
        ::auth/status   :failed})))
 
 (defn logout!
-  "Implementation of logout."
+  "Implementation of logout. Retains CSRF token and rotates session key"
   [env]
-  (fmw/augment-response {} (fn [resp] (assoc resp :session {}))))
+  (fmw/augment-response {} (fn [resp] (assoc resp :session (vary-meta (select-keys (-> env :ring/request :session) [:ring.middleware.anti-forgery/anti-forgery-token]) assoc :recreate true)))))
 
 (defn check-session! [env]
   (log/info "Checking for existing session")
@@ -46,4 +46,3 @@
     (some-> env :ring/request :session)
     {::auth/provider :local
      ::auth/status   :not-logged-in}))
-
