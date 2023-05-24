@@ -6,6 +6,7 @@
     [com.fulcrologic.rad.attributes :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
@@ -22,6 +23,7 @@
 (defattr date :invoice/date :instant
   {::form/field-style           :date-at-noon
    ::datetime/default-time-zone "America/Los_Angeles"
+   ao/required? true
    ao/identities                #{:invoice/id}
    ao/schema                    :production})
 
@@ -29,6 +31,12 @@
   {ao/target                                                       :line-item/id
    :com.fulcrologic.rad.database-adapters.sql/delete-referent?     true
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
+   ao/required?                                                    true
+   ao/valid?                                                       (fn [v props k]
+                                                                     (and
+                                                                       (vector? v)
+                                                                       (pos? (count v))))
+   fo/validation-message                                           "You must have a least one line item."
    ao/cardinality                                                  :many
    ao/identities                                                   #{:invoice/id}
    ao/schema                                                       :production})
