@@ -1,45 +1,42 @@
 (ns com.example.ui.account-forms
   (:require
+    #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
+       :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [clojure.string :as str]
-    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.rad.picker-options :as po]
-    [taoensso.timbre :as log]
     [com.example.model :as model]
     [com.example.model.account :as account]
     [com.example.model.timezone :as timezone]
     [com.example.ui.address-forms :refer [AddressForm]]
     [com.example.ui.file-forms :refer [FileForm]]
+    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
+    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.raw.components :as rc]
-    [com.fulcrologic.fulcro.mutations :refer [defmutation]]
-    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
-    [com.fulcrologic.rad.semantic-ui-options :as suo]
-    #?(:clj  [com.fulcrologic.fulcro.dom-server :as dom :refer [div label input]]
-       :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
+    [com.fulcrologic.rad.picker-options :as po]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
-    [com.fulcrologic.rad.attributes :as attr]))
+    [com.fulcrologic.rad.semantic-ui-options :as suo]))
 
 #_(def account-validator
-  "Here's how to make a validator, possibly to override a validation defined on the attributes.
-   Usually `ao/valid?` with an `attr/make-attribute-validator` is sufficient. "
-  (fs/make-validator (fn [form field]
-                       (case field
-                         ;; Override what the attribute asks for. Comment this out and see that it uses
-                         ;; the attribute's validation, which is lower case instead (also comment out the custom
-                         ;; validation message on the form).
-                         :account/email (let [prefix (or
-                                                       (some-> form
-                                                         :account/name
-                                                         (str/split #"\s")
-                                                         (first)
-                                                         (str/upper-case))
-                                                       "")]
-                                          (str/starts-with? (get form field "") prefix))
-                         (= :valid (model/all-attribute-validator form field))))))
+    "Here's how to make a validator, possibly to override a validation defined on the attributes.
+     Usually `ao/valid?` with an `attr/make-attribute-validator` is sufficient. "
+    (fs/make-validator (fn [form field]
+                         (case field
+                           ;; Override what the attribute asks for. Comment this out and see that it uses
+                           ;; the attribute's validation, which is lower case instead (also comment out the custom
+                           ;; validation message on the form).
+                           :account/email (let [prefix (or
+                                                         (some-> form
+                                                           :account/name
+                                                           (str/split #"\s")
+                                                           (first)
+                                                           (str/upper-case))
+                                                         "")]
+                                            (str/starts-with? (get form field "") prefix))
+                           (= :valid (model/all-attribute-validator form field))))))
 
 ;; NOTE: Limitation: Each "storage location" requires a form. The ident of the component matches the identity
 ;; of the item being edited. Thus, if you want to edit things that are related to a given entity, you must create
@@ -47,11 +44,11 @@
 ;; data in forms when "mixing" server side "entities/tables/documents".
 
 (form/defsc-form TagForm [this props]
-  {fo/id account/tag-id
+  {fo/id         account/tag-id
    fo/attributes [account/tag-label]})
 
 (form/defsc-form AccountForm [this props]
-  {fo/id                  account/id
+  {fo/id             account/id
    ; fo/debug? true
    ;   ::form/read-only?          true
    fo/attributes     [;account/avatar
@@ -72,7 +69,7 @@
    ;; so that computed props can be sent to the form to modify its layout. Subforms, for example,
    ;; don't get top-level controls like "Save" and "Cancel".
    fo/field-styles   {:account/tags :pick-many}
-   fo/field-options  {:account/tags {:style :dropdown
+   fo/field-options  {:account/tags {:style             :dropdown
                                      fo/title           "Add tag"
                                      po/form            TagForm
                                      po/quick-create    (fn [v] {:tag/id    (tempid/tempid)
@@ -212,7 +209,3 @@
                             :disabled? (fn [_ row-props] (not (:account/active? row-props)))}]
 
    ro/route               "accounts"})
-
-(comment
-
-  (comp/get-query AccountList-Row))
