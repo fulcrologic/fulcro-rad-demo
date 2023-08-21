@@ -9,7 +9,7 @@
         [[com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]])
     [clojure.string :as str]
     [com.example.model.timezone :as timezone]
-    [com.wsscode.pathom.connect :as pc] ; make reader happy about ::pc/ keywords
+    [com.wsscode.pathom.connect :as pc]                     ; make reader happy about ::pc/ keywords
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
@@ -34,7 +34,7 @@
    ao/required?          true
    ao/schema             :production
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema
-                         {:db/unique :db.unique/value}
+   {:db/unique :db.unique/value}
    fo/validation-message "Must use your lower-case first name as the email address name."
    ao/valid?             (fn [v props _]
                            (let [prefix (or
@@ -101,23 +101,11 @@
    :com.fulcrologic.rad.database-adapters.datomic/attribute-schema {:db/isComponent true}
    ao/schema                                                       :production})
 
-;; NOTE: How to do file SHA->URL stuff...
-#_(pc/defresolver image-resolver [env input]
-    {::pc/input  #{:file/sha ::blob/store}
-     ::pc/output [:file/url]})
-
-;; NOTE: Not quite done yet...
-(defattr avatar :account/avatar :string
-  {
-   ;; The field style give you a specific control, and the blob settings
-   ;; are used by middleware to target a particular store (you must config).
-   fo/field-style           ::blob/file-upload
-   ::blob/accept-file-types "image/*"
-   ::blob/store             :avatar-images
-   ::blob/remote            :remote
-
-   ao/identities            #{:account/id}
-   ao/schema                :production})
+;; NOTE: Be sure to add query inclusions to see preview of the image upload
+(blob/defblobattr avatar :account/avatar :avatar-images :remote
+  {ao/identities  #{:account/id}
+   ao/schema      :production
+   fo/field-style ::blob/image-upload})
 
 (defattr files :account/files :ref
   {ao/target      :file/id
@@ -130,8 +118,8 @@
    ao/cardinality :many
    ao/identities  #{:account/id}
    ao/schema      :production})
-(defattr tag-id :tag/id :uuid, {ao/identity?   true, ao/schema      :production})
-(defattr tag-label :tag/label :string, {ao/identities  #{:tag/id}, ao/schema      :production})
+(defattr tag-id :tag/id :uuid, {ao/identity? true, ao/schema :production})
+(defattr tag-label :tag/label :string, {ao/identities #{:tag/id}, ao/schema :production})
 #?(:clj (pc/defresolver all-tags [env query-params]
           {::pc/output [{:all-tags [:tag/id :tag/label]}]}
           {:all-tags (queries/get-all-tags env query-params)}))

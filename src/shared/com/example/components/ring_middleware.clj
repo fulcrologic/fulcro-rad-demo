@@ -46,8 +46,9 @@
 (defn wrap-html-routes [ring-handler]
   (fn [{:keys [uri anti-forgery-token] :as req}]
     (if (or (str/starts-with? uri "/api")
-          (str/starts-with? uri "/images")
+          (str/starts-with? uri "/images") ; perm store. For preview of uploads after file save
           (str/starts-with? uri "/files")
+          (str/starts-with? uri "/preview") ; temporary store. For preview of uploads before file save
           (str/starts-with? uri "/js"))
       (ring-handler req)
 
@@ -60,8 +61,9 @@
     (-> not-found-handler
       (wrap-api "/api")
       (file-upload/wrap-mutation-file-uploads {})
-      (blob/wrap-blob-service "/images" bs/image-blob-store)
+      (blob/wrap-blob-service "/images" bs/image-blob-store) ; serve perm files for getting image uploads that are saved
       (blob/wrap-blob-service "/files" bs/file-blob-store)
+      (blob/wrap-blob-service "/preview" bs/temporary-blob-store) ; serve temporary files for previews of image upload
       (server/wrap-transit-params {})
       (server/wrap-transit-response {})
       (wrap-html-routes)

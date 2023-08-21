@@ -5,7 +5,7 @@
 
 (defstate temporary-blob-store
   :start
-  (storage/transient-blob-store "" 1))
+  (storage/transient-blob-store "/preview" 5))
 
 (defstate image-blob-store
   :start
