@@ -7,13 +7,14 @@
     [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
+    [com.fulcrologic.rad.form-render-options :as fro]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
-    [com.fulcrologic.rad.type-support.date-time :as datetime]
     [com.fulcrologic.rad.type-support.date-time :as dt]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.wsscode.pathom.connect :as pc]
-    [taoensso.encore :as enc]))
+    [taoensso.encore :as enc]
+    [taoensso.timbre :as log]))
 
 (defattr id :invoice/id :uuid
   {ao/identity? true
@@ -21,11 +22,11 @@
    ao/schema    :production})
 
 (defattr date :invoice/date :instant
-  {::form/field-style           :date-at-noon
-   ::datetime/default-time-zone "America/Los_Angeles"
-   ao/required? true
-   ao/identities                #{:invoice/id}
-   ao/schema                    :production})
+  {::form/field-style     :date-at-noon
+   ::dt/default-time-zone "America/Los_Angeles"
+   ao/required?           true
+   ao/identities          #{:invoice/id}
+   ao/schema              :production})
 
 (defattr line-items :invoice/line-items :ref
   {ao/target                                                       :line-item/id

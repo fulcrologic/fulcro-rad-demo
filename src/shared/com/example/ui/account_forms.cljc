@@ -104,7 +104,6 @@
 
 (form/defsc-form BriefAccountForm [this props]
   {fo/id             account/id
-   fo/controls       {}
    fo/attributes     [account/name
                       account/role
                       timezone/zone-id account/email

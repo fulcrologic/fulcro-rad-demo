@@ -5,6 +5,7 @@
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.form-render-options :as fro]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
@@ -17,6 +18,7 @@
 
 (form/defsc-form ItemForm [this props]
   {fo/id            item/id
+  ; fro/style        :rad/multirender
    fo/attributes    [item/item-name
                      item/category
                      item/description

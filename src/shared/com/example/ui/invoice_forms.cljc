@@ -1,29 +1,21 @@
 (ns com.example.ui.invoice-forms
   (:require
     [clojure.string :as str]
-    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.rad.picker-options :as po]
-    [com.fulcrologic.rad.type-support.decimal :as math]
-    [com.example.model :as model]
     [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
-    [com.fulcrologic.fulcro.algorithms.form-state :as fs]
+    [com.example.ui.account-forms :refer [AccountForm BriefAccountForm]]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
-    [com.example.ui.account-forms :refer [BriefAccountForm AccountForm]]
+    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
+    [com.fulcrologic.fulcro.components :refer [defsc]]
     [com.fulcrologic.rad.form :as form]
+    [com.fulcrologic.rad.form-render-options :as fro]
     [com.fulcrologic.rad.form-options :as fo]
+    [com.fulcrologic.rad.picker-options :as po]
+    [com.fulcrologic.rad.report :as report]
+    [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
-    [taoensso.timbre :as log]
-    [com.fulcrologic.rad.report :as report]
-    [com.fulcrologic.rad.report-options :as ro]))
-
-(def invoice-validator (fs/make-validator (fn [form field]
-                                            (let [value (get form field)]
-                                              (case field
-                                                :invoice/line-items (> (count value) 0)
-                                                (= :valid (model/all-attribute-validator form field)))))))
+    [com.fulcrologic.rad.type-support.decimal :as math]))
 
 (defsc AccountQuery [_ _]
   {:query [:account/id :account/name :account/email]
@@ -31,19 +23,19 @@
 
 (defn sum-subtotals* [{:invoice/keys [line-items] :as invoice}]
   (assoc invoice :invoice/total
-    (reduce
-      (fn [t {:line-item/keys [subtotal]}]
-        (math/+ t subtotal))
-      (math/zero)
-      line-items)))
+                 (reduce
+                   (fn [t {:line-item/keys [subtotal]}]
+                     (math/+ t subtotal))
+                   (math/zero)
+                   line-items)))
 
 (form/defsc-form InvoiceForm [this props]
   {fo/id             invoice/id
+   fro/style         :rad/multirender
    ;; So, a special (attr/derived-value key type style) would be useful for form logic display
    ;::form/read-only?     true
    fo/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]
    fo/default-values {:invoice/date (datetime/now)}
-   fo/validator      invoice-validator
    fo/layout         [[:invoice/customer :invoice/date]
                       [:invoice/line-items]
                       [:invoice/total]]
@@ -68,6 +60,7 @@
                                                                               (sort-by :account/name options)))
                                          po/cache-time-ms   30000}}
    fo/subforms       {:invoice/line-items {fo/ui          LineItemForm
+                                           fro/style      :table
                                            fo/can-delete? (fn [_ _] true)
                                            fo/can-add?    (fn [_ _] true)}}
    fo/triggers       {:derive-fields (fn [new-form-tree] (sum-subtotals* new-form-tree))}
@@ -127,3 +120,7 @@
 
    ro/run-on-mount?       true
    ro/route               "invoices"})
+
+(comment
+  (form/form-and-subform-attributes InvoiceForm)
+  )
