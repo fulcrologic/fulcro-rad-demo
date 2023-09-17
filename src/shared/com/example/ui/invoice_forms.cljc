@@ -6,20 +6,16 @@
     [com.example.ui.account-forms :refer [AccountForm BriefAccountForm]]
     [com.example.ui.line-item-forms :refer [LineItemForm]]
     [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.fulcro.components :refer [defsc]]
+    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.rad.form :as form]
-    [com.fulcrologic.rad.form-render-options :as fro]
     [com.fulcrologic.rad.form-options :as fo]
+    [com.fulcrologic.rad.form-render-options :as fro]
     [com.fulcrologic.rad.picker-options :as po]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
     [com.fulcrologic.rad.type-support.decimal :as math]))
-
-(defsc AccountQuery [_ _]
-  {:query [:account/id :account/name :account/email]
-   :ident :account/id})
 
 (defn sum-subtotals* [{:invoice/keys [line-items] :as invoice}]
   (assoc invoice :invoice/total
@@ -36,33 +32,9 @@
    ;::form/read-only?     true
    fo/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]
    fo/default-values {:invoice/date (datetime/now)}
-   fo/layout         [[:invoice/customer :invoice/date]
-                      [:invoice/line-items]
+   fo/layout         [[:invoice/customer :invoice/date] ; See invoice/customer for field-style and field-options.
+                      [:invoice/line-items] ; See invoice/line-items for field-style and field-options.
                       [:invoice/total]]
-   fo/field-styles   {:invoice/customer :pick-one}
-   fo/field-options  {:invoice/customer {po/form            BriefAccountForm
-                                         fo/title           (fn [i {:account/keys [id]}]
-                                                              (if (tempid/tempid? id)
-                                                                "New Account"
-                                                                "Edit Account"))
-                                         po/quick-create    (fn [v] {:account/id        (tempid/tempid)
-                                                                     :account/email     (str/lower-case (str v "@example.com"))
-                                                                     :time-zone/zone-id :time-zone.zone-id/America-Los_Angeles
-                                                                     :account/active?   true
-                                                                     :account/name      v})
-                                         po/allow-create?   true
-                                         po/allow-edit?     true
-                                         po/query-key       :account/all-accounts
-                                         po/query-component AccountQuery
-                                         po/options-xform   (fn [_ options] (mapv
-                                                                              (fn [{:account/keys [id name email]}]
-                                                                                {:text (str name ", " email) :value [:account/id id]})
-                                                                              (sort-by :account/name options)))
-                                         po/cache-time-ms   30000}}
-   fo/subforms       {:invoice/line-items {fo/ui          LineItemForm
-                                           fro/style      :table
-                                           fo/can-delete? (fn [_ _] true)
-                                           fo/can-add?    (fn [_ _] true)}}
    fo/triggers       {:derive-fields (fn [new-form-tree] (sum-subtotals* new-form-tree))}
    fo/route-prefix   "invoice"
    fo/title          (fn [_ {:invoice/keys [id]}]

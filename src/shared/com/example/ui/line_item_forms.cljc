@@ -1,20 +1,16 @@
 (ns com.example.ui.line-item-forms
   (:require
-    [com.fulcrologic.fulcro.components :as comp]
-    [com.fulcrologic.fulcro.mutations :as m]
-    [com.fulcrologic.rad.picker-options :as picker-options]
     [com.example.model :as model]
     [com.example.model.category :as category]
     [com.example.model.line-item :as line-item]
     [com.example.ui.item-forms :as item-forms]
-    [com.fulcrologic.rad.type-support.decimal :as math]
+    [com.fulcrologic.fulcro.algorithms.normalized-state :as fns]
+    [com.fulcrologic.fulcro.components :as comp]
+    [com.fulcrologic.fulcro.ui-state-machines :as uism]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
-    [com.fulcrologic.rad.form-render-options :as fro]
-    [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.application :as app]
-    [com.fulcrologic.fulcro.ui-state-machines :as uism]
-    [com.fulcrologic.fulcro.algorithms.normalized-state :as fns]))
+    [com.fulcrologic.rad.picker-options :as picker-options]
+    [com.fulcrologic.rad.type-support.decimal :as math]))
 
 (defn add-subtotal* [{:line-item/keys [quantity quoted-price] :as item}]
   (assoc item :line-item/subtotal (math/* quantity quoted-price)))

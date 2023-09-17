@@ -33,7 +33,8 @@
       (fr/render-header renv id-attr)
       (fr/render-fields renv id-attr)
       (fr/render-footer renv id-attr))
-    (let [subform-options (log/spy :info (some-> parent (comp/component-options) fo/subforms parent-relation))
+    (let [parent-options  (some-> parent (comp/component-options))
+          subform-options (fo/subform-options parent-options parent-relation)
           can-delete?     (?! (fo/can-delete? subform-options) parent (comp/props form-instance))]
       (comp/fragment {:key (str (comp/get-ident form-instance))}
         (fr/render-header renv id-attr)
@@ -49,11 +50,11 @@
 
 (defmethod fr/render-header :default [{::form/keys [master-form form-instance]} attr]
   (let [k    (ao/qualified-key attr)
-        top? (= master-form form-instance)]
+        top? (= master-form form-instance)
+        {::form/keys [title action-buttons] :as fopts} (comp/component-options form-instance)]
     (cond
       (and top? (ao/identity? attr))
       #_=> (let [props          (comp/props form-instance)
-                 {::form/keys [title action-buttons]} (comp/component-options form-instance)
                  action-buttons (if action-buttons action-buttons form/standard-action-buttons)
                  title          (?! title form-instance props)]
              (div :.ui.basic.segment
@@ -65,7 +66,7 @@
                    (keep #(control/render-control master-form %) action-buttons)))))
       (= :many (ao/cardinality attr))
       #_=> (let [{Form ::form/ui
-                  :as  subform-options} (-> form-instance (comp/component-options) fo/subforms k)
+                  :as  subform-options} (fo/subform-options fopts attr)
                  options  (some-> Form (comp/component-options))
                  props    (get (comp/props form-instance) k)
                  can-add? (?! (fo/can-add? subform-options) form-instance attr)
@@ -147,15 +148,14 @@
         (constantly layout))
       layout)))
 
-(defmethod fr/render-fields :default [{::form/keys [form-instance] :as renv}]
+(defmethod fr/render-fields :default [{::form/keys [form-instance] :as renv} attr]
   (div :.ui.basic.segment
     (render-layout renv (comp/component-options form-instance))))
 
 (defmethod fr/render-field [:ref :table] [{::form/keys [form-instance] :as renv} field-attr]
   (let [relation-key (ao/qualified-key field-attr)
         item         (-> form-instance comp/props relation-key)
-        ItemForm     (comp/component-options form-instance fo/subforms relation-key fo/ui)
-        item-options (comp/component-options ItemForm)
+        ItemForm     (form/subform-ui (comp/component-options form-instance) field-attr)
         to-many?     (= :many (ao/cardinality field-attr))]
     (if ItemForm
       (dom/table :.ui.table {:key (str relation-key)}
@@ -170,8 +170,7 @@
 (defmethod fr/render-field [:ref :default] [{::form/keys [form-instance] :as renv} field-attr]
   (let [relation-key (ao/qualified-key field-attr)
         item         (-> form-instance comp/props relation-key)
-        {ItemForm ::form/ui
-         :as      subform-options} (comp/component-options form-instance fo/subforms relation-key)
+        ItemForm     (form/subform-ui (comp/component-options form-instance) field-attr)
         to-many?     (= :many (ao/cardinality field-attr))]
     (if ItemForm
       (comp/fragment {:key (str relation-key)}
@@ -184,7 +183,7 @@
 
 (defmethod fr/render-header [:default :table] [{::form/keys [form-instance] :as env} field-attr]
   (let [{ItemForm    ::form/ui
-         ::form/keys [can-add?]} (comp/component-options form-instance fo/subforms (ao/qualified-key field-attr))
+         ::form/keys [can-add?]} (fo/subform-options (comp/component-options form-instance) field-attr)
         attrs (comp/component-options ItemForm fo/attributes)]
     (dom/thead nil
       (dom/tr nil
@@ -196,26 +195,28 @@
 
 (defmethod fr/render-footer [:default :table] [{::form/keys [form-instance] :as env} {::attr/keys [qualified-key] :as field-attr}]
   (let [{ItemForm    ::form/ui
-         ::form/keys [can-add?]} (comp/component-options form-instance fo/subforms qualified-key)
+         ::form/keys [can-add?]} (fo/subform-options (comp/component-options form-instance) qualified-key)
         can-add? (?! can-add? form-instance field-attr)]
     (when can-add?
       (dom/tfoot nil
         (dom/tr nil
           (dom/td nil
-           (dom/button :.ui.icon.button
-             {:onClick (fn []
-                         (form/add-child! form-instance qualified-key ItemForm {:order :append}))}
-             (dom/i :.plus.icon))))))))
+            (dom/button :.ui.icon.button
+              {:onClick (fn []
+                          (form/add-child! form-instance qualified-key ItemForm {:order :append}))}
+              (dom/i :.plus.icon))))))))
 
-(defmethod fr/render-form [:default :table] [{::form/keys [parent parent-relation form-instance] :as renv} _]
-  (let [{::form/keys [attributes]} (comp/component-options form-instance)
-        {::form/keys [can-delete?]} (comp/component-options parent fo/subforms parent-relation)
-        can-delete? (?! can-delete? parent (comp/props form-instance))]
-    (dom/tr {:key (str (comp/get-ident form-instance))}
-      (mapv (fn [attr]
-              (dom/td {:key (str (ao/qualified-key attr))}
-                (fr/render-field renv (assoc attr fo/omit-label? true)))) attributes)
-      (when can-delete?
-        (dom/td {:style {:verticalAlign "middle"}}
-          (dom/button :.ui.icon.button {:onClick (fn [] (form/delete-child! parent parent-relation (comp/get-ident form-instance)))}
-            (dom/i :.times.icon)))))))
+(defmethod fr/render-form [:default :table] [{::form/keys [parent parent-relation form-instance] :as renv} idattr]
+  (if parent
+    (let [{::form/keys [attributes]} (comp/component-options form-instance)
+          {::form/keys [can-delete?]} (fo/subform-options (comp/component-options parent) parent-relation)
+          can-delete? (?! can-delete? parent (comp/props form-instance))]
+      (dom/tr {:key (str (comp/get-ident form-instance))}
+        (mapv (fn [attr]
+                (dom/td {:key (str (ao/qualified-key attr))}
+                  (form/render-input renv attr))) attributes)
+        (when can-delete?
+          (dom/td {:style {:verticalAlign "middle"}}
+            (dom/button :.ui.icon.button {:onClick (fn [] (form/delete-child! parent parent-relation (comp/get-ident form-instance)))}
+              (dom/i :.times.icon))))))
+    (dom/div nil "Rendering top-level forms as a table is not supported.")))

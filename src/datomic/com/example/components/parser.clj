@@ -41,7 +41,7 @@
      {::p/wrap-parser
       (fn transform-parser-out-plugin-external [parser]
         (fn transform-parser-out-plugin-internal [env tx]
-          ;; TASK: This should be taken from account-based setting
+          ;; TODO: This should be taken from account-based setting
           (dt/with-timezone "America/Los_Angeles"
             (if (and (map? env) (seq tx))
               (parser env tx)

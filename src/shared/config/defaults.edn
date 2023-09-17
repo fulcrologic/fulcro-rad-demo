@@ -71,4 +71,5 @@
                                                     :log-requests?  true
                                                     :log-responses? true}
 
- :taoensso.timbre/logging-config                   {:min-level :info}}
+ :taoensso.timbre/logging-config                   {:min-level :info
+                                                    :output-opts {:stacktrace-fonts {}}}}

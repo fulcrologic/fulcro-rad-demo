@@ -3,6 +3,8 @@
     #?(:clj [com.example.components.database-queries :as queries])
     [cljc.java-time.local-date :as ld]
     [cljc.java-time.local-date-time :as ldt]
+    [clojure.string :as str]
+    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
     [com.fulcrologic.rad.attributes :refer [defattr]]
     [com.fulcrologic.rad.attributes-options :as ao]
     [com.fulcrologic.rad.form :as form]
@@ -10,6 +12,7 @@
     [com.fulcrologic.rad.form-render-options :as fro]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
+    [com.fulcrologic.rad.picker-options :as po]
     [com.fulcrologic.rad.type-support.date-time :as dt]
     [com.fulcrologic.rad.type-support.decimal :as math]
     [com.wsscode.pathom.connect :as pc]
@@ -40,7 +43,12 @@
    fo/validation-message                                           "You must have a least one line item."
    ao/cardinality                                                  :many
    ao/identities                                                   #{:invoice/id}
-   ao/schema                                                       :production})
+   ao/schema                                                       :production
+
+   fo/subform                                                      {fo/ui          `com.example.ui.line-item-forms/LineItemForm
+                                                                    fro/style      :table
+                                                                    fo/can-delete? (fn [_ _] true)
+                                                                    fo/can-add?    (fn [_ _] true)}})
 
 (defattr total :invoice/total :decimal
   {ao/identities      #{:invoice/id}
@@ -49,11 +57,33 @@
    ao/read-only?      true})
 
 (defattr customer :invoice/customer :ref
-  {ao/cardinality :one
-   ao/target      :account/id
-   ao/required?   true
-   ao/identities  #{:invoice/id}
-   ao/schema      :production})
+  {ao/cardinality   :one
+   ao/target        :account/id
+   ao/required?     true
+   ao/identities    #{:invoice/id}
+   ao/schema        :production
+
+   fo/field-style   :pick-one
+   fo/field-options {po/allow-create? true
+                     po/allow-edit?   true
+                     po/form          `com.example.ui.account-forms/BriefAccountForm
+                     fo/title         (fn [i {:account/keys [id]}]
+                                        (if (tempid/tempid? id)
+                                          "New Account"
+                                          "Edit Account"))
+                     po/quick-create  (fn [v] {:account/id        (tempid/tempid)
+                                               :account/email     (str/lower-case (str v "@example.com"))
+                                               :time-zone/zone-id :time-zone.zone-id/America-Los_Angeles
+                                               :account/active?   true
+                                               :account/name      v})
+                     po/query-key     :account/all-accounts
+                     po/query         [:account/id :account/name :account/email]
+                     po/options-xform (fn [_ options] (mapv
+                                                        (fn [{:account/keys [id name email]}]
+                                                          {:text (str name ", " email) :value [:account/id id]})
+
+                                                        (sort-by :account/name options)))
+                     po/cache-time-ms 30000}})
 
 ;; Fold account details into the invoice details, if desired
 #?(:clj

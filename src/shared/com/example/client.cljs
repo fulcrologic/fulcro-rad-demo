@@ -54,8 +54,13 @@
   (app/force-root-render! app))
 
 (defn init []
-  (log/merge-config! {:output-fn prefix-output-fn
-                      :appenders {:console (console-appender)}})
+  (log/merge-config! {:output-fn   prefix-output-fn
+                      :output-opts {:stacktrace-fonts {}}
+                      :ns-filter   {:allow #{"*"}
+                                    :deny  #{"com.fulcrologic.fulcro.ui-state-machines"}}
+                      :appenders   {:console (console-appender)}})
+  (when goog.DEBUG
+    (log/set-min-level! :trace))
   (log/info "Starting App")
   ;; default time zone (should be changed at login for given user)
   (datetime/set-timezone! "America/Los_Angeles")
