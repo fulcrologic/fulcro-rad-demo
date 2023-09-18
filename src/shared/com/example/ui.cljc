@@ -7,7 +7,6 @@
        :cljs [com.fulcrologic.fulcro.dom :as dom :refer [div label input]])
     [com.example.ui.account-forms :refer [AccountForm AccountList]]
     [com.example.ui.dashboard :as dashboard]
-    [com.example.ui.invoice-forms :refer [InvoiceForm InvoiceList AccountInvoices]]
     [com.example.ui.item-forms :refer [ItemForm InventoryReport]]
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.example.ui.master-detail :as mdetail]
@@ -15,6 +14,7 @@
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom.html-entities :as ent]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.fulcro.routing.dynamic-routing :refer [defrouter]]
     [com.fulcrologic.rad.authorization :as auth]
     [com.fulcrologic.rad.form :as form]
@@ -32,7 +32,7 @@
 ;; This will just be a normal router...but there can be many of them.
 (defrouter MainRouter [this {:keys [current-state route-factory route-props]}]
   {:always-render-body? true
-   :router-targets      [LandingPage ItemForm InvoiceForm InvoiceList AccountList AccountForm AccountInvoices
+   :router-targets      [LandingPage ItemForm AccountList AccountForm
                          sales-report/SalesReport InventoryReport
                          sales-report/RealSalesReport
                          dashboard/Dashboard
@@ -78,9 +78,24 @@
                    (ui-dropdown-item {:onClick (fn [] (form/create! this ItemForm))} "New")))
                (ui-dropdown {:className "item" :text "Invoices"}
                  (ui-dropdown-menu {}
-                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this InvoiceList {}))} "View All")
-                   (ui-dropdown-item {:onClick (fn [] (form/create! this InvoiceForm))} "New")
-                   (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this AccountInvoices {:account/id (new-uuid 101)}))} "Invoices for Account 101")))
+                   (ui-dropdown-item
+                     ;; NOTE: Dynamically-loaded module and router target
+                     {:onClick (fn [] (dr/route-to! this {:router    MainRouter
+                                                          :target    `com.example.ui.invoice-forms/InvoiceList
+                                                          :load-from :invoicing}))}
+                     "View All")
+                   (ui-dropdown-item
+                     ;; NOTE: Dynamically-loaded module and router target
+                     {:onClick (fn []
+                                 (form/create! this `com.example.ui.invoice-forms/InvoiceForm {} {:router    MainRouter
+                                                                                                  :load-from :invoicing}))}
+                     "New")
+                   (ui-dropdown-item
+                     {:onClick (fn [] (dr/route-to! this {:router       MainRouter
+                                                          :target       `com.example.ui.invoice-forms/AccountInvoices
+                                                          :load-from    :invoicing
+                                                          :route-params {:account/id (new-uuid 101)}}))}
+                     "Invoices for Account 101")))
                (ui-dropdown {:className "item" :text "Reports"}
                  (ui-dropdown-menu {}
                    (ui-dropdown-item {:onClick (fn [] (rroute/route-to! this dashboard/Dashboard {}))} "Dashboard")
@@ -109,4 +124,3 @@
         (ui-main-router router)))))
 
 (def ui-root (comp/factory Root))
-

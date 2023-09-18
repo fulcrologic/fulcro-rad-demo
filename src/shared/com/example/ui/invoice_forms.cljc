@@ -1,21 +1,23 @@
 (ns com.example.ui.invoice-forms
   (:require
-    [clojure.string :as str]
+    #?(:cljs [cljs.loader :as loader])
+    [com.example.client :as client]
     [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
-    [com.example.ui.account-forms :refer [AccountForm BriefAccountForm]]
-    [com.example.ui.line-item-forms :refer [LineItemForm]]
+    [com.example.ui :refer [MainRouter]]
+    [com.example.ui.account-forms :refer [AccountForm]]
+    [com.example.ui.line-item-forms]                        ; Required, since we're getting to it in a completely dynamic way
     [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.form-render-options :as fro]
-    [com.fulcrologic.rad.picker-options :as po]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
-    [com.fulcrologic.rad.type-support.decimal :as math]))
+    [com.fulcrologic.rad.type-support.decimal :as math]
+    [taoensso.timbre :as log]))
 
 (defn sum-subtotals* [{:invoice/keys [line-items] :as invoice}]
   (assoc invoice :invoice/total
@@ -32,8 +34,8 @@
    ;::form/read-only?     true
    fo/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]
    fo/default-values {:invoice/date (datetime/now)}
-   fo/layout         [[:invoice/customer :invoice/date] ; See invoice/customer for field-style and field-options.
-                      [:invoice/line-items] ; See invoice/line-items for field-style and field-options.
+   fo/layout         [[:invoice/customer :invoice/date]     ; See invoice/customer for field-style and field-options.
+                      [:invoice/line-items]                 ; See invoice/line-items for field-style and field-options.
                       [:invoice/total]]
    fo/triggers       {:derive-fields (fn [new-form-tree] (sum-subtotals* new-form-tree))}
    fo/route-prefix   "invoice"
@@ -93,6 +95,10 @@
    ro/run-on-mount?       true
    ro/route               "invoices"})
 
-(comment
-  (form/form-and-subform-attributes InvoiceForm)
-  )
+(defn init-module []
+  #?(:cljs
+     (do
+       (dr/add-route-target!! client/app {:router MainRouter :target InvoiceForm})
+       (dr/add-route-target!! client/app {:router MainRouter :target AccountInvoices})
+       (dr/add-route-target!! client/app {:router MainRouter :target InvoiceList})
+       (loader/set-loaded! :invoicing))))

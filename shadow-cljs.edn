@@ -6,7 +6,10 @@
                        :asset-path "/js/main"
                        :dev        {:compiler-options {:external-config {:guardrails {:emit-spec? true :throw? false}
                                                                          :fulcro     {:html-source-annotations? true}}}}
-                       :modules    {:main {:init-fn com.example.client/init}}
+                       :module-loader true
+                       :modules    {:main {:init-fn com.example.client/init}
+                                    :invoicing {:init-fn com.example.ui.invoice-forms/init-module
+                                                :depends-on #{:main}}}
                        :js-options {:resolve
                                     {
                                      ;; for performance checking during dev
@@ -21,6 +24,11 @@
                                       :require "@js-joda/timezone/dist/js-joda-timezone-10-year-range.min.js"}}}
                        :devtools   {:preloads   [com.fulcrologic.fulcro.inspect.preload]
                                     :after-load com.example.client/refresh}}
+            :i18n {:target     :browser
+                   :output-dir "resources/public/js/i18n"
+                   :asset-path "/js/i18n"
+                   :compiler-options {:optimizations :whitespace}
+                   :modules {:main {:init-fn com.example.client/init}} }
 
             :test     {:target           :browser-test
                        :test-dir         "resources/public/js/test"

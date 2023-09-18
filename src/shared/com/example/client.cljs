@@ -14,7 +14,6 @@
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
-    [com.fulcrologic.rad.form-render :as fr]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.routing :as routing]
