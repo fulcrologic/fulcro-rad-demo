@@ -1,5 +1,6 @@
 (ns com.example.client
   (:require
+    [cljs.loader :as loader]
     [com.example.model :as r.model]
     [com.example.ui :as ui :refer [Root]]
     [com.example.ui.form-rendering :as frender]
@@ -26,14 +27,31 @@
 (defonce stats-accumulator
   (tufte/add-accumulating-handler! {:ns-pattern "*"}))
 
+(defn module-for-url
+  "Figure out if the target URL requires a module of code to load."
+  [app]
+  (let [hist                  (history/active-history app)
+        {:keys [route]} (history/-current-route hist)
+        route-element->module {"invoice"          :invoicing
+                               "account-invoices" :invoicing
+                               "invoices"         :invoicing}]
+    (first (keep route-element->module route))))
+
 (m/defmutation fix-route
-  "Mutation. Called after auth startup. Looks at the session. If the user is not logged in, it triggers authentication"
+  "Mutation. If the user is logged in, try to restore the route, making sure any code modules are loaded before doing so."
   [_]
   (action [{:keys [app]}]
     (let [logged-in (auth/verified-authorities app)]
       (if (empty? logged-in)
         (routing/route-to! app ui/LandingPage {})
-        (hist5/restore-route! app ui/LandingPage {})))))
+        (let [module  (module-for-url app)
+              loaded? (if (nil? module)
+                        true
+                        (some-> module (loader/loaded?)))]
+          (if loaded?
+            (hist5/restore-route! app ui/LandingPage {})
+            (loader/load module #(js/setTimeout (fn [] (hist5/restore-route! app ui/LandingPage {}))
+                                   500))))))))
 
 (defn setup-RAD [app]
   (rad-app/install-ui-controls! app sui/all-controls)

@@ -80,9 +80,9 @@
                  (ui-dropdown-menu {}
                    (ui-dropdown-item
                      ;; NOTE: Dynamically-loaded module and router target
-                     {:onClick (fn [] (dr/route-to! this {:router    MainRouter
-                                                          :target    `com.example.ui.invoice-forms/InvoiceList
-                                                          :load-from :invoicing}))}
+                     {:onClick (fn [] (rroute/route-to! this {:router    MainRouter
+                                                              :target    `com.example.ui.invoice-forms/InvoiceList
+                                                              :load-from :invoicing}))}
                      "View All")
                    (ui-dropdown-item
                      ;; NOTE: Dynamically-loaded module and router target
@@ -91,7 +91,7 @@
                                                                                                   :load-from :invoicing}))}
                      "New")
                    (ui-dropdown-item
-                     {:onClick (fn [] (dr/route-to! this {:router       MainRouter
+                     {:onClick (fn [] (rroute/route-to! this {:router       MainRouter
                                                           :target       `com.example.ui.invoice-forms/AccountInvoices
                                                           :load-from    :invoicing
                                                           :route-params {:account/id (new-uuid 101)}}))}

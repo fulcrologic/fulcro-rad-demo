@@ -134,14 +134,13 @@
 
 (def ui-tabbed-layout (comp/computed-factory TabbedLayout))
 
-
 (defn render-layout [{::form/keys [form-instance] :as env} {::form/keys [attributes layout] :as options}]
 
   (let [{::form/keys [attributes layout tabbed-layout debug?] :as options} (comp/component-options form-instance)
         k->attr (rsf/attribute-map attributes)
         layout  (cond
                   (vector? layout) (render-layout* env options k->attr layout)
-                  (vector? tabbed-layout) (rsf/ui-tabbed-layout env options)
+                  (vector? tabbed-layout) (ui-tabbed-layout env options)
                   :else (mapv (fn [attr] (fr/render-field env attr)) attributes))]
     (if (and #?(:clj false :cljs goog.DEBUG) debug?)
       (debug/top-bottom-debugger form-instance (comp/props form-instance)
