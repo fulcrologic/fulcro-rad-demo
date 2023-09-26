@@ -1,14 +1,14 @@
 (ns com.example.ui.invoice-forms
   (:require
-    #?(:cljs [cljs.loader :as loader])
-    [com.example.client :as client]
+    #?@(:cljs [[cljs.loader :as loader]
+               [com.example.client :as client]
+               [com.example.ui :refer [MainRouter]]
+               [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]])
     [com.example.model.account :as account]
     [com.example.model.invoice :as invoice]
-    [com.example.ui :refer [MainRouter]]
     [com.example.ui.account-forms :refer [AccountForm]]
     [com.example.ui.line-item-forms]                        ; Required, since we're getting to it in a completely dynamic way
     [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.form :as form]
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.form-render-options :as fro]
@@ -16,8 +16,7 @@
     [com.fulcrologic.rad.report-options :as ro]
     [com.fulcrologic.rad.routing :as rroute]
     [com.fulcrologic.rad.type-support.date-time :as datetime]
-    [com.fulcrologic.rad.type-support.decimal :as math]
-    [taoensso.timbre :as log]))
+    [com.fulcrologic.rad.type-support.decimal :as math]))
 
 (defn sum-subtotals* [{:invoice/keys [line-items] :as invoice}]
   (assoc invoice :invoice/total
@@ -29,7 +28,7 @@
 
 (form/defsc-form InvoiceForm [this props]
   {fo/id             invoice/id
-   fro/style         :rad/multirender
+   fro/style         :multimethod
    ;; So, a special (attr/derived-value key type style) would be useful for form logic display
    ;::form/read-only?     true
    fo/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]
