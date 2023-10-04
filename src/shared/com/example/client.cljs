@@ -3,7 +3,8 @@
     [cljs.loader :as loader]
     [com.example.model :as r.model]
     [com.example.ui :as ui :refer [Root]]
-    [com.example.ui.form-rendering :as frender]
+    [com.example.ui.form-rendering]                         ; side effect to get defmethods
+    [com.example.ui.report-rendering]                       ; side effect to get defmethods
     [com.example.ui.login-dialog :refer [LoginForm]]
     [com.fulcrologic.fulcro.algorithms.timbre-support :refer [console-appender prefix-output-fn]]
     [com.fulcrologic.fulcro.algorithms.tx-processing.batched-processing :as btxn]
@@ -15,6 +16,7 @@
     [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [com.fulcrologic.rad.application :as rad-app]
     [com.fulcrologic.rad.authorization :as auth]
+    [com.fulcrologic.rad.form-render :as fr]
     [com.fulcrologic.rad.rendering.semantic-ui.semantic-ui-controls :as sui]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.routing :as routing]
@@ -56,7 +58,8 @@
 (defn setup-RAD [app]
   (rad-app/install-ui-controls! app sui/all-controls)
   (report/install-formatter! app :boolean :affirmation (fn [_ value] (if value "yes" "no")))
-  (frender/install! app r.model/all-attributes))
+  (log/info "ALLOWING DEFAULTS")
+  (fr/allow-defaults! r.model/all-attributes))
 
 (defonce app (-> (rad-app/fulcro-rad-app {})
                (with-react18)

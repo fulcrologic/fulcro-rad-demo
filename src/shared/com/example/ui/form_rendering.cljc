@@ -16,16 +16,6 @@
     [com.fulcrologic.rad.semantic-ui-options :as suo]
     [taoensso.timbre :as log]))
 
-(defn install!
-  "Install multimethod rendering such that:
-
-   * All keywords in the RAD model will derive from :default.
-   * A form can use `fro/style :multimethod` to switch from the built-in plugin rendering to multimethod rendering.
-  "
-  [app attrs]
-  (fr/allow-defaults! attrs)
-  (fr/install-as! app :multimethod))
-
 ;; Need this so that the plugin's way of rendering refs is used by default when rendering with multimethods
 (defmethod fr/render-field [:ref :default] [{::form/keys [form-instance] :as renv} field-attr]
   (rsf/standard-ref-container renv field-attr (comp/component-options form-instance)))

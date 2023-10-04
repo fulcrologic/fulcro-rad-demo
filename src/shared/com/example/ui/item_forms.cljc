@@ -2,6 +2,7 @@
   (:require
     [com.example.model.item :as item]
     [com.fulcrologic.rad.picker-options :as picker-options]
+    [com.fulcrologic.fulcro.dom :as dom]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.rad.control :as control]
     [com.fulcrologic.rad.form :as form]
@@ -9,6 +10,8 @@
     [com.fulcrologic.rad.form-options :as fo]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
+    [com.fulcrologic.rad.report-render :as rr]
+    [com.fulcrologic.rad.report-render-options :as rro]
     [taoensso.timbre :as log]
     [com.example.model.category :as category]))
 
@@ -18,7 +21,7 @@
 
 (form/defsc-form ItemForm [this props]
   {fo/id            item/id
-  ; fro/style        :rad/multirender
+   ; fro/style        :rad/multirender
    fo/attributes    [item/item-name
                      item/category
                      item/description
@@ -37,6 +40,7 @@
 
 (report/defsc-report InventoryReport [this props]
   {ro/title               "Inventory Report"
+   rro/style              :multimethod
    ro/source-attribute    :item/all-items
    ro/row-pk              item/id
    ro/columns             [item/item-name category/label item/price item/in-stock]
