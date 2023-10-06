@@ -19,6 +19,7 @@
     [com.fulcrologic.rad.picker-options :as po]
     [com.fulcrologic.rad.report :as report]
     [com.fulcrologic.rad.report-options :as ro]
+    [com.fulcrologic.rad.report-render-options :as rro]
     [com.fulcrologic.rad.semantic-ui-options :as suo]))
 
 #_(def account-validator
@@ -135,6 +136,8 @@
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
 
+   rro/style :multimethod
+
    ;; The rendering options can also be set globally. Putting them on the component override globals.
    suo/rendering-options  {suo/action-button-render      (fn [this {:keys [key onClick label]}]
                                                            (when (= key ::new-account)
@@ -142,7 +145,7 @@
                                                                (dom/i {:className "icon user"})
                                                                label)))
                            suo/body-class                ""
-                           suo/controls-class            ""
+                           ;suo/controls-class            ""
                            suo/layout-class              ""
                            suo/report-table-class        "ui very compact celled selectable table"
                            suo/report-table-header-class (fn [this i] (case i
