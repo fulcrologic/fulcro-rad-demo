@@ -40,7 +40,7 @@
            :datomic   {:extra-paths ["src/datomic"]
                        :extra-deps  {com.datomic/dev-local              {:mvn/version "1.0.243"}
                                      com.datomic/client-cloud           {:mvn/version "1.0.123"}
-                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.4.5"}}}
+                                     com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.5.0"}}}
            :asami     {:extra-paths ["src/asami" "src/asami-tests"]
                        :extra-deps  {cz.holyjak/fulcro-rad-asami {:git/url "https://github.com/holyjak/fulcro-rad-asami"
                                                                   :sha     "46b6f59643db171be0aa2b3bdc72806935f0ece4"}}}

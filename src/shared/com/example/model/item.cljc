@@ -7,8 +7,10 @@
     [taoensso.timbre :as log]))
 
 (defattr id :item/id :uuid
-  {ao/identity? true
-   ao/schema    :production})
+  {ao/identity?                                                   true
+   ; needed for recursive calls of parser to work properly when using minimal queries
+   :com.fulcrologic.rad.database-adapters.datomic/resolver-cache? false
+   ao/schema                                                      :production})
 
 (defattr category :item/category :ref
   {ao/target      :category/id
@@ -42,9 +44,10 @@
 #?(:clj
    (pc/defresolver item-category-resolver [{:keys [parser] :as env} {:item/keys [id]}]
      {::pc/input  #{:item/id}
+      ::pc/cache? false
       ::pc/output [:category/id :category/label]}
      (let [result (parser env [{[:item/id id] [{:item/category [:category/id :category/label]}]}])]
-       (get-in (log/spy :info result) [[:item/id id] :item/category]))))
+       (get-in result [[:item/id id] :item/category]))))
 
 (def attributes [id item-name category description price in-stock all-items])
 

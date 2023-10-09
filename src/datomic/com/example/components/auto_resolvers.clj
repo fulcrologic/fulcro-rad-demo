@@ -10,4 +10,5 @@
   (vec
     (concat
       (res/generate-resolvers all-attributes)
-      (datomic/generate-resolvers all-attributes :production))))
+      (datomic/generate-resolvers all-attributes :production {:use-cache?     true
+                                                              :minimal-pulls? true}))))

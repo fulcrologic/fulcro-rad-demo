@@ -28,7 +28,9 @@
 
 (form/defsc-form InvoiceForm [this props]
   {fo/id             invoice/id
+
    fro/style         :multimethod
+
    ;; So, a special (attr/derived-value key type style) would be useful for form logic display
    ;::form/read-only?     true
    fo/attributes     [invoice/customer invoice/date invoice/line-items invoice/total]

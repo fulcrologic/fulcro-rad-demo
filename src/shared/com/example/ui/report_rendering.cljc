@@ -165,7 +165,8 @@
                               "collapsing")}
           action-buttons)))))
 
-(let [ui-table-row-layout (comp/factory TableRowLayout)]
+(let [ui-table-row-layout (comp/factory TableRowLayout {:keyfn (fn [{:keys [row-class props]}]
+                                                                 (str (comp/get-ident row-class props)))})]
   (defn render-table-row [report-instance row-class row-props]
     (ui-table-row-layout {:report-instance report-instance
                           :row-class       row-class

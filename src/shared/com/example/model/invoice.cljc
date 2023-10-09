@@ -45,7 +45,7 @@
    ao/schema                                                       :production
 
    fo/subform                                                      {fo/ui          `com.example.ui.line-item-forms/LineItemForm
-                                                                    fro/style :table
+                                                                    fro/style      :table
                                                                     fo/can-delete? (fn [_ _] true)
                                                                     fo/can-add?    (fn [_ _] true)}})
 
