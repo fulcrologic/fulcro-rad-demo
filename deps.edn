@@ -38,8 +38,7 @@
                                      com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.8-alpha"}}}
 
            :datomic   {:extra-paths ["src/datomic"]
-                       :extra-deps  {com.datomic/dev-local              {:mvn/version "1.0.243"}
-                                     com.datomic/client-cloud           {:mvn/version "1.0.123"}
+                       :extra-deps  {com.datomic/local                  {:mvn/version "1.0.267"}
                                      com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.4.5"}}}
            :asami     {:extra-paths ["src/asami" "src/asami-tests"]
                        :extra-deps  {cz.holyjak/fulcro-rad-asami {:git/url "https://github.com/holyjak/fulcro-rad-asami"

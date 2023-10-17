@@ -71,15 +71,7 @@ if you don't have `yarn`, use `npm install` instead.
 
 == Using Datomic Cloud
 
-The Datomic database used in the demo is Datomic Cloud. On-prem is also supported (using a different namespace. See
-the `on-prem` tag which uses older versions the datomic RAD plugin and Datomic free), but
-the datomic-free version does not have enough features to support RAD. Datomic Cloud has a dev-local driver that can
-be used to create in-memory database, which makes writing an easy-to-run demo more simple.
-
-You will need to obtain the current version of dev-local from https://cognitect.com/dev-tools[Cognitect] in order to
-run this demo (and update the `deps.edn` to reflect the version you got).
-
-Once you have the dependencies you should be able to start the webapp in Datomic mode using:
+The Datomic database used in the demo is Datomic Local. It uses an in-memory database, which makes writing an easy-to-run demo simple. To start the webapp in Datomic, use:
 
 [source, bash]
 -----
