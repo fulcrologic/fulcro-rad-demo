@@ -49,11 +49,11 @@
   {fo/id         account/tag-id
    fo/attributes [account/tag-label]})
 
-(form/defsc-form AccountForm [this props]
+(form/defsc-form AccountForm [this {:ui/keys [route-denied?] :as props}]
   {fo/id              account/id
    ; fo/debug? true
    ;   ::form/read-only?          true
-   fo/query-inclusion [(blob/status-key :account/avatar) ; IMPORTANT: For image upload to "look right" you need to include these in your query
+   fo/query-inclusion [(blob/status-key :account/avatar)    ; IMPORTANT: For image upload to "look right" you need to include these in your query
                        (blob/url-key :account/avatar)
                        (blob/progress-key :account/avatar)]
    fo/attributes      [account/avatar
@@ -66,6 +66,7 @@
    fo/default-values  {:account/active?         true
                        :account/primary-address {}
                        :account/addresses       [{}]}
+   fo/confirm         :async
    ;fo/validator           account-validator
    ;fo/validation-messages {:account/email "You must use your UPPER case first name as your email address name."}
    fo/route-prefix    "account"
@@ -136,7 +137,7 @@
    ;::report/row-style                :list
    ;::report/BodyItem                 AccountListItem
 
-   rro/style :multimethod
+   rro/style              :multimethod
 
    ;; The rendering options can also be set globally. Putting them on the component override globals.
    suo/rendering-options  {suo/action-button-render      (fn [this {:keys [key onClick label]}]
