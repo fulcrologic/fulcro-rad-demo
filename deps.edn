@@ -1,12 +1,12 @@
 {:paths   ["src/shared"]
 
- :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.7.0-RC5"}
-           com.fulcrologic/fulcro-rad             {:mvn/version "1.6.0-RC5"}
-           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.4.0-RC5"}
-           com.fulcrologic/fulcro-i18n            {:mvn/version "1.1.0"}
+ :deps    {com.fulcrologic/fulcro                 {:mvn/version "3.9.0-rc9"}
+           com.fulcrologic/fulcro-rad             {:mvn/version "1.6.16"}
+           com.fulcrologic/fulcro-rad-semantic-ui {:mvn/version "1.4.7"}
+           com.fulcrologic/fulcro-i18n            {:mvn/version "1.1.2"}
            com.wsscode/pathom                     {:mvn/version "2.4.0"}
            edn-query-language/eql                 {:mvn/version "1.0.2"}
-           com.fulcrologic/guardrails             {:mvn/version "1.1.11"}
+           com.fulcrologic/guardrails             {:mvn/version "1.2.9"}
 
            org.postgresql/postgresql              {:mvn/version "42.5.1"}
 
@@ -38,7 +38,8 @@
                                      com.fulcrologic/fulcro-rad-sql {:mvn/version "0.0.8-alpha"}}}
 
            :datomic   {:extra-paths ["src/datomic"]
-                       :extra-deps  {com.datomic/local                  {:mvn/version "1.0.267"}
+                       :extra-deps  {com.datomic/local                  {:mvn/version "1.0.291"}
+                                     com.datomic/client-cloud           {:mvn/version "1.0.123"}
                                      com.fulcrologic/fulcro-rad-datomic {:mvn/version "1.4.5"}}}
            :asami     {:extra-paths ["src/asami" "src/asami-tests"]
                        :extra-deps  {cz.holyjak/fulcro-rad-asami {:git/url "https://github.com/holyjak/fulcro-rad-asami"
@@ -54,5 +55,6 @@
            :dev       {:extra-paths ["src/dev" "resources"]
                        :extra-deps  {thheller/shadow-cljs                {:mvn/version "2.20.16"}
                                      com.fulcrologic/semantic-ui-wrapper {:mvn/version "2.1.4"}
+                                     com.fulcrologic/fulcro-inspect      {:mvn/version "1.0.4"}
                                      binaryage/devtools                  {:mvn/version "1.0.6"}
                                      org.clojure/tools.namespace         {:mvn/version "1.4.4"}}}}}
