@@ -1,3 +1,5 @@
 saveExact: true
 minimumReleaseAge: 10080   # minutes = 7 days
 allowBuilds: {}   # no dependency has install scripts; add any new one here as `name: false`
+# shadow-cljs resolves transitive npm deps (e.g. `process`, `scheduler`) from the top of node_modules
+shamefullyHoist: true
