@@ -1,0 +1,3 @@
+saveExact: true
+minimumReleaseAge: 10080   # minutes = 7 days
+allowBuilds: {}   # no dependency has install scripts; add any new one here as `name: false`

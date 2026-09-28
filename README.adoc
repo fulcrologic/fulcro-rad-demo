@@ -63,11 +63,13 @@ able to edit it, just start a shadow-cljs watch:
 
 [source, bash]
 -----
-$ yarn
-$ shadow-cljs watch main
+$ pnpm install --frozen-lockfile
+$ pnpm exec shadow-cljs watch main
 -----
 
-if you don't have `yarn`, use `npm install` instead.
+This project uses https://pnpm.io[pnpm] (see `packageManager` in `package.json`; `corepack enable` will
+provide the right version). npm and yarn are refused. Dependency install scripts are disabled
+(`allowBuilds` in `pnpm-workspace.yaml`), versions are exact, and releases younger than 7 days are rejected.
 
 == Using Datomic Cloud
 
