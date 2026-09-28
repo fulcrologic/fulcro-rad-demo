@@ -40,17 +40,6 @@ jobs:
         with:
            babashka-version: 1.0.169
 
-      - name: "Create clojure config files"
-        if: matrix.db_deps_alias == 'datomic' # only needed for datomic dev-local dep
-        run: |
-          echo "XDG_CONFIG_HOME=$XDG_CONFIG_HOME, CLJ_CONFIG=$CLJ_CONFIG"
-          test -d ~/.m2 || mkdir ~/.m2
-          echo ${{ secrets.SECRET_BASE64_SETTINGS_XML }} | base64 --decode > ~/.m2/settings.xml          
-          #NOTE: Adding the repo to user deps.edn should suffice but somehow doesn't work in GA action :'(
-          #export USER_DEPS=$(bb -e '(-> (shell/sh "clojure" "-Sdescribe") :out edn/read-string :config-user)')
-          #export USER_DEPS_DIR=$(dirname $USER_DEPS)
-          #test -d "$USER_DEPS_DIR" || mkdir -p "$USER_DEPS_DIR"
-          #echo '{:mvn/repos {"cognitect-dev-tools" {:url "https://dev-tools.cognitect.com/maven/releases/"}}}' > $USER_DEPS
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
